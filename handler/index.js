@@ -8,11 +8,6 @@ const {
     Client
 } = require("discord.js");
 
-//DATABASE
-const mongoose = require("mongoose");
-require('dotenv').config();
-const spawnedPokes = require("../schemas/Spawned");
-
 const globPromise = promisify(glob);
 const chalk = require("chalk");
 
@@ -55,14 +50,6 @@ module.exports = async (client) => {
     });
     client.on("ready", async () => {
         await client.application.commands.set(arrayOfSlashCommands).then(console.log(chalk.green("[SLASH COMMANDS] <==> || Successfully loaded all slash commands globally! || <==> [SLASH COMMANDS]")))
-        try{
-            await mongoose.connect(process.env.MONGODB_CONNECT || '', {
-                keepAlive: true,
-                dbName: 'Discmons',
-            }).then(() => console.log(chalk.green("[DATABASE] <==> || Successfully connected to the MongoDB database! || <==> [DATABASE]"))).then(async () => await spawnedPokes.deleteMany().then(console.log(chalk.green('[DATABASE] <==> || Successfully wiped all spawned pokemons for new restart! || <==> [DATABASE]'))))
-        } catch(dberror) {
-            console.log(chalk.red(`[DATABASE] <==> || Database seems to have ran into an error and could not connect! || <==> [DATABASE]\n\n${dberror}`));
-        }
     });
 };
 

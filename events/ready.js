@@ -57,8 +57,6 @@ client.on("ready", async (client) => {
             startupCooldown.delete("startupcooldown");
             console.log(chalk.green(`[COOLDOWN] <==> || Cooldown is now over and everyone has been given access to the bot services again! || <==> [COOLDOWN]`));
         }, 1000 * 60);
-
-        //await spawnedPokes.deleteMany().then(console.log(chalk.green('[DATABASE] <==> || Successfully wiped all spawned pokemons for new restart! || <==> [DATABASE]')))
         
     } catch (e) {
         console.log(String(e.stack))

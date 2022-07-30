@@ -13,10 +13,10 @@ const {
 } = require("fs");
 const config = require("./botconfig/config.json");
 const chalk = require("chalk");
-const {
-    Webhook
-} = require("@top-gg/sdk");
 const express = require('express');
+const mysql = require("mysql2/promise");
+require('dotenv').config();
+
 
 //           --------------------<CONSTRUCTORS>--------------------
 
@@ -71,7 +71,7 @@ client.config = require("./botconfig/config.json");
 
 //           --------------------<REQUIRES>--------------------
 
-require("./handler/anticrash")(client)
+require("./handler/anticrash")(client);
 // Initializing the project
 require("./handler")(client);
 //require("./database/db")
@@ -85,6 +85,19 @@ require("./handler")(client);
 
 //           --------------------<STATS POSTER>--------------------
 
+
+//--
+
+const connection = await mysql.createConnection({
+    port: process.env.MYSQL_PORT,
+    user: process.env.MYSQL_USER,
+    password: process.env.MYSQL_PASS,
+    supportBigNumbers: true,
+}).then(console.log("Connected to database!"));
+
+client.connection = connection;
+
+//--
 
 
 //           --------------------<STARTER>--------------------

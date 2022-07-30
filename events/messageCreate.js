@@ -19,9 +19,6 @@ const {
     xpCooldowns
 } = require("../index");
 const {
-    v4: uuidv4
-} = require("uuid");
-const {
     encounterspawn
 } = require("../handler/functions");
 const {
