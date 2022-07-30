@@ -14,7 +14,7 @@ const {
 const config = require("./botconfig/config.json");
 const chalk = require("chalk");
 const express = require('express');
-const mysql = require("mysql2/promise");
+const mysql = require('mysql2/promise');
 require('dotenv').config();
 
 
@@ -88,23 +88,33 @@ require("./handler")(client);
 
 //--
 
-const connection = await mysql.createConnection({
-    port: process.env.MYSQL_PORT,
-    user: process.env.MYSQL_USER,
-    password: process.env.MYSQL_PASS,
-    supportBigNumbers: true,
-}).then(console.log("Connected to database!"));
+async function dbConnection() {
 
-client.connection = connection;
+    if (!process.env.MYSQL_PORT || process.env.MYSQL_USER || process.env.MYSQL_PASS) {
+        return console.log("[ERROR] <==> || You must fill out the .env file before starting the project! || <==> [ERROR]")
+    }
+
+    const connection = await mysql.createConnection({
+        port: process.env.MYSQL_PORT,
+        user: process.env.MYSQL_USER,
+        password: process.env.MYSQL_PASS,
+        supportBigNumbers: true,
+    }).then(console.log("Connected to database!"));
+
+    client.connection = connection;
+
+}
 
 //--
 
 
-//           --------------------<STARTER>--------------------
+//           --------------------<STARTING ARGUMENTS>--------------------
 
-client.login(client.config.token);
+dbConnection();
 
-//           --------------------<STARTER>--------------------
+client.login(process.env.LOGIN_TOKEN);
+
+//           --------------------<STARTING ARGUMENTS>--------------------
 
 /*
 
