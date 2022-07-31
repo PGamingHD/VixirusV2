@@ -3,17 +3,14 @@
         CommandInteraction,
         MessageEmbed,
         MessageActionRow,
-        MessageButton
+        MessageButton,
+        EmbedBuilder
     } = require('discord.js');
     const ee = require('../../botconfig/embed.json');
     const emoji = require('../../botconfig/embed.json')
     const prettyMilliseconds = require('pretty-ms');
     const config = require('../../botconfig/config.json')
     const axios = require('axios');
-    const userData = require('../../schemas/userData');
-    const {
-        EmbedBuilder
-    } = require('@discordjs/builders');
 
     module.exports = {
         name: 'vote',

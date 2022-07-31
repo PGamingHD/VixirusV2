@@ -9,10 +9,10 @@
         ButtonBuilder,
         EmbedBuilder
     } = require('discord.js');
-    const ee = require('../../botconfig/embed.json');
-    const emoji = require('../../botconfig/embed.json')
+    const ee = require('../botconfig/embed.json');
+    const emoji = require('../botconfig/embed.json')
     const prettyMilliseconds = require('pretty-ms');
-    const config = require('../../botconfig/config.json')
+    const config = require('../botconfig/config.json')
     const userData = require('../../schemas/userData');
 
     module.exports = {
@@ -64,7 +64,7 @@
             const user = bagitems;
             const ownedbagitems = bagitems.Items;
 
-            if(ownedbagitems.length === 0) {
+            if (ownedbagitems.length === 0) {
                 return interaction.reply({
                     embeds: [
                         new EmbedBuilder()
@@ -180,11 +180,11 @@
             })
 
             collector.on('end', async (collected) => {
-                if(ownedbagitems.length > 6){
+                if (ownedbagitems.length > 6) {
                     for (let i = 0; i < mainRow.components.length; i++) {
                         mainRow.components[i].setDisabled(true);
                     }
-    
+
                     await interaction.editReply({
                         components: [mainRow]
                     });

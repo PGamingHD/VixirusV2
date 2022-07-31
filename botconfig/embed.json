@@ -1,5 +1,5 @@
 {
     "color": 11141375,
-    "wrongcolor": 16711680,
-    "maintenancecolor": 16775936
+    "errorColor": 16711680,
+    "maintenanceColor": 16775936
 }

@@ -10,7 +10,6 @@
     const emoji = require('../../botconfig/embed.json')
     const prettyMilliseconds = require('pretty-ms');
     const config = require('../../botconfig/config.json');
-    const dev = require("../../schemas/developerData");
 
     module.exports = {
         name: 'ping',
@@ -21,10 +20,6 @@
          * @param {String[]} args 
          */
         run: async (client, interaction, args) => {
-
-            const test = Math.floor(0.01 * (2 * 45 + 31 + Math.floor(0.25 * 150)) * 100) + 100 + 10;
-            return console.log(test)
-
             const timeBefore = new Date().getTime();
             await dev.findOne({
                 developerAccess: "accessStringforDeveloperOnly"

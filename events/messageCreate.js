@@ -9,33 +9,18 @@ const {
 const ee = require("../botconfig/embed.json");
 const emoji = require("../botconfig/emojis.json");
 const config = require("../botconfig/config.json");
-const server = require("../schemas/Servers");
-const spawned = require("../schemas/Spawned");
-const pokemon = require("../schemas/Pokemons");
-const developer = require("../schemas/developerData");
-const userdata = require("../schemas/userData");
-const {
-    awardCooldowns,
-    xpCooldowns
-} = require("../index");
-const {
-    encounterspawn
-} = require("../handler/functions");
-const {
-    startupCooldown
-} = require("../index");
+const startupCooldown = client.startupCooldown;
 
 client.on("messageCreate", async (message) => {
-
+/*
     if (message.author.bot || !message.guild) return;
 
-    if (startupCooldown.has("startupcooldown") && !config.developerID.includes(message.author.id)) {
+    if (startupCooldown.has("startupcooldown") && !config.DEVELOPER_IDS.includes(message.author.id)) {
         return;
     }
 
-    const dev = await developer.findOne({
-        developerAccess: "accessStringforDeveloperOnly",
-    })
+    const [globalRows, globalFields] = await client.connection.query('SELECT * FROM global_data WHERE global_access = 1');
+    const inMaintenance = globalRows[0].maintenance_mode;
 
     if (dev.globalMaintenance) {
         return;

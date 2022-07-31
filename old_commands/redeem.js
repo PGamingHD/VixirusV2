@@ -6,15 +6,10 @@
         MessageButton,
         ApplicationCommandOptionType
     } = require('discord.js');
-    const ee = require('../../botconfig/embed.json');
-    const emoji = require('../../botconfig/embed.json')
+    const ee = require('../botconfig/embed.json');
+    const emoji = require('../botconfig/embed.json')
     const prettyMilliseconds = require('pretty-ms');
-    const config = require('../../botconfig/config.json');
-    const userData = require("../../schemas/userData");
-    const pokemon = require("../../schemas/Pokemons");
-    const {
-        redeemSpawn
-    } = require("../../handler/functions");
+    const config = require('../botconfig/config.json');
 
     module.exports = {
         name: 'redeem',

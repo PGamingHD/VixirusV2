@@ -12,7 +12,6 @@
     const emoji = require('../../botconfig/embed.json')
     const prettyMilliseconds = require('pretty-ms');
     const config = require('../../botconfig/config.json');
-    const globalData = require('../../schemas/globalData');
     let cpuStat = require("cpu-stat");
     let os = require("os");
 
@@ -28,7 +27,7 @@
         run: async (client, interaction, args) => {
 
             try {
-                cpuStat.usagePercent( async function (e, percent, seconds) {
+                cpuStat.usagePercent(async function (e, percent, seconds) {
                     if (e) return console.log(String(e.stack));
 
                     const foundglobal = await globalData.findOne({
@@ -116,32 +115,8 @@
                             value: `\`[ ${percent.toFixed(2)}% ]\``,
                             inline: true
                         }, {
-                            name: 'Total Registered',
-                            value: `\`[ ${foundglobal.Registered} ]\``,
-                            inline: true
-                        }, {
-                            name: 'Total Caught',
-                            value: `\`[ ${foundglobal.totalCaught.toLocaleString('en-US')} ]\``,
-                            inline: true
-                        }, {
-                            name: 'Total Mythical',
-                            value: `\`[ ${foundglobal.MythicalCaught.toLocaleString('en-US')} ]\``,
-                            inline: true
-                        }, {
-                            name: 'Total Legendary',
-                            value: `\`[ ${foundglobal.LegendaryCaught.toLocaleString('en-US')} ]\``,
-                            inline: true
-                        }, {
-                            name: 'Total Ultra Beasts',
-                            value: `\`[ ${foundglobal.UBCaught.toLocaleString('en-US')} ]\``,
-                            inline: true    
-                        }, {
-                            name: 'Total Shiny',
-                            value: `\`[ ${foundglobal.ShinyCaught.toLocaleString('en-US')} ]\``,
-                            inline: true
-                        }, {
                             name: 'Host Location',
-                            value: '\`[ England, Kettering (52.3984,-0.7257) ]\`',
+                            value: '\`[ Germany, Falkenstein ]\`',
                             inline: true
                         }, {
                             name: 'Bot Version',

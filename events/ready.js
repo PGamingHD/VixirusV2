@@ -1,13 +1,14 @@
 const client = require("../index");
 const config = require("../botconfig/config.json");
 const emoji = require("../botconfig/emojis.json");
-const { Cron } = require("croner");
+const {
+    Cron
+} = require("croner");
 const {
     ActivityType,
     Interaction
 } = require("discord.js");
 const chalk = require("chalk");
-const spawnedPokes = require("../schemas/Spawned");
 const {
     startupCooldown
 } = require("../index");
@@ -57,7 +58,7 @@ client.on("ready", async (client) => {
             startupCooldown.delete("startupcooldown");
             console.log(chalk.green(`[COOLDOWN] <==> || Cooldown is now over and everyone has been given access to the bot services again! || <==> [COOLDOWN]`));
         }, 1000 * 60);
-        
+
     } catch (e) {
         console.log(String(e.stack))
     }

@@ -15,95 +15,109 @@ const client = require("../index");
 const ee = require("../botconfig/embed.json");
 const emoji = require("../botconfig/emojis.json");
 const config = require("../botconfig/config.json");
-const {
-    startupCooldown
-} = require("../index");
-
-//SCHEMA DATA
-const userData = require("../schemas/userData");
-const pokemon = require("../schemas/Pokemons");
-const developer = require("../schemas/developerData");
-const server = require("../schemas/Servers");
-const {
-    maintenancemode,
-    forcespawn
-} = require("../handler/functions");
+const embed = require("../botconfig/embed.json");
+const startupCooldown = client.startupCooldown;
 
 client.on("interactionCreate", async (interaction) => {
 
-    if (startupCooldown.has("startupcooldown") && !config.developerID.includes(interaction.user.id)) {
+    if (startupCooldown.has("startupcooldown") && !config.DEVELOPER_IDS.includes(interaction.user.id)) {
         return interaction.reply({
-            content: ':x: The bot is still starting up, please be patient and wait for the cooldown to end!',
-            ephemeral: true
+            embeds: [
+                new EmbedBuilder()
+                .setColor(embed.errorColor)
+                .setDescription(`:x: The bot is still starting up, please be patient and wait for the cooldown to end!`)
+            ]
         })
     }
 
-    const dev = await developer.findOne({
-        developerAccess: "accessStringforDeveloperOnly",
-    })
+    const [globalRows, globalFields] = await client.connection.query('SELECT * FROM global_data WHERE global_access = 1');
+    const inMaintenance = globalRows[0].maintenance_mode;
+    const latestTOS = globalRows[0].latest_tos;
 
-    if (dev.globalMaintenance && !config.developerID.includes(interaction.user.id)) {
+    if (inMaintenance && !config.DEVELOPER_IDS.includes(interaction.user.id)) {
+
         return interaction.reply({
-            content: ':x: Maintenance Mode is enabled, please wait until the maintenance is over!',
-            ephemeral: true
+            embeds: [
+                new EmbedBuilder()
+                .setColor(embed.maintenanceColor)
+                .setDescription(`:x: Maintenance Mode is enabled, please wait until the maintenance is over!`)
+            ]
         })
     }
 
-    const findserver = await server.findOne({
-        ServerID: parseInt(interaction.guild.id),
-    })
-
-    if (!findserver) {
-        await server.create({
-            ServerID: parseInt(interaction.guild.id),
-            Blacklisted: false,
-            SpawningTime: 0,
-            RedirectChannel: 0
+    const [blacklistGuildRows, blacklistGuildFields] = await client.connection.query(`SELECT * FROM blacklist_data WHERE blacklist_type = "GUILD" AND blacklist_id = "${interaction.guild.id}"`);
+    if (blacklistGuildRows.length !== 0) {
+        return interaction.reply({
+            embeds: [
+                new EmbedBuilder()
+                .setColor(embed.errorColor)
+                .setTitle(':x: Blacklist Detected :x:')
+                .setDescription(`This server has been blacklisted from the usage of this bots functions, please open a ticket on the Support Server to get this fixed.`)
+            ]
         })
-    } else {
-        if (findserver.Blacklisted) {
-            return interaction.reply({
-                content: ':x: This server has been blacklisted from the usage of this bots functions, please open a ticket on the Support Server to get this fixed.',
-                ephemeral: true
-            })
-        }
     }
 
-    const finduser = await userData.findOne({
-        OwnerID: parseInt(interaction.user.id),
-    })
+    const [blacklistUserRows, blacklistUserFields] = await client.connection.query(`SELECT * FROM blacklist_data WHERE blacklist_type = "USER" AND blacklist_id = "${interaction.user.id}"`);
+    if (blacklistUserRows.length !== 0) {
+        return interaction.reply({
+            embeds: [
+                new EmbedBuilder()
+                .setColor(embed.errorColor)
+                .setTitle(':x: Blacklist Detected :x:')
+                .setDescription(`You have been blacklisted from the usage of this bots functions, please open a ticket on the Support Server to get this fixed.`)
+            ]
+        })
+    }
 
-    if (finduser) {
+    const [tosAgreementRows, tosAgreementFields] = await client.connection.query(`SELECT * FROM tos_agreements WHERE agreement_userid = ${interaction.user.id}`);
 
-        if (finduser.Blacklisted) {
-            return interaction.reply({
-                content: ':x: You have been blacklisted from the usage of this bots functions, please open a ticket on the Support Server to get this fixed.',
-                ephemeral: true
-            })
-        }
+    let existingAgreement = 0;
 
-        if (dev.LastTOSUpdate > finduser.LatestAgreed && interaction.isButton()) {
-            if (interaction.customId === "agree") {
-                await interaction.deferUpdate();
+    if(tosAgreementRows.length !== 0) {
+        existingAgreement = tosAgreementRows[0].agreement_date;
+    }
 
-                const agreementRow = new ActionRowBuilder()
-                agreementRow.addComponents([
-                    new ButtonBuilder()
-                    .setEmoji('✅')
-                    .setCustomId('agree')
-                    .setStyle(ButtonStyle.Primary)
-                ])
-                agreementRow.addComponents([
-                    new ButtonBuilder()
-                    .setEmoji('❎')
-                    .setCustomId('disagree')
-                    .setStyle(ButtonStyle.Primary)
-                ])
+    if (latestTOS > existingAgreement && !interaction.isButton()) {
+        const agreementRow = new ActionRowBuilder()
+        agreementRow.addComponents([
+            new ButtonBuilder()
+            .setEmoji('✅')
+            .setCustomId('agree')
+            .setStyle(ButtonStyle.Primary)
+        ])
+        agreementRow.addComponents([
+            new ButtonBuilder()
+            .setEmoji('❎')
+            .setCustomId('disagree')
+            .setStyle(ButtonStyle.Primary)
+        ])
+
+        await interaction.reply({
+            embeds: [
+                new EmbedBuilder()
+                .setColor(ee.color)
+                .setTitle(`Updated Terms of Service agreement!`)
+                .setDescription(`**Whoops, wait one second there ${interaction.user}!**\n\nLooks like you have yet to read our newly updated [Terms of Service](https://discord.gg/discmon) and agree to it.\nPlease read through our new ToS then agree with the buttons below, or decline.\n\n> We update our ToS agreements regulary, which is why you are seeing this again, or you might just be new here.`)
+            ],
+            components: [agreementRow]
+        });
+
+        const agreementInteraction = await interaction.fetchReply();
+
+        let filter = m => m.user.id === interaction.user.id;
+        const collector = agreementInteraction.createMessageComponentCollector({
+            filter,
+            time: 1000 * 60
+        });
+
+        collector.on('collect', async (interactionCollector) => {
+            if (interactionCollector.customId === "agree") {
+                await interactionCollector.deferUpdate();
 
                 for (let i = 0; i < agreementRow.components.length; i++) {
                     agreementRow.components[i].setDisabled(true);
                 }
-
+    
                 await interaction.editReply({
                     embeds: [
                         new EmbedBuilder()
@@ -114,27 +128,36 @@ client.on("interactionCreate", async (interaction) => {
                     components: [agreementRow]
                 })
 
-                await finduser.updateOne({
-                    LatestAgreed: Date.now()
+                if(tosAgreementRows.length === 0) {
+                    await client.connection.query(`INSERT INTO tos_agreements (agreement_userid, agreement_date) VALUES (${interaction.user.id}, ${Date.now()})`);
+                } else {
+                    await client.connection.query(`UPDATE tos_agreements SET agreement_date = "${Date.now()}" WHERE agreement_userid = ${interaction.user.id}`);
+                }
+                return;
+            }
+
+            if (interactionCollector.customId === "disagree") {
+                await interactionCollector.deferUpdate();
+
+                for (let i = 0; i < agreementRow.components.length; i++) {
+                    agreementRow.components[i].setDisabled(true);
+                }
+    
+                await interaction.editReply({
+                    embeds: [
+                        new EmbedBuilder()
+                        .setColor(ee.errorColor)
+                        .setTitle(`Successfully disagreed to our ToS`)
+                        .setDescription(`You have now declined agreement to our ToS, please note that no further bot access can be given unless you agree to the new Terms of Service.`)
+                    ],
+                    components: [agreementRow]
                 });
                 return;
-            } else if (interaction.customId === "disagree") {
-                await interaction.deferUpdate();
+            }
+        });
 
-                const agreementRow = new ActionRowBuilder()
-                agreementRow.addComponents([
-                    new ButtonBuilder()
-                    .setEmoji('✅')
-                    .setCustomId('agree')
-                    .setStyle(ButtonStyle.Primary)
-                ])
-                agreementRow.addComponents([
-                    new ButtonBuilder()
-                    .setEmoji('❎')
-                    .setCustomId('disagree')
-                    .setStyle(ButtonStyle.Primary)
-                ])
-
+        collector.on('end', async (collected) => {
+            if(collected.size === 0) {
                 for (let i = 0; i < agreementRow.components.length; i++) {
                     agreementRow.components[i].setDisabled(true);
                 }
@@ -142,43 +165,14 @@ client.on("interactionCreate", async (interaction) => {
                 await interaction.editReply({
                     embeds: [
                         new EmbedBuilder()
-                        .setColor(ee.wrongcolor)
-                        .setTitle(`Successfully disagreed to our ToS`)
-                        .setDescription(`You have now declined agreement to our ToS, please note that no further bot access can be given unless you agree to the new Terms of Service.`)
+                        .setColor(ee.errorColor)
+                        .setTitle(`Agreement has timed out`)
+                        .setDescription(`Your agreement post has timed out, please reuse a command to get a new one up for display to agree to our newest TOS!`)
                     ],
                     components: [agreementRow]
                 });
-                return;
-            } else {
-                return;
             }
-        }
-
-        if (dev.LastTOSUpdate > finduser.LatestAgreed && !interaction.isButton()) {
-            const agreementRow = new ActionRowBuilder()
-            agreementRow.addComponents([
-                new ButtonBuilder()
-                .setEmoji('✅')
-                .setCustomId('agree')
-                .setStyle(ButtonStyle.Primary)
-            ])
-            agreementRow.addComponents([
-                new ButtonBuilder()
-                .setEmoji('❎')
-                .setCustomId('disagree')
-                .setStyle(ButtonStyle.Primary)
-            ])
-
-            return interaction.reply({
-                embeds: [
-                    new EmbedBuilder()
-                    .setColor(ee.color)
-                    .setTitle(`Updated Terms of Service agreement!`)
-                    .setDescription(`**Whoops, wait one second there ${interaction.user}!**\n\nLooks like you have yet to read our new upgraded [Terms of Service](https://discord.gg/discmon) and agree to it.\nPlease read through our new ToS then agree with the buttons below, or decline.\n\n> We update our ToS agreements regulary, which is why you are seeing this again.`)
-                ],
-                components: [agreementRow]
-            });
-        }
+        });
     }
 
     // Slash Command Handling
@@ -227,35 +221,36 @@ client.on("interactionCreate", async (interaction) => {
             });
         }
 
-        const founduser = await userData.findOne({
-            OwnerID: parseInt(interaction.user.id),
-        })
-
-        if (!cmd.startCmd && !founduser) {
+        if (cmd.DeveloperCommand && !interaction.user.id.includes(config.DEVELOPER_IDS)) {
             return interaction.reply({
-                content: ':x: Looks like you have yet to register to this bot, please register before using the commands. Register using the command \`/start\` and pick a starter Pokémon!',
-                ephemeral: true
-            })
-        }
-
-        if (cmd.DeveloperCommand && !interaction.user.id.includes(config.developerID)) {
-            return interaction.reply({
-                content: ':x: Looks like you do not have permissions to execute this command.',
-                ephemeral: true
+                embeds: [
+                    new EmbedBuilder()
+                    .setColor(ee.wrongcolor)
+                    .setTitle(`:x: Missing Permissions :x:`)
+                    .setDescription(`Looks like you do not have enough permissions to run this command, this command requires you to have the \`Developer\` permission to run.`)
+                ],
             })
         }
 
         if (cmd.serverOwner && interaction.member.id !== interaction.guild.ownerId) {
             return interaction.reply({
-                content: ':x: Looks like you do not have permissions to execute this command.',
-                ephemeral: true
+                embeds: [
+                    new EmbedBuilder()
+                    .setColor(ee.wrongcolor)
+                    .setTitle(`:x: Missing Permissions :x:`)
+                    .setDescription(`Looks like you do not have enough permissions to run this command, this command requires you to have the \`Server Owner\` permission to run.`)
+                ],
             })
         }
 
         if (cmd.serverAdmin && !interaction.member.permissions.has(PermissionFlagsBits.Administrator)) {
             return interaction.reply({
-                content: ':x: Looks like you do not have permissions to execute this command.',
-                ephemeral: true
+                embeds: [
+                    new EmbedBuilder()
+                    .setColor(ee.wrongcolor)
+                    .setTitle(`:x: Missing Permissions :x:`)
+                    .setDescription(`Looks like you do not have enough permissions to run this command, this command requires you to have the \`Administrator\` permission to run.`)
+                ],
             })
         }
 

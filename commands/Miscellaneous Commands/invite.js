@@ -9,9 +9,6 @@ const emoji = require("../../botconfig/emojis.json")
 const ee = require("../../botconfig/embed.json");
 const config = require("../../botconfig/config.json");
 const prettyMilliseconds = require("pretty-ms")
-const {
-    evaluate
-} = require("mathjs");
 
 module.exports = {
     name: "invite",

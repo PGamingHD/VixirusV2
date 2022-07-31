@@ -8,10 +8,6 @@ const {
 const emoji = require("../../botconfig/emojis.json")
 const ee = require("../../botconfig/embed.json");
 const config = require("../../botconfig/config.json");
-const {
-    evaluate
-} = require("mathjs");
-
 module.exports = {
     name: "ping", //userMoney, userBank, userBitcoin, userID (ALL USERVALUES)
     aliases: ['latency', 'pingbot'],

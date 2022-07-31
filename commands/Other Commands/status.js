@@ -7,13 +7,6 @@ const {
 } = require("discord.js");
 const emoji = require("../../botconfig/emojis.json")
 const ee = require("../../botconfig/embed.json");
-const {
-    api
-} = require("../../index");
-let cpuStat = require("cpu-stat");
-let os = require("os");
-const prettyMilliseconds = require("pretty-ms");
-const config = require("../../botconfig/config.json")
 
 module.exports = {
     name: "status", //userMoney, userBank, userBitcoin, userID (ALL USERVALUES)

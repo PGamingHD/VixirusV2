@@ -10,22 +10,8 @@ const emoji = require("../botconfig/emojis.json")
 const ee = require("../botconfig/embed.json");
 const config = require("../botconfig/config.json");
 const client = require("../index");
-const schema = require('../schemas/Servers');
 
 client.on("guildCreate", async (guild, Client) => {
-
-    const hasdata = await schema.findOne({
-        ServerID: parseInt(guild.id),
-    });
-
-    if (!hasdata) {
-        const creation = await schema.create({
-            ServerID: parseInt(guild.id),
-            Blacklisted: false,
-            SpawningTime: 0,
-            RedirectChannel: 0
-        })
-    }
 
     try {
 
@@ -74,7 +60,7 @@ client.on("guildCreate", async (guild, Client) => {
                             .setTimestamp()
                             .setDescription(`To get yourself started with this brand new experience, please start by using \`/start\` to start your adventure off.\nAs members of this server talk, pokémon will spawn more frequently. You can then catch those pokémons with \`/catch <pokemon>\`, gotta catch em' all!\nNeed further help? Please use the command \`/help\` to view all available commands.\n\n**Configuration Help**\n• \`/redirect <channel>\` to redirect all pokémon spawns to a specific channel.\n• More help can be found by using \`/help config\`\n\n**Community Server**\nJoin our server at [https://discord.gg/botdeveloper](hey)`)
                         ]
-                    }).then(console.log("ERROR SEND"))
+                    })
                 } else {
                     return;
                 }
@@ -90,7 +76,6 @@ client.on("guildCreate", async (guild, Client) => {
                 ]
             })
         }
-
     } catch (error) {}
 });
 

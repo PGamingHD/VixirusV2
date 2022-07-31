@@ -90,16 +90,23 @@ require("./handler")(client);
 
 async function dbConnection() {
 
-    if (!process.env.MYSQL_PORT || process.env.MYSQL_USER || process.env.MYSQL_PASS) {
-        return console.log("[ERROR] <==> || You must fill out the .env file before starting the project! || <==> [ERROR]")
+    if (!process.env.MYSQL_PORT.length === 0 || process.env.MYSQL_USER.length === 0 || process.env.MYSQL_PASS.length === 0 || process.env.LOGIN_TOKEN.length === 0 || process.env.MYSQL_DATABASE.length === 0) {
+        return console.log(chalk.red("[ERROR] <==> || You must fill out the .env file before starting the project! || <==> [ERROR]"));
     }
 
     const connection = await mysql.createConnection({
+
+        //DATABASE CREDENTIALS
+
         port: process.env.MYSQL_PORT,
         user: process.env.MYSQL_USER,
         password: process.env.MYSQL_PASS,
+        database: process.env.MYSQL_DATABASE,
+
+        //DATABASE SETTINGS
+
         supportBigNumbers: true,
-    }).then(console.log("Connected to database!"));
+    }).then(console.log(chalk.green("[DATABASE] <==> || Connection has been successfully established with the Database! || <==> [DATABASE]")));
 
     client.connection = connection;
 
@@ -109,7 +116,6 @@ async function dbConnection() {
 
 
 //           --------------------<STARTING ARGUMENTS>--------------------
-
 dbConnection();
 
 client.login(process.env.LOGIN_TOKEN);
