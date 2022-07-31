@@ -163,7 +163,7 @@
                     await interactionCollector.deferUpdate();
                     collector.stop();
                 }
-            })
+            });
 
             collector.on('end', async (collected) => {
                 if (collected.size > 0) {

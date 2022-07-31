@@ -22,6 +22,7 @@
     "axios": "^0.27.2",
     "croner": "^4.3.11",
     "discord.js": "^14.1.2",
+    "express": "^4.18.1",
     "glob": "^7.1.1",
     "nodemon": "^2.0.16",
     "paypal-rest-sdk": "^1.8.1",

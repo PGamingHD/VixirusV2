@@ -183,7 +183,7 @@
                 ])
             }
 
-            await interaction.reply({
+            const main = await interaction.reply({
                 embeds: [
                     new EmbedBuilder()
                     .setColor(ee.color)
@@ -198,10 +198,8 @@
                 components: [adminRow]
             })
 
-            const newInteraction = await interaction.fetchReply();
-
             let filter = m => m.user.id === interaction.user.id;
-            const collector = newInteraction.createMessageComponentCollector({
+            const collector = main.createMessageComponentCollector({
                 filter,
                 idle: 1000 * 60,
                 time: 1000 * 120

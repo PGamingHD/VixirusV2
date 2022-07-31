@@ -15,6 +15,7 @@ const config = require("./botconfig/config.json");
 const chalk = require("chalk");
 const express = require('express');
 const mysql = require('mysql2/promise');
+const path = require("path");
 require('dotenv').config();
 
 
@@ -79,11 +80,22 @@ require("./handler")(client);
 //           --------------------<REQUIRES>--------------------
 
 
-//           --------------------<STATS POSTER>--------------------
+//           --------------------<EXPRESS ROUTING>--------------------
 
-//HERE
+const app = express();
+const mainRouter = require("./expressRouter/router");
 
-//           --------------------<STATS POSTER>--------------------
+app.use(mainRouter);
+
+app.listen(process.env.EXPRESS_PORT, function (error) {
+    if(error) {
+        console.log(chalk.red(error));
+    } else {
+        console.log(chalk.green(`[EXPRESS] <==> || Router has been started and successfully attached to port ${process.env.EXPRESS_PORT} || <==> [EXPRESS]`))
+    }
+});
+
+//           --------------------<EXPRESS ROUTING>--------------------
 
 
 //--

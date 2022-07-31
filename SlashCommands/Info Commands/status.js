@@ -30,25 +30,21 @@
                 cpuStat.usagePercent(async function (e, percent, seconds) {
                     if (e) return console.log(String(e.stack));
 
-                    const foundglobal = await globalData.findOne({
-                        accessString: "accessingGlobalDataFromString",
-                    });
-
                     const buttonrow = new ActionRowBuilder()
                     buttonrow.addComponents([
                         new ButtonBuilder()
-                        .setURL(`https://discord.com/api/oauth2/authorize?client_id=904757023797813339&permissions=517543939136&scope=bot%20applications.commands`)
+                        .setURL(`https://discord.com/api/oauth2/authorize?client_id=1003056966706413689&permissions=517543939136&scope=bot%20applications.commands`)
                         .setLabel('Invite')
                         .setStyle(ButtonStyle.Link)
                     ])
                     buttonrow.addComponents([
                         new ButtonBuilder()
-                        .setURL(`https://discord.gg/discmon`)
+                        .setURL(`https://discord.gg/comingsoon`)
                         .setLabel('Support')
                         .setStyle(ButtonStyle.Link)
                     ])
 
-                    const joinedat = await interaction.guild.members.fetch(`${config.botID}`);
+                    const joinedat = await interaction.guild.members.fetch(`${config.BOT_CLIENTID}`);
                     const newjoined = Math.floor(joinedat.joinedTimestamp / 1000);
                     let platform;
 
@@ -61,11 +57,11 @@
 
                     const botinfo = new EmbedBuilder()
                         .setAuthor({
-                            name: 'Discmon Status',
+                            name: 'VixirusV2 Status',
                             iconURL: client.user.displayAvatarURL()
                         })
                         .setColor(ee.color)
-                        .setDescription(`I am the one and only Discmon, check my commands out with \`/help\`!`)
+                        .setDescription(`I am the one and only VixirusV2, check my commands out with \`/help\`!`)
                         .addFields([{
                             name: `Birthday`,
                             value: `<t:${Math.floor(client.user.createdTimestamp / 1000)}>`,
@@ -120,7 +116,7 @@
                             inline: true
                         }, {
                             name: 'Bot Version',
-                            value: `\`[ ${config.botVersion} ]\``,
+                            value: `\`[ ${config.BOT_VERSION} ]\``,
                             inline: true
                         }])
 
@@ -131,8 +127,7 @@
                 });
             } catch (e) {
                 await interaction.reply({
-                    content: ':x: Failed to send status message, please retry using the command again.',
-                    ephemeral: true
+                    content: ':x: Failed to send status message, please retry using the command again.'
                 })
             }
         }
