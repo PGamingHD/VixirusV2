@@ -12,11 +12,11 @@ const {
     readdirSync
 } = require("fs");
 const config = require("./botconfig/config.json");
-const chalk = require("chalk");
-const express = require('express');
-const mysql = require('mysql2/promise');
-const path = require("path");
-require('dotenv').config();
+const chalk = require("chalk"); //Colors in terminals! :)
+//const express = require('express'); 
+//const mysql = require('mysql2/promise'); Require a DB?
+//const path = require("path");
+require('dotenv').config(); //Settings for BOT
 
 
 //           --------------------<CONSTRUCTORS>--------------------
@@ -39,12 +39,12 @@ const client = new Client({
         GatewayIntentBits.GuildPresences,
         GatewayIntentBits.MessageContent,
         GatewayIntentBits.GuildMessageReactions,
+        GatewayIntentBits.GuildVoiceStates,
     ],
 
     partials: [
         Partials.ActivityType,
     ],
-
 });
 
 //           --------------------<CONSTRUCTING CLIENTS>--------------------
@@ -61,8 +61,7 @@ module.exports = client;
 
 client.commands = new Collection();
 client.slashCommands = new Collection();
-client.awardCooldowns = new Collection();
-client.xpCooldowns = new Collection();
+client.cachedGuildLanguages = new Collection();
 client.startupCooldown = new Collection();
 client.categories = readdirSync("./commands/");
 client.config = require("./botconfig/config.json");
@@ -78,24 +77,6 @@ require("./handler")(client);
 //require("./database/db")
 
 //           --------------------<REQUIRES>--------------------
-
-
-//           --------------------<EXPRESS ROUTING>--------------------
-
-const app = express();
-const mainRouter = require("./expressRouter/router");
-
-app.use(mainRouter);
-
-app.listen(process.env.EXPRESS_PORT, function (error) {
-    if(error) {
-        console.log(chalk.red(error));
-    } else {
-        console.log(chalk.green(`[EXPRESS] <==> || Router has been started and successfully attached to port ${process.env.EXPRESS_PORT} || <==> [EXPRESS]`))
-    }
-});
-
-//           --------------------<EXPRESS ROUTING>--------------------
 
 
 //--
@@ -128,7 +109,7 @@ async function dbConnection() {
 
 
 //           --------------------<STARTING ARGUMENTS>--------------------
-dbConnection();
+//dbConnection(); Connect to DB before logging in!
 
 client.login(process.env.LOGIN_TOKEN);
 

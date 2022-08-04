@@ -4,6 +4,7 @@ const {
     EmbedBuilder,
     WebhookClient
 } = require("discord.js");
+const client = require("../index");
 const Discord = require("discord.js")
 const config = require("../botconfig/config.json");
 const ee = require("../botconfig/embed.json");
@@ -11,324 +12,42 @@ const {
     v4: uuidv4
 } = require("uuid");
 const adminLogs = new WebhookClient({
-    url: config.adminLogs
+    url: config.ADMIN_LOGS
 });
 
-//DATABASE SCHEMAS
-const spawned = require("../schemas/Spawned");
-const pokemon = require("../schemas/Pokemons");
-const server = require("../schemas/Servers");
-const developer = require('../schemas/developerData');
-
 //MODULE EXPORTS
-module.exports.encounterspawn = encounterspawn;
+module.exports.stringTemplateParser = stringTemplateParser;
+module.exports.languageControl = languageControl;
 module.exports.escapeRegex = escapeRegex;
-module.exports.forcespawn = forcespawn;
-module.exports.maintenancemode = maintenancemode;
 module.exports.calculatePercentage = calculatePercentage;
 module.exports.hintgame = hintgame;
-module.exports.redeemSpawn = redeemSpawn;
-
 //FUNCTIONS
 
-async function encounterspawn(message, rarity) {
+async function languageControl(guild, translateLine) {
+    const [guildLanguageRows, guildLanguageFields] = await client.connection.query(`SELECT language_current FROM language_data WHERE language_serverid = ${guild.id}`);
+    let guildLanguage = 'en-US';
+    if (guildLanguageRows.length !== 0) {
+       guildLanguage = guildLanguageRows[0].language_current
+    }
 
-    const countedPokemon = await pokemon.findOne({
-        PokemonRarity: rarity
-    }).count();
+    const dataFile = require(`../language/${guildLanguage}.json`)
+    let translatedLine = dataFile[`${translateLine}`];
 
-    const pokemonAmount = Math.floor(Math.random() * countedPokemon);
+    if (translatedLine === undefined) {
+        translatedLine = 'Invalid translation name'
+    }
 
-    const pokemontospawn = await pokemon.findOne({
-        PokemonRarity: rarity
-    }).skip(pokemonAmount)
+    return translatedLine
+}
 
-    const findserver = await server.findOne({
-        ServerID: parseInt(message.guild.id)
+    //console.log(stringTemplateParser('my name is {{name}} and age is {{age}}', {name: 'Tom', age:100}));
+function stringTemplateParser(expression, valueObj) {
+    const templateMatcher = /{{\s?([^{}\s]*)\s?}}/g;
+    let text = expression.replace(templateMatcher, (substring, value, index) => {
+      value = valueObj[value];
+      return value;
     });
-
-    let channelToSend;
-
-    if(parseInt(findserver.RedirectChannel) !== 0){
-        const redirectChannel = await message.guild.channels.fetch(`${findserver.RedirectChannel}`)
-
-        channelToSend = redirectChannel;
-    } else {
-        channelToSend = message.channel;
-    }
-
-    const levelGeneration = Math.floor(Math.random() * (20 - 1) + 1);
-
-    const generatedUUID = uuidv4();
-
-    const msg = await channelToSend.send({
-        embeds: [
-            new EmbedBuilder()
-            .setColor(ee.color)
-            .setDescription(`A wild pokémon has spawned, catch the spawned\n pokémon with \`/catch (name)\` before it flees!`)
-            .setImage(pokemontospawn.PokemonPicture)
-            .setFooter({
-                text: generatedUUID
-            })
-        ]
-    })
-
-    const guildId = message.guild.id;
-    const channelId = channelToSend.id;
-    const messageId = msg.id;
-
-    await spawned.create({
-        SpawnedServerID: parseInt(guildId),
-        SpawnedChannelID: channelId,
-        SpawnedMessageID: messageId,
-        PokemonID: generatedUUID,
-        PokemonName: pokemontospawn.PokemonName,
-        PokemonPicture: pokemontospawn.PokemonPicture,
-        PokemonLevel: levelGeneration
-    })
-
-    await server.findOneAndUpdate({
-        ServerID: parseInt(message.guild.id),
-    }, {
-        SpawningTime: 0
-    })
-
-    setTimeout(async () => {
-        const timetodel = await spawned.findOne({
-            PokemonID: generatedUUID,
-        })
-
-        if (timetodel) {
-            await spawned.deleteOne({
-                PokemonID: generatedUUID
-            })
-            msg.delete();
-            message.channel.send({
-                content: `:x: The \`${pokemontospawn.PokemonName}\` wasn't caught in time and therefore fled, better luck next time!`
-            });
-        } else {
-            return;
-        }
-    }, 1000 * 120);
-}
-
-async function forcespawn(interaction, pokemonname, pokemonlevel) {
-
-    const forcedpokemon = await pokemon.findOne({
-        PokemonName: pokemonname
-    })
-
-    if (!forcedpokemon) {
-        interaction.reply({
-            embeds: [
-                new EmbedBuilder()
-                .setColor(ee.wrongcolor)
-                .setDescription(`:x: The specific pokemon could not be found, please specific a valid pokemon to spawn!`)
-            ],
-            ephemeral: true
-        })
-    }
-
-    const generatedUUID = uuidv4();
-
-    const msg = await interaction.channel.send({
-        embeds: [
-            new EmbedBuilder()
-            .setColor(ee.color)
-            .setDescription(`A wild pokémon has spawned, catch the spawned\n pokémon with \`/catch (name)\` before it flees!`)
-            .setImage(forcedpokemon.PokemonPicture)
-            .setFooter({
-                text: generatedUUID
-            })
-        ]
-    })
-
-    const guildId = interaction.guild.id;
-    const channelId = interaction.channel.id;
-    const messageId = msg.id;
-
-    await spawned.create({
-        SpawnedServerID: parseInt(guildId),
-        SpawnedChannelID: channelId,
-        SpawnedMessageID: messageId,
-        PokemonID: generatedUUID,
-        PokemonName: forcedpokemon.PokemonName,
-        PokemonPicture: forcedpokemon.PokemonPicture,
-        PokemonLevel: pokemonlevel
-    })
-
-    setTimeout(async () => {
-        const timetodel = await spawned.findOne({
-            PokemonID: generatedUUID,
-        })
-
-        if (timetodel) {
-            await spawned.deleteOne({
-                PokemonID: generatedUUID
-            })
-            msg.delete();
-            interaction.channel.send({
-                content: `:x: The \`${forcedpokemon.PokemonName}\` wasn't caught in time and therefore fled, better luck next time!`
-            });
-        } else {
-            return;
-        }
-    }, 1000 * 120);
-}
-
-async function redeemSpawn(interaction, pokemonname) {
-
-    const forcedpokemon = await pokemon.findOne({
-        PokemonName: pokemonname
-    })
-
-    if (!forcedpokemon) {
-        interaction.reply({
-            embeds: [
-                new EmbedBuilder()
-                .setColor(ee.wrongcolor)
-                .setDescription(`:x: The specific pokemon could not be found, please specific a valid pokemon to spawn!`)
-            ],
-            ephemeral: true
-        })
-    }
-
-    const levelGeneration = Math.floor(Math.random() * (50 - 15) + 15);
-
-    const generatedUUID = uuidv4();
-
-    const msg = await interaction.channel.send({
-        embeds: [
-            new EmbedBuilder()
-            .setColor(ee.color)
-            .setDescription(`A wild pokémon has spawned, catch the spawned\n pokémon with \`/catch (name)\` before it flees!`)
-            .setImage(forcedpokemon.PokemonPicture)
-            .setFooter({
-                text: generatedUUID
-            })
-        ]
-    })
-
-    const guildId = interaction.guild.id;
-    const channelId = interaction.channel.id;
-    const messageId = msg.id;
-
-    await spawned.create({
-        SpawnedServerID: parseInt(guildId),
-        SpawnedChannelID: channelId,
-        SpawnedMessageID: messageId,
-        PokemonID: generatedUUID,
-        PokemonName: forcedpokemon.PokemonName,
-        PokemonPicture: forcedpokemon.PokemonPicture,
-        PokemonLevel: levelGeneration
-    })
-
-    setTimeout(async () => {
-        const timetodel = await spawned.findOne({
-            PokemonID: generatedUUID,
-        })
-
-        if (timetodel) {
-            await spawned.deleteOne({
-                PokemonID: generatedUUID
-            })
-            msg.delete();
-            interaction.channel.send({
-                content: `:x: The \`${forcedpokemon.PokemonName}\` wasn't caught in time and therefore fled, better luck next time!`
-            });
-        } else {
-            return;
-        }
-    }, 1000 * 120);
-}
-
-async function maintenancemode(client, interaction, cooldown, length) {
-    const devmode = await developer.findOne({
-        developerAccess: 'accessStringforDeveloperOnly'
-    });
-
-    const mainChannel = client.channels.cache.get(config.maintenanceChannel);
-
-
-    if (devmode.globalMaintenance) {
-
-        mainChannel.send({
-            embeds: [
-                new EmbedBuilder()
-                .setColor(ee.maintenancecolor)
-                .setTitle(`:yellow_circle: **Maintenance Warning** :yellow_circle:`)
-                .setDescription(`**The maintenance mode will be turned off in approximately \`[${cooldown}]\` Second(s) again, prepare yourselves!**`)
-                .setFooter({
-                    text: `Maintenance issued by: ${interaction.user.tag}`,
-                    iconURL: interaction.user.displayAvatarURL()
-                })
-            ]
-        })
-        interaction.followUp({
-            content: `:arrows_clockwise: Maintenance Mode will be turned off in \`[${cooldown}]\` Second(s)!`,
-            ephemeral: true
-        })
-
-        setTimeout(async () => {
-
-            mainChannel.send({
-                embeds: [
-                    new EmbedBuilder()
-                    .setColor(ee.color)
-                    .setTitle(`:green_circle: **Maintenance Warning** :green_circle:`)
-                    .setDescription(`**The maintenance mode have now ended, and all services should be back up running!**`)
-                    .setFooter({
-                        text: `Maintenance issued by: ${interaction.user.tag}`,
-                        iconURL: interaction.user.displayAvatarURL()
-                    })
-                ]
-            })
-
-            await devmode.updateOne({
-                globalMaintenance: false
-            })
-        }, 1000 * cooldown);
-
-    } else {
-
-        mainChannel.send({
-            embeds: [
-                new EmbedBuilder()
-                .setColor(ee.maintenancecolor)
-                .setTitle(`:yellow_circle: **Maintenance Warning** :yellow_circle:`)
-                .setDescription(`**The maintenance mode will be turned on in approximately \`[${cooldown}]\` Second(s) to do some maintenance work on the Bot, please finish everything asap!**`)
-                .setFooter({
-                    text: `Maintenance issued by: ${interaction.user.tag}`,
-                    iconURL: interaction.user.displayAvatarURL()
-                })
-            ]
-        })
-        interaction.followUp({
-            content: `:arrows_clockwise: Maintenance Mode will be turned on in \`${cooldown}\` Second(s)!`,
-            ephemeral: true
-        })
-
-        setTimeout(async () => {
-
-            mainChannel.send({
-                embeds: [
-                    new EmbedBuilder()
-                    .setColor(ee.wrongcolor)
-                    .setTitle(`:red_circle: **Maintenance Warning** :red_circle:`)
-                    .setDescription(`**The maintenance mode have now begun and will continue for the next \`[${length}]\` Minute(s)!**`)
-                    .setFooter({
-                        text: `Maintenance issued by: ${interaction.user.tag}`,
-                        iconURL: interaction.user.displayAvatarURL()
-                    })
-                ]
-            })
-            await devmode.updateOne({
-                globalMaintenance: true
-            })
-
-        }, 1000 * cooldown);
-
-    }
+    return text
 }
 
 function escapeRegex(str) {

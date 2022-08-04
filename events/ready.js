@@ -19,7 +19,9 @@ client.on("ready", async (client) => {
             const stringlength = 69;
             console.log(chalk.green(`[LOGIN] <==> || I successfully logged into ${client.user.tag} and started ALL services || <==> [LOGIN]`));
             console.log(chalk.red(`[COOLDOWN] <==> || Entering bot cooldown for 60 seconds while the Database connects correctly! || <==> [COOLDOWN]`));
-        } catch {}
+        } catch (error) {
+            console.log(error)
+        }
 
         const act1 = {
             text: `over ${client.guilds.cache.reduce((a, g) => a + g.memberCount,0)} users!`,

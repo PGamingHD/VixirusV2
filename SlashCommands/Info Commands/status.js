@@ -9,11 +9,15 @@
         EmbedBuilder
     } = require('discord.js');
     const ee = require('../../botconfig/embed.json');
-    const emoji = require('../../botconfig/embed.json')
+    const embed = require('../../botconfig/embed.json')
     const prettyMilliseconds = require('pretty-ms');
     const config = require('../../botconfig/config.json');
     let cpuStat = require("cpu-stat");
     let os = require("os");
+    const {
+        languageControl,
+        stringTemplateParser
+    } = require("../../handler/functions");
 
 
     module.exports = {
@@ -34,13 +38,13 @@
                     buttonrow.addComponents([
                         new ButtonBuilder()
                         .setURL(`https://discord.com/api/oauth2/authorize?client_id=1003056966706413689&permissions=517543939136&scope=bot%20applications.commands`)
-                        .setLabel('Invite')
+                        .setLabel(await languageControl(interaction.guild, 'INVITE_LABEL'))
                         .setStyle(ButtonStyle.Link)
                     ])
                     buttonrow.addComponents([
                         new ButtonBuilder()
                         .setURL(`https://discord.gg/comingsoon`)
-                        .setLabel('Support')
+                        .setLabel(await languageControl(interaction.guild, 'SUPPORT_LABEL'))
                         .setStyle(ButtonStyle.Link)
                     ])
 
@@ -61,61 +65,61 @@
                             iconURL: client.user.displayAvatarURL()
                         })
                         .setColor(ee.color)
-                        .setDescription(`I am the one and only VixirusV2, check my commands out with \`/help\`!`)
+                        .setDescription(await languageControl(interaction.guild, 'BOT_STATUS_DESC'))
                         .addFields([{
-                            name: `Birthday`,
+                            name: await languageControl(interaction.guild, 'BIRTHDAY_LABEL'),
                             value: `<t:${Math.floor(client.user.createdTimestamp / 1000)}>`,
                             inline: true
                         }, {
-                            name: `Joined On`,
+                            name: await languageControl(interaction.guild, 'JOINEDON_LABEL'),
                             value: `<t:${newjoined}>`,
                             inline: true
                         }, {
-                            name: 'Bot Developer',
+                            name: await languageControl(interaction.guild, 'BOTDEVELOPER_LABEL'),
                             value: '[***PGamingHD***](https://discordapp.com/users/266726434855321600/)',
                             inline: true
                         }, {
-                            name: 'Platform',
+                            name: await languageControl(interaction.guild, 'PLATFORM_LABEL'),
                             value: `\`\`[ ${platform} ]\`\``,
                             inline: true
                         }, {
-                            name: 'Registered Commands',
+                            name: await languageControl(interaction.guild, 'REGISTEREDCMDS_LABEL'),
                             value: `\`[ ${client.slashCommands.map((d) => d.options).flat().length.toLocaleString('en-US')} ]\``,
                             inline: true
                         }, {
-                            name: 'Cached Server(s)',
+                            name: await languageControl(interaction.guild, 'CACHEDSERVERS_LABEL'),
                             value: `\`[ ${client.guilds.cache.size.toLocaleString('en-US')} ]\``,
                             inline: true
                         }, {
-                            name: 'Cached Channel(s)',
+                            name: await languageControl(interaction.guild, 'CACHEDCHANNELS_LABEL'),
                             value: `\`[ ${client.channels.cache.size.toLocaleString('en-US')} ]\``,
                             inline: true
                         }, {
-                            name: 'Cached User(s)',
+                            name: await languageControl(interaction.guild, 'CACHEDUSERS_LABEL'),
                             value: `\`[ ${client.users.cache.size.toLocaleString('en-US')} ]\``,
                             inline: true
                         }, {
-                            name: 'Total User(s)',
+                            name: await languageControl(interaction.guild, 'TOTALUSERS_LABEL'),
                             value: `\`[ ${client.guilds.cache.reduce((a, g) => a + g.memberCount,0).toLocaleString('en-US')} ]\``,
                             inline: true
                         }, {
-                            name: 'Uptime',
+                            name: await languageControl(interaction.guild, 'UPTIME_LABEL'),
                             value: `\`[ ${prettyMilliseconds(client.uptime)} ]\``,
                             inline: true
                         }, {
-                            name: 'Memory Usage',
+                            name: await languageControl(interaction.guild, 'MEMORY_LABEL'),
                             value: `\`[ ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2).toLocaleString('en-US')}mb ]\``,
                             inline: true
                         }, {
-                            name: 'CPU Usage',
+                            name: await languageControl(interaction.guild, 'CPU_LABEL'),
                             value: `\`[ ${percent.toFixed(2)}% ]\``,
                             inline: true
                         }, {
-                            name: 'Host Location',
+                            name: await languageControl(interaction.guild, 'HOSTLOC_LABEL'),
                             value: '\`[ Germany, Falkenstein ]\`',
                             inline: true
                         }, {
-                            name: 'Bot Version',
+                            name: await languageControl(interaction.guild, 'VERSION_LABEL'),
                             value: `\`[ ${config.BOT_VERSION} ]\``,
                             inline: true
                         }])
@@ -127,7 +131,11 @@
                 });
             } catch (e) {
                 await interaction.reply({
-                    content: ':x: Failed to send status message, please retry using the command again.'
+                    embeds: [
+                        new EmbedBuilder()
+                        .setColor(embed.color)
+                        .setDescription(await languageControl(interaction.guild, 'SENDMSG_FAILURE'))
+                    ]
                 })
             }
         }

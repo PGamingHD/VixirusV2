@@ -1,5 +1,5 @@
   //import the shardingmanager, from discord.js
-  const {
+  const { //TO START (node shard.js)
     ShardingManager
   } = require("discord.js");
   //import the config file

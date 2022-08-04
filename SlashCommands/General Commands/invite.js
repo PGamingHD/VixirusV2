@@ -10,7 +10,10 @@
     const emoji = require('../../botconfig/embed.json')
     const prettyMilliseconds = require('pretty-ms');
     const config = require('../../botconfig/config.json');
- 
+    const {
+        languageControl,
+    } = require("../../handler/functions");
+
     module.exports = {
         name: 'invite',
         description: 'Interested in inviting me, or maybe joining our support server?',
@@ -24,8 +27,8 @@
                 embeds: [
                     new EmbedBuilder()
                     .setColor(ee.color)
-                    .setTitle(`Want to join our Support Server or Invite me?`)
-                    .setDescription(`**Invite Me**\n[Invite](https://discord.com/api/oauth2/authorize?client_id=968900553168015361&permissions=137439341640&scope=applications.commands%20bot)\n\n**Support Server**\n[Support](https://discord.gg/discmon)`)
+                    .setTitle(await languageControl(interaction.guild, 'INVITE_SUPPORT_TITLE'))
+                    .setDescription(await languageControl(interaction.guild, 'INVITE_SUPPORT_DESC'))
                 ]
             })
         }

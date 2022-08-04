@@ -11,6 +11,10 @@
     const prettyMilliseconds = require('pretty-ms');
     const config = require('../../botconfig/config.json')
     const axios = require('axios');
+    const {
+        languageControl,
+        stringTemplateParser
+    } = require("../../handler/functions");
 
     module.exports = {
         name: 'vote',
@@ -53,17 +57,17 @@
                     embeds: [
                         new EmbedBuilder()
                         .setColor(ee.color)
-                        .setTitle(`Voting Rewards`)
-                        .setDescription(`Vote for us on [top.gg](https://top.gg/bot/904757023797813339/vote) to recieve tokens that can then be spent in the Shop. You can vote once per 12 hours!`)
+                        .setTitle(await languageControl(interaction.guild, 'VOTE_REWARDS_TITLE'))
+                        .setDescription(await languageControl(interaction.guild, 'VOTE_REWARDS_DESC'))
                         .addFields([{
-                            name: 'Voting Timer',
-                            value: `Your vote seems to be ready, vote and get your rewards now!`
+                            name: await languageControl(interaction.guild, 'VOTE_TIMER_TITLE'),
+                            value: await languageControl(interaction.guild, 'VOTE_TIMER_READY')
                         }, {
-                            name: 'Voting Streak',
+                            name: await languageControl(interaction.guild, 'VOTE_STREAK_TITLE'),
                             value: `${voting_streak}`
                         }])
                         .setFooter({
-                            text: 'Voting rewards will be automatically added to you after a vote has been successfully sent.'
+                            text: await languageControl(interaction.guild, 'VOTE_AUTOMATIC_ADD')
                         })
                     ]
                 })
@@ -77,17 +81,17 @@
                     embeds: [
                         new EmbedBuilder()
                         .setColor(ee.color)
-                        .setTitle(`Voting Rewards`)
-                        .setDescription(`Vote for us on [top.gg](https://top.gg/bot/904757023797813339/vote) to recieve tokens that can then be spent in the Shop. You can vote once per 12 hours!`)
+                        .setTitle(await languageControl(interaction.guild, 'VOTE_REWARDS_TITLE'))
+                        .setDescription(await languageControl(interaction.guild, 'VOTE_REWARDS_DESC'))
                         .addFields([{
-                            name: 'Voting Timer',
-                            value: `You can vote again in **${prettyMilliseconds(timeleft, {verbose: true})}**!`
+                            name: await languageControl(interaction.guild, 'VOTE_TIMER_TITLE'),
+                            value: stringTemplateParser(await languageControl(interaction.guild, 'VOTE_TIMER_NOTREADY'), {timeUntilNextVote: prettyMilliseconds(timeleft, {verbose: true})})
                         }, {
-                            name: 'Voting Streak',
+                            name: await languageControl(interaction.guild, 'VOTE_STREAK_TITLE'),
                             value: `${voting_streak}`
                         }])
                         .setFooter({
-                            text: 'Voting rewards will be automatically added to you after a vote has been successfully sent.'
+                            text: await languageControl(interaction.guild, 'VOTE_AUTOMATIC_ADD')
                         })
                     ]
                 })

@@ -17,6 +17,10 @@ const emoji = require("../botconfig/emojis.json");
 const config = require("../botconfig/config.json");
 const embed = require("../botconfig/embed.json");
 const startupCooldown = client.startupCooldown;
+const {
+    languageControl,
+    stringTemplateParser
+} = require("../handler/functions");
 
 client.on("interactionCreate", async (interaction) => {
 
@@ -25,7 +29,7 @@ client.on("interactionCreate", async (interaction) => {
             embeds: [
                 new EmbedBuilder()
                 .setColor(embed.errorColor)
-                .setDescription(`:x: The bot is still starting up, please be patient and wait for the cooldown to end!`)
+                .setDescription(await languageControl(interaction.guild, 'STARTUP_WARNING'))
             ]
         })
     }
@@ -40,7 +44,7 @@ client.on("interactionCreate", async (interaction) => {
             embeds: [
                 new EmbedBuilder()
                 .setColor(embed.maintenanceColor)
-                .setDescription(`:x: Maintenance Mode is enabled, please wait until the maintenance is over!`)
+                .setDescription(await languageControl(interaction.guild, 'MAINTENANCE_ON'))
             ]
         })
     }
@@ -51,8 +55,8 @@ client.on("interactionCreate", async (interaction) => {
             embeds: [
                 new EmbedBuilder()
                 .setColor(embed.errorColor)
-                .setTitle(':x: Blacklist Detected :x:')
-                .setDescription(`This server has been blacklisted from the usage of this bots functions, please open a ticket on the Support Server to get this fixed.`)
+                .setTitle(await languageControl(interaction.guild, 'DETECTED_BLACKLIST'))
+                .setDescription(await languageControl(interaction.guild, 'BLACKLISTED_GUILD'))
             ]
         })
     }
@@ -63,8 +67,8 @@ client.on("interactionCreate", async (interaction) => {
             embeds: [
                 new EmbedBuilder()
                 .setColor(embed.errorColor)
-                .setTitle(':x: Blacklist Detected :x:')
-                .setDescription(`You have been blacklisted from the usage of this bots functions, please open a ticket on the Support Server to get this fixed.`)
+                .setTitle(await languageControl(interaction.guild, 'DETECTED_BLACKLIST'))
+                .setDescription(await languageControl(interaction.guild, 'BLACKLISTED_USER'))
             ]
         })
     }
@@ -73,7 +77,7 @@ client.on("interactionCreate", async (interaction) => {
 
     let existingAgreement = 0;
 
-    if(tosAgreementRows.length !== 0) {
+    if (tosAgreementRows.length !== 0) {
         existingAgreement = tosAgreementRows[0].agreement_date;
     }
 
@@ -92,20 +96,20 @@ client.on("interactionCreate", async (interaction) => {
             .setStyle(ButtonStyle.Primary)
         ])
 
-        await interaction.reply({
+        const main = await interaction.reply({
             embeds: [
                 new EmbedBuilder()
                 .setColor(ee.color)
-                .setTitle(`Updated Terms of Service agreement!`)
-                .setDescription(`**Whoops, wait one second there ${interaction.user}!**\n\nLooks like you have yet to read our newly updated [Terms of Service](https://discord.gg/discmon) and agree to it.\nPlease read through our new ToS then agree with the buttons below, or decline.\n\n> We update our ToS agreements regulary, which is why you are seeing this again, or you might just be new here.`)
+                .setTitle(await languageControl(interaction.guild, 'TOS_UPDATED_TITLE'))
+                .setDescription(stringTemplateParser(await languageControl(interaction.guild, 'TOS_UPDATED_DESC'), {
+                    interactionUser: interaction.user
+                }))
             ],
             components: [agreementRow]
         });
 
-        const agreementInteraction = await interaction.fetchReply();
-
         let filter = m => m.user.id === interaction.user.id;
-        const collector = agreementInteraction.createMessageComponentCollector({
+        const collector = main.createMessageComponentCollector({
             filter,
             time: 1000 * 60
         });
@@ -117,18 +121,18 @@ client.on("interactionCreate", async (interaction) => {
                 for (let i = 0; i < agreementRow.components.length; i++) {
                     agreementRow.components[i].setDisabled(true);
                 }
-    
+
                 await interaction.editReply({
                     embeds: [
                         new EmbedBuilder()
                         .setColor(851712)
-                        .setTitle(`Successfully agreed to ToS`)
-                        .setDescription(`Thank you for agreeing to our newly update Terms of Service, you may now continue using the bot features.`)
+                        .setTitle(await languageControl(interaction.guild, 'TOS_AGREEMENT_TITLE'))
+                        .setDescription(await languageControl(interaction.guild, 'TOS_AGREEMENT_DESC'))
                     ],
                     components: [agreementRow]
                 })
 
-                if(tosAgreementRows.length === 0) {
+                if (tosAgreementRows.length === 0) {
                     await client.connection.query(`INSERT INTO tos_agreements (agreement_userid, agreement_date) VALUES (${interaction.user.id}, ${Date.now()})`);
                 } else {
                     await client.connection.query(`UPDATE tos_agreements SET agreement_date = "${Date.now()}" WHERE agreement_userid = ${interaction.user.id}`);
@@ -142,13 +146,13 @@ client.on("interactionCreate", async (interaction) => {
                 for (let i = 0; i < agreementRow.components.length; i++) {
                     agreementRow.components[i].setDisabled(true);
                 }
-    
+
                 await interaction.editReply({
                     embeds: [
                         new EmbedBuilder()
                         .setColor(ee.errorColor)
-                        .setTitle(`Successfully disagreed to our ToS`)
-                        .setDescription(`You have now declined agreement to our ToS, please note that no further bot access can be given unless you agree to the new Terms of Service.`)
+                        .setTitle(await languageControl(interaction.guild, 'TOS_DECLINE_TITLE'))
+                        .setDescription(await languageControl(interaction.guild, 'TOS_DECLINE_DESC'))
                     ],
                     components: [agreementRow]
                 });
@@ -157,7 +161,7 @@ client.on("interactionCreate", async (interaction) => {
         });
 
         collector.on('end', async (collected) => {
-            if(collected.size === 0) {
+            if (collected.size === 0) {
                 for (let i = 0; i < agreementRow.components.length; i++) {
                     agreementRow.components[i].setDisabled(true);
                 }
@@ -166,13 +170,14 @@ client.on("interactionCreate", async (interaction) => {
                     embeds: [
                         new EmbedBuilder()
                         .setColor(ee.errorColor)
-                        .setTitle(`Agreement has timed out`)
-                        .setDescription(`Your agreement post has timed out, please reuse a command to get a new one up for display to agree to our newest TOS!`)
+                        .setTitle(await languageControl(interaction.guild, 'TOS_TIMEOUT_TITLE'))
+                        .setDescription(await languageControl(interaction.guild, 'TOS_TIMEOUT_DESC'))
                     ],
                     components: [agreementRow]
                 });
             }
         });
+        return;
     }
 
     // Slash Command Handling
@@ -184,8 +189,8 @@ client.on("interactionCreate", async (interaction) => {
                     embeds: [
                         new EmbedBuilder()
                         .setColor(ee.wrongcolor)
-                        .setTitle(`:x: Missing Permissions :x:`)
-                        .setDescription(`Looks like I do not have **permission** to send messages in that channel, please **fix it** before trying to use commands there again. Try contacting the **server owner**!\n\nPermissions I require in channels: \`Send Messages\`, \`Embed Links\`, \`Use External Emoji\`, \`Read Message History\`!`)
+                        .setTitle(await languageControl(interaction.guild, 'MISSING_PERMS_TITLE'))
+                        .setDescription(await languageControl(interaction.guild, 'MISSING_PERMS_DESC'))
                     ],
                     ephemeral: true,
                 })
@@ -196,15 +201,21 @@ client.on("interactionCreate", async (interaction) => {
             } else {
                 if (error.rawError.message === "Cannot send messages to this user") {
                     return interaction.reply({
-                        embeds: [],
+                        embeds: [
+                            new EmbedBuilder()
+                            .setColor(embed.errorColor)
+                            .setDescription(await languageControl(interaction.guild, 'FAILED_TO_SEND_MSG'))
+                        ],
                         components: [],
-                        content: ':x: Failed to send message, please open your DMs before using this command again.'
                     })
                 } else {
                     return interaction.reply({
-                        embeds: [],
+                        embeds: [
+                            new EmbedBuilder()
+                            .setColor(embed.errorColor)
+                            .setDescription(await languageControl(interaction.guild, 'RAN_INTO_DM_ERROR'))
+                        ],
                         components: [],
-                        content: ':x: I ran into an error when sending a message to you, please reuse the command.'
                     })
                 }
             }
@@ -214,7 +225,7 @@ client.on("interactionCreate", async (interaction) => {
         if (!cmd) {
             let embed = new EmbedBuilder()
                 .setColor(ee.color)
-                .setDescription(`:x: An error has occured, please contact the developer if this is a mistake.`)
+                .setDescription(await languageControl(interaction.guild, 'COMMAND_ERROR'))
             return interaction.reply({
                 embeds: [embed],
                 epehemeral: true
@@ -226,8 +237,8 @@ client.on("interactionCreate", async (interaction) => {
                 embeds: [
                     new EmbedBuilder()
                     .setColor(ee.wrongcolor)
-                    .setTitle(`:x: Missing Permissions :x:`)
-                    .setDescription(`Looks like you do not have enough permissions to run this command, this command requires you to have the \`Developer\` permission to run.`)
+                    .setTitle(await languageControl(interaction.guild, 'MISSING_PERMS_TITLE'))
+                    .setDescription(await languageControl(interaction.guild, 'MISSING_DEV_PERMS'))
                 ],
             })
         }
@@ -237,8 +248,8 @@ client.on("interactionCreate", async (interaction) => {
                 embeds: [
                     new EmbedBuilder()
                     .setColor(ee.wrongcolor)
-                    .setTitle(`:x: Missing Permissions :x:`)
-                    .setDescription(`Looks like you do not have enough permissions to run this command, this command requires you to have the \`Server Owner\` permission to run.`)
+                    .setTitle(await languageControl(interaction.guild, 'MISSING_PERMS_TITLE'))
+                    .setDescription(await languageControl(interaction.guild, 'MISSING_OWNER_PERMS'))
                 ],
             })
         }
@@ -248,8 +259,8 @@ client.on("interactionCreate", async (interaction) => {
                 embeds: [
                     new EmbedBuilder()
                     .setColor(ee.wrongcolor)
-                    .setTitle(`:x: Missing Permissions :x:`)
-                    .setDescription(`Looks like you do not have enough permissions to run this command, this command requires you to have the \`Administrator\` permission to run.`)
+                    .setTitle(await languageControl(interaction.guild, 'MISSING_PERMS_TITLE'))
+                    .setDescription(await languageControl(interaction.guild, 'MISSING_ADMIN_PERMS'))
                 ],
             })
         }
@@ -270,11 +281,10 @@ client.on("interactionCreate", async (interaction) => {
 
         if (!interaction.member.permissions.has(cmd.userPermissions || []))
             return interaction.reply({
-                content: "You do not have permissions to use this command!",
+                content: await languageControl(interaction.guild, 'MISSING_CMD_PERMS'),
             });
 
         await cmd.run(client, interaction, con, args);
-        //INTERACTION ABOVE
     }
 
     // Context Menu Handling

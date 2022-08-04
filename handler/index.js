@@ -15,6 +15,7 @@ const chalk = require("chalk");
  * @param {Client} client
  */
 module.exports = async (client) => {
+
     // Commands
     const commandFiles = await globPromise(`${process.cwd()}/commands/**/*.js`);
     commandFiles.map((value) => {

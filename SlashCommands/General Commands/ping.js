@@ -10,6 +10,10 @@
     const emoji = require('../../botconfig/embed.json')
     const prettyMilliseconds = require('pretty-ms');
     const config = require('../../botconfig/config.json');
+    const {
+        languageControl,
+        stringTemplateParser
+    } = require("../../handler/functions");
 
     module.exports = {
         name: 'ping',
@@ -19,11 +23,9 @@
          * @param {Message} message 
          * @param {String[]} args 
          */
-        run: async (client, interaction, args) => {
+        run: async (client, interaction, con, args) => {
             const timeBefore = new Date().getTime();
-            await dev.findOne({
-                developerAccess: "accessStringforDeveloperOnly"
-            })
+            await con.query('SELECT 1');
             const timeAfter = new Date().getTime();
             const evaled = timeAfter - timeBefore;
 
@@ -36,20 +38,20 @@
                         iconURL: client.user.displayAvatarURL()
                     })
                     .addFields([{
-                        name: 'Bot Latency',
+                        name: await languageControl(interaction.guild, 'PING_BOT_LATENCY'),
                         value: `\`\`\`re\n[ ${Math.floor((Date.now() - interaction.createdTimestamp) - 2 * Math.floor(client.ws.ping))}ms ]\`\`\``,
                         inline: true
                     }, {
-                        name: 'API Latency',
+                        name: await languageControl(interaction.guild, 'PING_API_LATENCY'),
                         value: `\`\`\`re\n[ ${Math.floor(client.ws.ping)}ms ]\`\`\``,
                         inline: true
                     }, {
-                        name: 'Database Latency',
+                        name: await languageControl(interaction.guild, 'PING_DB_LATENCY'),
                         value: `\`\`\`re\n[ ${evaled}ms ]\`\`\``
                     }])
                     .setTimestamp()
                     .setFooter({
-                        text: `Requested by ${interaction.user.username}`,
+                        text: stringTemplateParser(await languageControl(interaction.guild, 'PING_REQUEST_BY'), {interactionUsername: interaction.user.username}),
                         iconURL: interaction.user.displayAvatarURL()
                     })
                 ]
