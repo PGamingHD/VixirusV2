@@ -2,18 +2,14 @@ const {
     MessageEmbed,
     Collection,
     EmbedBuilder,
-    WebhookClient
+    WebhookClient,
+    AttachmentBuilder
 } = require("discord.js");
 const client = require("../index");
 const Discord = require("discord.js")
 const config = require("../botconfig/config.json");
 const ee = require("../botconfig/embed.json");
-const {
-    v4: uuidv4
-} = require("uuid");
-const adminLogs = new WebhookClient({
-    url: config.ADMIN_LOGS
-});
+const fs = require("fs");
 
 //MODULE EXPORTS
 module.exports.stringTemplateParser = stringTemplateParser;
@@ -21,13 +17,15 @@ module.exports.languageControl = languageControl;
 module.exports.escapeRegex = escapeRegex;
 module.exports.calculatePercentage = calculatePercentage;
 module.exports.hintgame = hintgame;
+module.exports.escapeRegex = escapeRegex;
+module.exports.writeError = writeError;
 //FUNCTIONS
 
 async function languageControl(guild, translateLine) {
-    const [guildLanguageRows, guildLanguageFields] = await client.connection.query(`SELECT language_current FROM language_data WHERE language_serverid = ${guild.id}`);
-    let guildLanguage = 'en-US';
-    if (guildLanguageRows.length !== 0) {
-       guildLanguage = guildLanguageRows[0].language_current
+    const guildLanguageRows = client.cachedGuildLanguages.get(`${guild.id}`);
+    let guildLanguage = 'en';
+    if (guildLanguageRows !== undefined) {
+       guildLanguage = guildLanguageRows;
     }
 
     const dataFile = require(`../language/${guildLanguage}.json`)
@@ -37,12 +35,11 @@ async function languageControl(guild, translateLine) {
         translatedLine = 'Invalid translation name'
     }
 
-    return translatedLine
+    return translatedLine;
 }
 
-    //console.log(stringTemplateParser('my name is {{name}} and age is {{age}}', {name: 'Tom', age:100}));
 function stringTemplateParser(expression, valueObj) {
-    const templateMatcher = /{{\s?([^{}\s]*)\s?}}/g;
+    const templateMatcher = /{\s?([^{}\s]*)\s?}/g;
     let text = expression.replace(templateMatcher, (substring, value, index) => {
       value = valueObj[value];
       return value;
@@ -76,4 +73,45 @@ function hintgame(word) {
     }
 
     return splitted.join("");
+}
+
+function escapeRegex(str) {
+    try {
+        return str.replace(/[.*+?^${}()|[\]\\]/g, `\\$&`);
+    } catch (e) {
+        console.log(String(e.stack).bgRed)
+    }
+}
+
+function writeError(error, guild) {
+    try {
+        const AD = new Date;
+        const ADY = AD.getFullYear();
+        let ADM = AD.getMonth();
+        let ADD = AD.getDate();
+        let ADH = AD.getHours();
+        let ADMI = AD.getMinutes();
+        let ADS = AD.getSeconds();
+    
+        if (ADD < 10) {
+            ADD = '0' + AD.getDate();
+        }
+        if (ADM < 10) {
+            ADM = '0' + AD.getMonth();
+        }
+        if (ADH < 10) {
+            ADH = '0' + AD.getHours();
+        }
+        if (ADMI < 10) {
+            ADMI = '0' + AD.getMinutes();
+        }
+        if (ADS < 10) {
+            ADS = '0' + AD.getSeconds();
+        }
+    
+        const msg = `[${ADY}/${ADM}/${ADD} ${ADH}:${ADMI}:${ADS}] - ` + error.message + '\r\n';
+        fs.appendFileSync(`./dashboard/errors/${guild.id}.txt`, msg);
+    } catch (error) {
+        console.log("ERROR WRITING ERROR FILE:", error)
+    }
 }

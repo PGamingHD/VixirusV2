@@ -23,6 +23,8 @@
     module.exports = {
         name: 'status',
         description: 'Get some general information about the status of Discmon!',
+        userPerms: [],
+        clientPerms: [],
         /** 
          * @param {Client} client 
          * @param {Message} message 
@@ -37,13 +39,13 @@
                     const buttonrow = new ActionRowBuilder()
                     buttonrow.addComponents([
                         new ButtonBuilder()
-                        .setURL(`https://discord.com/api/oauth2/authorize?client_id=1003056966706413689&permissions=517543939136&scope=bot%20applications.commands`)
+                        .setURL(config.Discord_Links.invite_link_recommended)
                         .setLabel(await languageControl(interaction.guild, 'INVITE_LABEL'))
                         .setStyle(ButtonStyle.Link)
                     ])
                     buttonrow.addComponents([
                         new ButtonBuilder()
-                        .setURL(`https://discord.gg/comingsoon`)
+                        .setURL(config.Discord_Links.Support_Server)
                         .setLabel(await languageControl(interaction.guild, 'SUPPORT_LABEL'))
                         .setStyle(ButtonStyle.Link)
                     ])

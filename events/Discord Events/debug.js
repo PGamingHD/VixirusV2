@@ -1,5 +1,5 @@
-const client = require("../index");
-const config = require("../botconfig/config.json");
+const client = require("../../index.js");
+const config = require("../../botconfig/config.json");
 
 if (config.ENABLE_DEBUG) {
 

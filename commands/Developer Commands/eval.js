@@ -1,7 +1,7 @@
 const {
     Message,
     Client,
-    MessageEmbed
+    EmbedBuilder
 } = require("discord.js");
 const emoji = require("../../botconfig/emojis.json")
 const ee = require("../../botconfig/embed.json");
@@ -11,9 +11,10 @@ const {
 } = require(`util`);
 
 module.exports = {
-    name: "eval", //userMoney, userBank, userBitcoin, userID (ALL USERVALUES)
+    name: "eval",
     aliases: ['evaluate'],
-    cooldown: 1,
+    userPerms: [],
+    clientPerms: [],
     /**
      *
      * @param {Client} client
@@ -21,12 +22,12 @@ module.exports = {
      * @param {String[]} args
      */
     run: async (client, message, args) => {
-        if (!config.ownerID.includes(message.author.id)) return;
+        if (!config.DEVELOPER_IDS.includes(message.author.id)) return;
+
         if (!args[0]) {
-            const embed = new MessageEmbed();
             return message.reply({
                 embeds: [
-                    embed
+                    new EmbedBuilder()
                     .setColor(ee.color)
                     .setDescription(`Please insert arguments to evaluate.`),
                 ],
@@ -34,38 +35,26 @@ module.exports = {
         }
         let evaled;
         try {
-            if (args.join(` `).includes(`token`))
-                return console.log(`ERROR, NO TOKEN GRABBING`.red);
+
+            if (args.join(` `).includes(`token`)) return;
 
             evaled = await eval(args.join(` `));
-            //make string out of the evaluation
             let string = inspect(evaled);
-            //if the token is included return error
-            if (string.includes(client.token))
-                return console.log(`ERROR, NO TOKEN GRABBING`.red);
-            //define queueembed
-            let evalEmbed = new MessageEmbed().setTitle(
-                `${client.user.username} | EVALUTION`
-            );
-            //set code to evaled
-            evalEmbed.setDescription(`
-                          
-                          ***Input:***
-                          \`\`\`js\n${args}\n\`\`\`
-                          
-                          ***Output:***
-                          \`\`\`js\n${string}\n\`\`\``);
-            //send embed
+
+            if (string.includes(client.token)) return;
+
+            let evalEmbed = new EmbedBuilder().setTitle(`${client.user.username} | EVALUTION`);
+            evalEmbed.setDescription(`***Input:***\n\`\`\`js\n${args}\n\`\`\`\n***Output:***\n\`\`\`js\n${string}\n\`\`\``);
             message.reply({
-                embeds: [evalEmbed.setColor(ee.color)]
+                embeds: [evalEmbed.setColor(ee.color).setTimestamp()]
             });
         } catch (e) {
-            console.log(String(e.stack));
-            const evalEmbed2 = new MessageEmbed();
-            evalEmbed2.setTitle(`Something went very wrong`);
+            console.log(e);
+            const evalEmbed2 = new EmbedBuilder();
+            evalEmbed2.setTitle(`Something went wrong`);
             evalEmbed2.setDescription(`\`\`\`${e.message}\`\`\``);
             return message.reply({
-                embeds: [evalEmbed2.setColor(ee.wrongcolor)]
+                embeds: [evalEmbed2.setColor(ee.errorColor).setTimestamp()]
             });
         }
     },

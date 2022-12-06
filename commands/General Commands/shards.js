@@ -1,16 +1,20 @@
 const {
     Message,
     Client,
-    MessageEmbed,
     MessageActionRow,
-    MessageButton
+    MessageButton,
+    EmbedBuilder
 } = require("discord.js");
 const emoji = require("../../botconfig/emojis.json")
 const ee = require("../../botconfig/embed.json");
+const {
+    languageControl
+} = require("../../handler/functions")
 
 module.exports = {
-    name: "shards", //userMoney, userBank, userBitcoin, userID (ALL USERVALUES)
-    aliases: ['shardstatus', 'shardinfo'],
+    name: "shards",
+    userPerms: [],
+    clientPerms: [],
     /**
      *
      * @param {Client} client
@@ -20,11 +24,9 @@ module.exports = {
     run: async (client, message, args, con) => {
         return message.reply({
             embeds: [
-                new MessageEmbed()
-                .setColor(ee.wrongcolor)
-                .setDescription(
-                    `This feature is currently disabled, check back later.`
-                ),
+                new EmbedBuilder()
+                .setColor(ee.errorColor)
+                .setDescription(await languageControl(message.guild, 'FEATURE_DISABLED'))
             ],
         });
         client.shard

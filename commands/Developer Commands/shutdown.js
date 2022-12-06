@@ -1,7 +1,7 @@
 const {
     Message,
     Client,
-    MessageEmbed
+    EmbedBuilder
 } = require("discord.js");
 const emoji = require("../../botconfig/emojis.json")
 const ee = require("../../botconfig/embed.json");
@@ -10,7 +10,8 @@ const config = require("../../botconfig/config.json")
 module.exports = {
     name: "shutdown", //userMoney, userBank, userBitcoin, userID (ALL USERVALUES)
     aliases: ['shutd', 'sd'],
-    cooldown: 1,
+    userPerms: [],
+    clientPerms: [],
     /**
      *
      * @param {Client} client
@@ -18,11 +19,11 @@ module.exports = {
      * @param {String[]} args
      */
     run: async (client, message, args) => {
-        if (!config.ownerID.includes(message.author.id)) return;
+        if (!config.DEVELOPER_IDS.includes(message.author.id)) return;
 
         await message.reply({
             embeds: [
-                new MessageEmbed()
+                new EmbedBuilder()
                 .setColor(ee.color)
                 .setDescription(`Message recieved, shutting down...`),
             ],
@@ -30,12 +31,3 @@ module.exports = {
         return process.exit();
     },
 };
-
-/*
-
-Code used in this script has been written by original PizzaParadise developer - PGamingHD#0666
-Require assistance with scripts? Join the discord and get help right away! - https://discord.gg/pxySje4GPC
-Other than that, please do note that it is required if you are using this to mention the original developer
-Original Developer - PGamingHD#0666
-
-*/

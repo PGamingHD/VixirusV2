@@ -9,14 +9,11 @@ const {
     IntentsBitField
 } = require("discord.js");
 const {
-    readdirSync
+    readdirSync,
+    readdir
 } = require("fs");
-const config = require("./botconfig/config.json");
-const chalk = require("chalk"); //Colors in terminals! :)
-//const express = require('express'); 
-//const mysql = require('mysql2/promise'); Require a DB?
-//const path = require("path");
-require('dotenv').config(); //Settings for BOT
+const chalk = require("chalk");
+require('dotenv').config();
 
 
 //           --------------------<CONSTRUCTORS>--------------------
@@ -61,65 +58,64 @@ module.exports = client;
 
 client.commands = new Collection();
 client.slashCommands = new Collection();
-client.cachedGuildLanguages = new Collection();
-client.startupCooldown = new Collection();
 client.categories = readdirSync("./commands/");
+client.slashcategories = readdirSync("./SlashCommands/");
+client.dashboardSettings = readdirSync("./dashboard/settings/");
+client.dashboardLanguages = readdirSync("./dashboard/languages");
 client.config = require("./botconfig/config.json");
 
 //           --------------------<GLOBAL VARIABLES CONSTRUCTION>--------------------
 
 
+//           --------------------<DB VARIABLES CONTSTRUCTION>--------------------
+
+//GLOBALS
+client.userCooldown = new Collection();
+client.startupCooldown = new Collection();
+
+//MODULES
+client.prefixmodule = new Collection();
+
+client.welcomemodule = new Collection();
+client.joinmodule = new Collection();
+client.leavemodule = new Collection();
+client.privatemodule = new Collection();
+
+client.languagemodule = new Collection();
+
+//SETTINGS
+client.cachedGuildLanguages = new Collection();
+
+client.cachedServerPrefixes = new Collection();
+
+client.cachedWelcomeMessages = new Collection();
+client.cachedWelcomeChannels = new Collection();
+client.cachedLeaveMessages = new Collection();
+client.cachedLeaveChannels = new Collection();
+client.cachedPrivateMessages = new Collection();
+
+//           --------------------<DB VARIABLES CONTSTRUCTION>--------------------
+
+
 //           --------------------<REQUIRES>--------------------
 
+require("./handler/dashboard");
 require("./handler/anticrash")(client);
-// Initializing the project
 require("./handler")(client);
-//require("./database/db")
 
 //           --------------------<REQUIRES>--------------------
 
 
-//--
+//           --------------------<DATABASE ARGUMENTS>--------------------
 
-async function dbConnection() {
-
-    if (!process.env.MYSQL_PORT.length === 0 || process.env.MYSQL_USER.length === 0 || process.env.MYSQL_PASS.length === 0 || process.env.LOGIN_TOKEN.length === 0 || process.env.MYSQL_DATABASE.length === 0) {
-        return console.log(chalk.red("[ERROR] <==> || You must fill out the .env file before starting the project! || <==> [ERROR]"));
-    }
-
-    const connection = await mysql.createConnection({
-
-        //DATABASE CREDENTIALS
-
-        port: process.env.MYSQL_PORT,
-        user: process.env.MYSQL_USER,
-        password: process.env.MYSQL_PASS,
-        database: process.env.MYSQL_DATABASE,
-
-        //DATABASE SETTINGS
-
-        supportBigNumbers: true,
-    }).then(console.log(chalk.green("[DATABASE] <==> || Connection has been successfully established with the Database! || <==> [DATABASE]")));
-
-    client.connection = connection;
-
-}
-
-//--
+//           --------------------<DATABASE ARGUMENTS>--------------------
 
 
 //           --------------------<STARTING ARGUMENTS>--------------------
-//dbConnection(); Connect to DB before logging in!
 
-client.login(process.env.LOGIN_TOKEN);
+client.login(process.env.LOGIN_TOKEN).catch((e) => {
+    console.log(e)
+    console.log(chalk.red("[LOGIN] <==> || Failed to login due to token being invalid, please fix this asap! || <==> [LOGIN]"))
+});
 
 //           --------------------<STARTING ARGUMENTS>--------------------
-
-/*
-
-Code used in this script has been written by original PizzaParadise developer - PGamingHD#0666
-Require assistance with scripts? Join the discord and get help right away! - https://discord.gg/pxySje4GPC
-Other than that, please do note that it is required if you are using this to mention the original developer
-Original Developer - PGamingHD#0666
-
-*/

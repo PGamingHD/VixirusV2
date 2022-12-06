@@ -33,11 +33,10 @@ module.exports = async (client) => {
     });
 
     // Events
-    const eventFiles = await globPromise(`${process.cwd()}/events/*.js`);
+    const eventFiles = await globPromise(`${process.cwd()}/events/**/*.js`);
     eventFiles.map((value) => require(value));
 
     // Slash Commands
-    console.log(process.cwd())
     const slashCommands = await globPromise(`${process.cwd()}/SlashCommands/**/*.js`);
 
     const arrayOfSlashCommands = [];

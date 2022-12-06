@@ -1,18 +1,22 @@
 const {
     Message,
     Client,
-    MessageEmbed,
-    MessageActionRow,
-    MessageButton
+    EmbedBuilder
 } = require("discord.js");
 const emoji = require("../../botconfig/emojis.json")
 const ee = require("../../botconfig/embed.json");
 const config = require("../../botconfig/config.json");
-const prettyMilliseconds = require("pretty-ms")
+const prettyMilliseconds = require("pretty-ms");
+const {
+    languageControl,
+    stringTemplateParser
+} = require("../../handler/functions")
 
 module.exports = {
     name: "invite",
-    aliases: ['invitebot', 'inviteme'],
+    aliases: ['invitebot', 'inviteme', 'inv'],
+    userPerms: [],
+    clientPerms: [],
     /**
      *
      * @param {Client} client
@@ -20,8 +24,16 @@ module.exports = {
      * @param {String[]} args
      */
     run: async (client, message, args, con) => {
-        return message.channel.send({
-            content: 'https://discord.com/api/oauth2/authorize?client_id=904757023797813339&permissions=517543939136&scope=bot%20applications.commands'
+        return message.reply({
+            embeds: [
+                new EmbedBuilder()
+                .setColor(ee.color)
+                .setTitle(await languageControl(message.guild, 'INVITE_SUPPORT_TITLE'))
+                .setDescription(await stringTemplateParser(await languageControl(message.guild, 'INVITE_SUPPORT_DESC'), {
+                    botInvite: config.Discord_Links.invite_link_recommended,
+                    discordInvite: config.Discord_Links.Support_Server
+                }))
+            ]
         })
     },
 };

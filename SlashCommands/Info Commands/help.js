@@ -17,6 +17,8 @@
     module.exports = {
         name: 'help',
         description: 'Do something!',
+                userPerms: [],
+        clientPerms: [],
         /** 
          * @param {Client} client 
          * @param {Message} message 
