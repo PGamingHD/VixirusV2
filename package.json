@@ -20,6 +20,9 @@
   "dependencies": {
     "@haileybot/captcha-generator": "^1.7.0",
     "@keyv/mysql": "^1.5.1",
+    "@twurple/api": "^5.2.7",
+    "@twurple/auth": "^5.2.7",
+    "@twurple/eventsub": "^5.2.7",
     "axios": "^0.27.2",
     "croner": "^4.3.11",
     "dbd-soft-ui": "^1.5.46-beta.1",

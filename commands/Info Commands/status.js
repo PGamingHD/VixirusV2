@@ -120,6 +120,10 @@ module.exports = {
                         name: await languageControl(message.guild, 'VERSION_LABEL'),
                         value: `\`[ ${config.BOT_VERSION} ]\``,
                         inline: true
+                    }, {
+                        name: await languageControl(interaction.guild, 'DASHBOARD_LABEL'),
+                        value: `[W.I.P](https://discord.gg/xQFFRzhJu2)`,
+                        inline: true
                     }])
 
                 return message.reply({
