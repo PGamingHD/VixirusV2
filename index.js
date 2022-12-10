@@ -80,6 +80,7 @@ client.welcomemodule = new Collection();
 client.joinmodule = new Collection();
 client.leavemodule = new Collection();
 client.privatemodule = new Collection();
+client.rolemodule = new Collection();
 
 client.languagemodule = new Collection();
 
@@ -93,6 +94,8 @@ client.cachedWelcomeChannels = new Collection();
 client.cachedLeaveMessages = new Collection();
 client.cachedLeaveChannels = new Collection();
 client.cachedPrivateMessages = new Collection();
+client.cachedAutoRoles = new Collection();
+
 
 //           --------------------<DB VARIABLES CONTSTRUCTION>--------------------
 

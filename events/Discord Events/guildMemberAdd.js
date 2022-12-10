@@ -43,5 +43,16 @@ client.on("guildMemberAdd", async (member) => {
             })
         } catch {}
     }
+
+    const guildRoles = await client.cachedAutoRoles.get(`${member.guild.id}`);
+    if (client.rolemodule.has(`${member.guild.id}`) && guildRoles.length !== 0) {
+        const fetchedGuild = await client.guilds.fetch(`${member.guild.id}`);
+        await guildRoles.forEach(async (role) => {
+            try {
+                const fetchedRole = await fetchedGuild.roles.fetch(`${role}`);
+                await member.roles.add(fetchedRole);
+            } catch {}
+        });
+    }
     return;
 });

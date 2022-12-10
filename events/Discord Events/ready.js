@@ -170,6 +170,7 @@ QPgdYOQTcXAvQK0pu7LxaFHk84aKcOK2788UBbkg6iGClIfSxSBgmFoUbFQTqTM=
                 await client.cachedLeaveChannels.set(`${guild.guild_id}`, guild.guild_byechannel);
             }
             await client.cachedPrivateMessages.set(`${guild.guild_id}`, guild.guild_private);
+            await client.cachedAutoRoles.set(`${guild.guild_id}`, guild.guild_autoroles);
 
             //MODULES
 
@@ -195,6 +196,10 @@ QPgdYOQTcXAvQK0pu7LxaFHk84aKcOK2788UBbkg6iGClIfSxSBgmFoUbFQTqTM=
 
             if (guild.guild_prefixmodule) {
                 await client.prefixmodule.set(`${guild.guild_id}`, "Prefix Enabled!");
+            }
+
+            if (guild.guild_rolemodule) {
+                await client.rolemodule.set(`${guild.guild_id}`, "Autoroles Enabled!");
             }
         });
         await pool.release();

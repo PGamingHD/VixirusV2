@@ -6,13 +6,13 @@ const {
 const client = require("../../../index");
 
 module.exports = {
-    optionId: 'enable_private',
-    optionName: "Private Message on Join",
-    optionDescription: "Send a message to user PMs whenever a user decides to join the server.",
+    optionId: 'enable_autoroles',
+    optionName: "Give roles on Join",
+    optionDescription: "Give roles to a user upon joining the server.",
     optionType: DBD.formTypes.switch(false),
     getActualSet: async ({guild,user}) => {
         try {
-            return await client.privatemodule.has(`${guild.id}`);
+            return await client.rolemodule.has(`${guild.id}`);
         } catch(error) {
             return writeError(error, guild);
         }
@@ -25,12 +25,12 @@ module.exports = {
         try {
             const [guildData, guildRows] = await pool.query(`SELECT * FROM guild_data WHERE guild_id = ${guild.id}`);
             if (guildData.length === 0) return;
-            await pool.query(`UPDATE guild_data SET guild_privatemodule = ${newData} WHERE guild_id = ${guild.id}`);
+            await pool.query(`UPDATE guild_data SET guild_rolemodule = ${newData} WHERE guild_id = ${guild.id}`);
 
             if (newData) {
-                client.privatemodule.set(`${guild.id}`, "Private Enabled!");
+                client.rolemodule.set(`${guild.id}`, "Autoroles Enabled!");
             } else {
-                client.privatemodule.delete(`${guild.id}`);
+                client.rolemodule.delete(`${guild.id}`);
             }
 
             return await pool.release();
