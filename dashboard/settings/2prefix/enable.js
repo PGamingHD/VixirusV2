@@ -6,13 +6,13 @@ const {
 const client = require("../../../index");
 
 module.exports = {
-    optionId: 'enable_leave',
-    optionName: "Message on Leave",
-    optionDescription: "Send a message whenever a user decides to leave the server.",
+    optionId: 'enable_prefix',
+    optionName: "Prefix Module",
+    optionDescription: "Enable/Disable the module.",
     optionType: DBD.formTypes.switch(false),
     getActualSet: async ({guild,user}) => {
         try {
-            return await client.leavemodule.has(`${guild.id}`);
+            return await client.prefixmodule.has(`${guild.id}`);
         } catch(error) {
             return writeError(error, guild);
         }
@@ -23,14 +23,14 @@ module.exports = {
     }) => {
         const pool = await getPool().getConnection();
         try {
-            const [guildData, guildRows] = await pool.query(`SELECT * FROM guild_data WHERE guild_id = ${guild.id}`);
+            const [guildData, guildRows] = await pool.query(`SELECT * FROM guild_data WHERE data_ServerId = ${guild.id}`);
             if (guildData.length === 0) return;
-            await pool.query(`UPDATE guild_data SET guild_leavemodule = ${newData} WHERE guild_id = ${guild.id}`);
+            await pool.query(`UPDATE guild_modules SET module_prefix = ${newData} WHERE module_ServerId = ${guild.id}`);
 
             if (newData) {
-                client.leavemodule.set(`${guild.id}`, "Welcome Enabled!");
+                client.prefixmodule.set(`${guild.id}`, "Prefix Enabled!");
             } else {
-                client.leavemodule.delete(`${guild.id}`);
+                client.prefixmodule.delete(`${guild.id}`);
             }
 
             return await pool.release();

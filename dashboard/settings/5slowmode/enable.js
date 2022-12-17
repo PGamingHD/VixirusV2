@@ -6,15 +6,16 @@ const {
 const client = require("../../../index");
 
 module.exports = {
-    optionId: 'private_msg',
-    optionName: "Private Message",
-    optionDescription: "Change the Private message",
-    optionType: DBD.formTypes.textarea("Have a great time in **{server}**!", 1, 1024, false, true),
+    optionId: 'enable_slowmode',
+    optionName: "Slowmode Module",
+    optionDescription: "Enable/Disable the module.",
+    optionType: DBD.formTypes.switch(false),
     getActualSet: async ({
-        guild,user
+        guild,
+        user
     }) => {
         try {
-            return await client.cachedPrivateMessages.get(`${guild.id}`);
+            return await client.slowmodemodule.has(`${guild.id}`);
         } catch(error) {
             return writeError(error, guild);
         }
@@ -23,15 +24,17 @@ module.exports = {
         guild,
         newData
     }) => {
-        if (newData === "") return;
-        
         const pool = await getPool().getConnection();
         try {
-            const [guildData, guildRows] = await pool.query(`SELECT * FROM guild_data WHERE guild_id = ${guild.id}`);
+            const [guildData, guildRows] = await pool.query(`SELECT * FROM guild_data WHERE data_ServerId = ${guild.id}`);
             if (guildData.length === 0) return;
-            await pool.query(`UPDATE guild_data SET guild_private = '${newData}' WHERE guild_id = ${guild.id}`);
+            await pool.query(`UPDATE guild_modules SET module_slowmode = ${newData} WHERE module_ServerId = ${guild.id}`);
 
-            await client.cachedPrivateMessages.set(`${guild.id}`, newData);
+            if (newData) {
+                client.slowmodemodule.set(`${guild.id}`, "Slowmode Enabled!");
+            } else {
+                client.slowmodemodule.delete(`${guild.id}`);
+            }
 
             return await pool.release();
         } catch (error) {

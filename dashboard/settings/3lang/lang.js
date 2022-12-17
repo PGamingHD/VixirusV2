@@ -1,5 +1,4 @@
 const DBD = require('discord-dashboard');
-const { ChannelType } = require('discord.js');
 const getPool = require("../../../handler/database");
 const {
     writeError
@@ -7,15 +6,18 @@ const {
 const client = require("../../../index");
 
 module.exports = {
-    optionId: 'channel',
-    optionName: "Welcome Channel",
-    optionDescription: "Change the Welcome channel",
-    optionType: DBD.formTypes.channelsSelect(false, [ChannelType.GuildText], true, false),
+    optionId: 'lang',
+    optionName: "Language",
+    optionDescription: "Change the bots guild language",
+    optionType: DBD.formTypes.select({
+        "English": 'en',
+        "Swedish": 'sv',
+    }),
     getActualSet: async ({
         guild,user
     }) => {
         try {
-            return await client.cachedWelcomeChannels.get(`${guild.id}`)
+            return await client.cachedGuildLanguages.get(`${guild.id}`);
         } catch(error) {
             return writeError(error, guild);
         }
@@ -26,11 +28,11 @@ module.exports = {
     }) => {
         const pool = await getPool().getConnection();
         try {
-            const [guildData, guildRows] = await pool.query(`SELECT * FROM guild_data WHERE guild_id = ${guild.id}`);
+            const [guildData, guildRows] = await pool.query(`SELECT * FROM guild_data WHERE data_ServerId = ${guild.id}`);
             if (guildData.length === 0) return;
-            await pool.query(`UPDATE guild_data SET guild_welcomechannel = '${newData}' WHERE guild_id = ${guild.id}`);
+            await pool.query(`UPDATE guild_data SET data_language = '${newData}' WHERE data_ServerId = ${guild.id}`);
 
-            await client.cachedWelcomeChannels.set(`${guild.id}`, newData);
+            await client.cachedGuildLanguages.set(`${guild.id}`, newData);
 
             return await pool.release();
         } catch (error) {

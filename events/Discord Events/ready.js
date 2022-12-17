@@ -18,7 +18,6 @@ const {
     latestTOS,
     agreementDate,
 } = require("../../index");
-const getPool = require("../../handler/database");
 
 //TWITCH TESTING
 const {
@@ -146,63 +145,7 @@ QPgdYOQTcXAvQK0pu7LxaFHk84aKcOK2788UBbkg6iGClIfSxSBgmFoUbFQTqTM=
 
             console.log(await offlineSubscription.getCliTestCommand());*/ //NEED TO OPEN LISTEN PORT 443 TO RECIEVE EVENTS!
 
-        //SET GUILD CACHED LANGUAGES!
-        const pool = await getPool().getConnection();
-        const [guilds, guildsRow] = await pool.query(`SELECT * FROM guild_data`);
-        guilds.forEach(async (guild) => {
-
-            //SETTINGS
-
-            await client.cachedGuildLanguages.set(`${guild.guild_id}`, guild.guild_language);
-
-            await client.cachedServerPrefixes.set(`${guild.guild_id}`, guild.guild_prefix);
-
-            await client.cachedWelcomeMessages.set(`${guild.guild_id}`, guild.guild_welcome);
-            if (guild.guild_welcomechannel === "") {
-                await client.cachedWelcomeChannels.set(`${guild.guild_id}`, null);
-            } else {
-                await client.cachedWelcomeChannels.set(`${guild.guild_id}`, guild.guild_welcomechannel);
-            }
-            await client.cachedLeaveMessages.set(`${guild.guild_id}`, guild.guild_bye);
-            if (guild.guild_byechannel === "") {
-                await client.cachedLeaveChannels.set(`${guild.guild_id}`, null);
-            } else {
-                await client.cachedLeaveChannels.set(`${guild.guild_id}`, guild.guild_byechannel);
-            }
-            await client.cachedPrivateMessages.set(`${guild.guild_id}`, guild.guild_private);
-            await client.cachedAutoRoles.set(`${guild.guild_id}`, guild.guild_autoroles);
-
-            //MODULES
-
-            if (guild.guild_welcomemodule) {
-                await client.welcomemodule.set(`${guild.guild_id}`, "Welcome Enabled!");
-            }
-
-            if (guild.guild_joinmodule) {
-                await client.joinmodule.set(`${guild.guild_id}`, "Join Enabled!");
-            }
-
-            if (guild.guild_leavemodule) {
-                await client.leavemodule.set(`${guild.guild_id}`, "Leave Enabled!");
-            }
-
-            if (guild.guild_privatemodule) {
-                await client.privatemodule.set(`${guild.guild_id}`, "Private Enabled!");
-            }
-
-            if (guild.guild_languagemodule) {
-                await client.languagemodule.set(`${guild.guild_id}`, "Language Enabled!");
-            }
-
-            if (guild.guild_prefixmodule) {
-                await client.prefixmodule.set(`${guild.guild_id}`, "Prefix Enabled!");
-            }
-
-            if (guild.guild_rolemodule) {
-                await client.rolemodule.set(`${guild.guild_id}`, "Autoroles Enabled!");
-            }
-        });
-        await pool.release();
+            require("../../handler/loadcollections")(client);
 
         client.user.setActivity('In Development', {
             type: ActivityType.Watching

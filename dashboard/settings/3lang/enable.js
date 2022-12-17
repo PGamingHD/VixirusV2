@@ -6,13 +6,16 @@ const {
 const client = require("../../../index");
 
 module.exports = {
-    optionId: 'enable_autoroles',
-    optionName: "Give roles on Join",
-    optionDescription: "Give roles to a user upon joining the server.",
+    optionId: 'enable_lang',
+    optionName: "Language Module",
+    optionDescription: "Enable/Disable the module.",
     optionType: DBD.formTypes.switch(false),
-    getActualSet: async ({guild,user}) => {
+    getActualSet: async ({
+        guild,
+        user
+    }) => {
         try {
-            return await client.rolemodule.has(`${guild.id}`);
+            return await client.languagemodule.has(`${guild.id}`);
         } catch(error) {
             return writeError(error, guild);
         }
@@ -23,14 +26,14 @@ module.exports = {
     }) => {
         const pool = await getPool().getConnection();
         try {
-            const [guildData, guildRows] = await pool.query(`SELECT * FROM guild_data WHERE guild_id = ${guild.id}`);
+            const [guildData, guildRows] = await pool.query(`SELECT * FROM guild_data WHERE data_ServerId = ${guild.id}`);
             if (guildData.length === 0) return;
-            await pool.query(`UPDATE guild_data SET guild_rolemodule = ${newData} WHERE guild_id = ${guild.id}`);
+            await pool.query(`UPDATE guild_modules SET module_language = ${newData} WHERE module_ServerId = ${guild.id}`);
 
             if (newData) {
-                client.rolemodule.set(`${guild.id}`, "Autoroles Enabled!");
+                client.languagemodule.set(`${guild.id}`, "Language Enabled!");
             } else {
-                client.rolemodule.delete(`${guild.id}`);
+                client.languagemodule.delete(`${guild.id}`);
             }
 
             return await pool.release();

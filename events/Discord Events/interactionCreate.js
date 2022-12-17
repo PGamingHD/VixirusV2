@@ -29,7 +29,6 @@ const {
 const {
     languageControl,
     stringTemplateParser,
-    confirmUser,
 } = require("../../handler/functions");
 const getPool = require("../../handler/database");
 
@@ -54,7 +53,7 @@ client.on("interactionCreate", async (interaction) => {
             if (!interaction.channel.permissionsFor(interaction.guild.members.me).has(PermissionFlagsBits.SendMessages)) {
                 return;
             } else {
-                if (error.rawError.message === "Cannot send messages to this user") {
+                if (error.message === "Cannot send messages to this user") {
                     return interaction.reply({
                         embeds: [
                             new EmbedBuilder()
@@ -85,6 +84,42 @@ client.on("interactionCreate", async (interaction) => {
                 embeds: [embed],
                 epehemeral: true
             });
+        }
+
+        if (cmd.module === "mod") {
+            let hasAccess = false;
+            const guildModRoles = await client.cachedModRoles.get(`${interaction.guild.id}`);
+            const getModuleStatus = await client.modmodule.has(`${interaction.guild.id}`);
+
+            if (!getModuleStatus) {
+                return interaction.reply({
+                    embeds: [
+                        new EmbedBuilder()
+                        .setColor(ee.errorColor)
+                        .setTitle(`:x: Module Disabled :x:`)
+                        .setDescription(`***Woops, it seems like this module is not yet enabled, please enable it and try again.***`)
+                    ],
+                    ephemeral: true
+                })
+            }
+
+            await guildModRoles.forEach(role => {
+                if (interaction.member.roles.cache.has(role)) hasAccess = true;
+            });
+
+            if (interaction.member.permissions.has(PermissionFlagsBits.Administrator)) hasAccess = true;
+
+            if (!hasAccess) {
+                return interaction.reply({
+                    embeds: [
+                        new EmbedBuilder()
+                        .setColor(ee.errorColor)
+                        .setTitle(`:x: Missing Permissions :x:`)
+                        .setDescription(`***It seems like you do not have the required Moderation Role or Administrator Permission to execute this command.***`)
+                    ],
+                    ephemeral: true
+                })
+            }
         }
 
         if (client.userCooldown.has(`${interaction.user.id}`)) {

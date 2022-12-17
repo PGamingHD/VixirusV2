@@ -1,5 +1,4 @@
 const DBD = require('discord-dashboard');
-const { ChannelType } = require('discord.js');
 const getPool = require("../../../handler/database");
 const {
     writeError
@@ -7,15 +6,15 @@ const {
 const client = require("../../../index");
 
 module.exports = {
-    optionId: 'leave_channel',
-    optionName: "Leave Channel",
-    optionDescription: "Change the Leave channel",
-    optionType: DBD.formTypes.channelsSelect(false, [ChannelType.GuildText], true, false),
+    optionId: 'leave_msg',
+    optionName: "Leave Message",
+    optionDescription: "Change the Leave message",
+    optionType: DBD.formTypes.textarea("**{user}** just left the server!", 1, 1024, false, true),
     getActualSet: async ({
         guild,user
     }) => {
         try {
-            return await client.cachedLeaveChannels.get(`${guild.id}`)
+            return await client.cachedLeaveMessages.get(`${guild.id}`);
         } catch(error) {
             return writeError(error, guild);
         }
@@ -24,13 +23,15 @@ module.exports = {
         guild,
         newData
     }) => {
+        if (newData === "") return;
+        
         const pool = await getPool().getConnection();
         try {
-            const [guildData, guildRows] = await pool.query(`SELECT * FROM guild_data WHERE guild_id = ${guild.id}`);
+            const [guildData, guildRows] = await pool.query(`SELECT * FROM guild_data WHERE data_ServerId = ${guild.id}`);
             if (guildData.length === 0) return;
-            await pool.query(`UPDATE guild_data SET guild_byechannel = '${newData}' WHERE guild_id = ${guild.id}`);
+            await pool.query(`UPDATE guild_data SET data_bye = '${newData}' WHERE data_ServerId = ${guild.id}`);
 
-            await client.cachedLeaveChannels.set(`${guild.id}`, newData);
+            await client.cachedLeaveMessages.set(`${guild.id}`, newData);
 
             return await pool.release();
         } catch (error) {

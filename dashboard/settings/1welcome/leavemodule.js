@@ -6,13 +6,13 @@ const {
 const client = require("../../../index");
 
 module.exports = {
-    optionId: 'enable_private',
-    optionName: "Private Message on Join",
-    optionDescription: "Send a message to user PMs whenever a user decides to join the server.",
+    optionId: 'enable_leave',
+    optionName: "Message on Leave",
+    optionDescription: "Send a message whenever a user decides to leave the server.",
     optionType: DBD.formTypes.switch(false),
     getActualSet: async ({guild,user}) => {
         try {
-            return await client.privatemodule.has(`${guild.id}`);
+            return await client.leavemodule.has(`${guild.id}`);
         } catch(error) {
             return writeError(error, guild);
         }
@@ -23,14 +23,14 @@ module.exports = {
     }) => {
         const pool = await getPool().getConnection();
         try {
-            const [guildData, guildRows] = await pool.query(`SELECT * FROM guild_data WHERE guild_id = ${guild.id}`);
+            const [guildData, guildRows] = await pool.query(`SELECT * FROM guild_data WHERE data_ServerId = ${guild.id}`);
             if (guildData.length === 0) return;
-            await pool.query(`UPDATE guild_data SET guild_privatemodule = ${newData} WHERE guild_id = ${guild.id}`);
+            await pool.query(`UPDATE guild_modules SET module_leave = ${newData} WHERE module_ServerId = ${guild.id}`);
 
             if (newData) {
-                client.privatemodule.set(`${guild.id}`, "Private Enabled!");
+                client.leavemodule.set(`${guild.id}`, "Welcome Enabled!");
             } else {
-                client.privatemodule.delete(`${guild.id}`);
+                client.leavemodule.delete(`${guild.id}`);
             }
 
             return await pool.release();

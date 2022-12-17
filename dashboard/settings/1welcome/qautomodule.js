@@ -6,13 +6,13 @@ const {
 const client = require("../../../index");
 
 module.exports = {
-    optionId: 'enable_join',
-    optionName: "Message on Join",
-    optionDescription: "Send a message whenever a user decides to join the server.",
+    optionId: 'enable_autoroles',
+    optionName: "Give roles on Join",
+    optionDescription: "Give roles to a user upon joining the server.",
     optionType: DBD.formTypes.switch(false),
     getActualSet: async ({guild,user}) => {
         try {
-            return await client.joinmodule.has(`${guild.id}`);
+            return await client.rolemodule.has(`${guild.id}`);
         } catch(error) {
             return writeError(error, guild);
         }
@@ -23,14 +23,14 @@ module.exports = {
     }) => {
         const pool = await getPool().getConnection();
         try {
-            const [guildData, guildRows] = await pool.query(`SELECT * FROM guild_data WHERE guild_id = ${guild.id}`);
+            const [guildData, guildRows] = await pool.query(`SELECT * FROM guild_data WHERE data_ServerId = ${guild.id}`);
             if (guildData.length === 0) return;
-            await pool.query(`UPDATE guild_data SET guild_joinmodule = ${newData} WHERE guild_id = ${guild.id}`);
+            await pool.query(`UPDATE guild_modules SET module_role = ${newData} WHERE module_ServerId = ${guild.id}`);
 
             if (newData) {
-                client.joinmodule.set(`${guild.id}`, "Welcome Enabled!");
+                client.rolemodule.set(`${guild.id}`, "Autoroles Enabled!");
             } else {
-                client.joinmodule.delete(`${guild.id}`);
+                client.rolemodule.delete(`${guild.id}`);
             }
 
             return await pool.release();

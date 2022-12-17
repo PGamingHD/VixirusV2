@@ -84,6 +84,12 @@ client.rolemodule = new Collection();
 
 client.languagemodule = new Collection();
 
+client.modmodule = new Collection();
+
+client.slowmodemodule = new Collection();
+
+client.funmodule = new Collection();
+
 //SETTINGS
 client.cachedGuildLanguages = new Collection();
 
@@ -95,6 +101,8 @@ client.cachedLeaveMessages = new Collection();
 client.cachedLeaveChannels = new Collection();
 client.cachedPrivateMessages = new Collection();
 client.cachedAutoRoles = new Collection();
+client.cachedModRoles = new Collection();
+client.cachedWarns = new Collection();
 
 
 //           --------------------<DB VARIABLES CONTSTRUCTION>--------------------

@@ -6,15 +6,15 @@ const {
 const client = require("../../../index");
 
 module.exports = {
-    optionId: 'welcome',
-    optionName: "Welcome Message",
-    optionDescription: "Change the Welcome message",
-    optionType: DBD.formTypes.textarea("Hey {user}, welcome to **{server}**!", 1, 1024, false, true),
+    optionId: 'mod_roles',
+    optionName: "Moderation Roles",
+    optionDescription: "Change the Moderation Roles, these roles will be able to execute ALL Moderation Commands.",
+    optionType: DBD.formTypes.rolesMultiSelect(false, true, false),
     getActualSet: async ({
         guild,user
     }) => {
         try {
-            return await client.cachedWelcomeMessages.get(`${guild.id}`);
+            return await client.cachedModRoles.get(`${guild.id}`);
         } catch(error) {
             return writeError(error, guild);
         }
@@ -23,15 +23,14 @@ module.exports = {
         guild,
         newData
     }) => {
-        if (newData === "") return;
-        
         const pool = await getPool().getConnection();
         try {
-            const [guildData, guildRows] = await pool.query(`SELECT * FROM guild_data WHERE guild_id = ${guild.id}`);
+            const [guildData, guildRows] = await pool.query(`SELECT * FROM guild_data WHERE data_ServerId = ${guild.id}`);
             if (guildData.length === 0) return;
-            await pool.query(`UPDATE guild_data SET guild_welcome = '${newData}' WHERE guild_id = ${guild.id}`);
+            const roles = "'" + newData.join("','") + "'";
+            await pool.query(`UPDATE guild_data SET data_modroles = JSON_ARRAY(${roles}) WHERE data_ServerId = ${guild.id}`);
 
-            await client.cachedWelcomeMessages.set(`${guild.id}`, newData);
+            await client.cachedModRoles.set(`${guild.id}`, newData);
 
             return await pool.release();
         } catch (error) {

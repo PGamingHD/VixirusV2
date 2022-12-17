@@ -58,10 +58,10 @@ client.on("messageCreate", async (message) => {
                     new EmbedBuilder()
                     .setColor(ee.color)
                     .setAuthor({
-                        name: 'Looks like I was pinged? let me help you a bit!',
+                        name: 'Looks like I was pinged? Let me help you a bit!',
                         iconURL: client.user.displayAvatarURL()
                     })
-                    .setDescription(`>>> My current guild prefix is: \`${prefix}\`\n\nTo view all commands please use: \`${prefix}help\``)
+                    .setDescription(`>>> My current guild prefix is: \`${prefix}\` and \`/\`\n\nTo view all commands please use: \`${prefix}help\` or \`/help\``)
                     .setFooter({
                         text: `Requested by: ${message.author.tag}`
                     })

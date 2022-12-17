@@ -25,10 +25,10 @@ module.exports = {
     }) => {
         const pool = await getPool().getConnection();
         try {
-            const [guildData, guildRows] = await pool.query(`SELECT * FROM guild_data WHERE guild_id = ${guild.id}`);
+            const [guildData, guildRows] = await pool.query(`SELECT * FROM guild_data WHERE data_ServerId = ${guild.id}`);
             if (guildData.length === 0) return;
             const roles = "'" + newData.join("','") + "'";
-            await pool.query(`UPDATE guild_data SET guild_autoroles = JSON_ARRAY(${roles}) WHERE guild_id = ${guild.id}`);
+            await pool.query(`UPDATE guild_data SET data_autoroles = JSON_ARRAY(${roles}) WHERE data_ServerId = ${guild.id}`);
 
             await client.cachedAutoRoles.set(`${guild.id}`, newData);
 

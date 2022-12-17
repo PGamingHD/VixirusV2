@@ -6,13 +6,13 @@ const {
 const client = require("../../../index");
 
 module.exports = {
-    optionId: 'enable_welcome',
-    optionName: "Enable Welcome Module",
-    optionDescription: "Enable/Disable the module.",
+    optionId: 'enable_join',
+    optionName: "Message on Join",
+    optionDescription: "Send a message whenever a user decides to join the server.",
     optionType: DBD.formTypes.switch(false),
     getActualSet: async ({guild,user}) => {
         try {
-            return await client.welcomemodule.has(`${guild.id}`);
+            return await client.joinmodule.has(`${guild.id}`);
         } catch(error) {
             return writeError(error, guild);
         }
@@ -23,14 +23,14 @@ module.exports = {
     }) => {
         const pool = await getPool().getConnection();
         try {
-            const [guildData, guildRows] = await pool.query(`SELECT * FROM guild_data WHERE guild_id = ${guild.id}`);
+            const [guildData, guildRows] = await pool.query(`SELECT * FROM guild_data WHERE data_ServerId = ${guild.id}`);
             if (guildData.length === 0) return;
-            await pool.query(`UPDATE guild_data SET guild_welcomemodule = ${newData} WHERE guild_id = ${guild.id}`);
+            await pool.query(`UPDATE guild_modules SET module_join = ${newData} WHERE module_ServerId = ${guild.id}`);
 
             if (newData) {
-                client.welcomemodule.set(`${guild.id}`, "Welcome Enabled!");
+                client.joinmodule.set(`${guild.id}`, "Welcome Enabled!");
             } else {
-                client.welcomemodule.delete(`${guild.id}`);
+                client.joinmodule.delete(`${guild.id}`);
             }
 
             return await pool.release();

@@ -1,1 +1,0 @@
-[2022/11/10 17:30:54] - Invalid JSON text: "The document root must not be followed by other values." at position 19 in value for column 'guild_data.guild_autoroles'.

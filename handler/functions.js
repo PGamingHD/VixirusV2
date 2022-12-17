@@ -10,6 +10,7 @@ const Discord = require("discord.js")
 const config = require("../botconfig/config.json");
 const ee = require("../botconfig/embed.json");
 const fs = require("fs");
+const { v4: uuidv4 } = require('uuid');
 
 //MODULE EXPORTS
 module.exports.stringTemplateParser = stringTemplateParser;
@@ -19,6 +20,8 @@ module.exports.calculatePercentage = calculatePercentage;
 module.exports.hintgame = hintgame;
 module.exports.escapeRegex = escapeRegex;
 module.exports.writeError = writeError;
+module.exports.genGuid = genGuid;
+module.exports.dateNow = dateNow;
 //FUNCTIONS
 
 async function languageControl(guild, translateLine) {
@@ -114,4 +117,36 @@ function writeError(error, guild) {
     } catch (error) {
         console.log("ERROR WRITING ERROR FILE:", error)
     }
+}
+
+function dateNow() {
+    const AD = new Date;
+    const ADY = AD.getFullYear();
+    let ADM = AD.getMonth();
+    let ADD = AD.getDate();
+    let ADH = AD.getHours();
+    let ADMI = AD.getMinutes();
+    let ADS = AD.getSeconds();
+
+    if (ADD < 10) {
+        ADD = '0' + AD.getDate();
+    }
+    if (ADM < 10) {
+        ADM = '0' + AD.getMonth();
+    }
+    if (ADH < 10) {
+        ADH = '0' + AD.getHours();
+    }
+    if (ADMI < 10) {
+        ADMI = '0' + AD.getMinutes();
+    }
+    if (ADS < 10) {
+        ADS = '0' + AD.getSeconds();
+    }
+
+    return `${ADY}-${ADM}-${ADD} ${ADH}:${ADMI}:${ADS}`;
+}
+
+function genGuid() {
+    return uuidv4();
 }

@@ -6,16 +6,15 @@ const {
 const client = require("../../../index");
 
 module.exports = {
-    optionId: 'enable_lang',
-    optionName: "Enable Language Module",
-    optionDescription: "Enable/Disable the module.",
-    optionType: DBD.formTypes.switch(false),
+    optionId: 'welcome',
+    optionName: "Welcome Message",
+    optionDescription: "Change the Welcome message",
+    optionType: DBD.formTypes.textarea("Hey {user}, welcome to **{server}**!", 1, 1024, false, true),
     getActualSet: async ({
-        guild,
-        user
+        guild,user
     }) => {
         try {
-            return await client.languagemodule.has(`${guild.id}`);
+            return await client.cachedWelcomeMessages.get(`${guild.id}`);
         } catch(error) {
             return writeError(error, guild);
         }
@@ -24,17 +23,15 @@ module.exports = {
         guild,
         newData
     }) => {
+        if (newData === "") return;
+        
         const pool = await getPool().getConnection();
         try {
-            const [guildData, guildRows] = await pool.query(`SELECT * FROM guild_data WHERE guild_id = ${guild.id}`);
+            const [guildData, guildRows] = await pool.query(`SELECT * FROM guild_data WHERE data_ServerId = ${guild.id}`);
             if (guildData.length === 0) return;
-            await pool.query(`UPDATE guild_data SET guild_languagemodule = ${newData} WHERE guild_id = ${guild.id}`);
+            await pool.query(`UPDATE guild_data SET data_welcome = '${newData}' WHERE data_ServerId = ${guild.id}`);
 
-            if (newData) {
-                client.languagemodule.set(`${guild.id}`, "Language Enabled!");
-            } else {
-                client.languagemodule.delete(`${guild.id}`);
-            }
+            await client.cachedWelcomeMessages.set(`${guild.id}`, newData);
 
             return await pool.release();
         } catch (error) {

@@ -13,15 +13,9 @@ module.exports = {
     getActualSet: async ({
         guild,user
     }) => {
-        const pool = await getPool().getConnection();
         try {
-            const [guildData, guildRows] = await pool.query(`SELECT * FROM guild_data WHERE guild_id = ${guild.id}`);
-            await pool.release();
-            if (guildData.length === 0) return;
-    
-            return guildData[0].guild_prefix;
+            return await client.cachedServerPrefixes.get(`${guild.id}`);
         } catch(error) {
-            await pool.release();
             return writeError(error, guild);
         }
     },
@@ -33,9 +27,9 @@ module.exports = {
         
         const pool = await getPool().getConnection();
         try {
-            const [guildData, guildRows] = await pool.query(`SELECT * FROM guild_data WHERE guild_id = ${guild.id}`);
+            const [guildData, guildRows] = await pool.query(`SELECT * FROM guild_data WHERE data_ServerId = ${guild.id}`);
             if (guildData.length === 0) return;
-            await pool.query(`UPDATE guild_data SET guild_prefix = '${newData}' WHERE guild_id = ${guild.id}`);
+            await pool.query(`UPDATE guild_data SET data_prefix = '${newData}' WHERE data_ServerId = ${guild.id}`);
 
             await client.cachedServerPrefixes.set(`${guild.id}`, newData);
 
