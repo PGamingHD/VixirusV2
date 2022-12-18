@@ -31,6 +31,8 @@ module.exports = async (client) => {
         await client.cachedModRoles.set(`${guild.data_ServerId}`, guild.data_modroles);
 
         await client.cachedWarns.set(`${guild.data_ServerId}`, guild.data_warns);
+
+        await client.cachedMuteds.set(`${guild.data_ServerId}`, guild.data_mutedrole);
     });
 
     const [guildModules, modulesGuild] = await pool.query(`SELECT * FROM guild_modules;`);

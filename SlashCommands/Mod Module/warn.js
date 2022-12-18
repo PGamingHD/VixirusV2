@@ -139,6 +139,7 @@ module.exports = {
                         name: 'Reason',
                         value: `\`\`\`${reasonForWarn}\`\`\``
                     }])
+                    .setTimestamp()
                     .setThumbnail(`https://cdn.discordapp.com/attachments/1010999257899204769/1053662138251624488/hammer.png`)
                 ]
             });

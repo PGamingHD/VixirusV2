@@ -103,6 +103,7 @@ client.cachedPrivateMessages = new Collection();
 client.cachedAutoRoles = new Collection();
 client.cachedModRoles = new Collection();
 client.cachedWarns = new Collection();
+client.cachedMuteds = new Collection();
 
 
 //           --------------------<DB VARIABLES CONTSTRUCTION>--------------------
