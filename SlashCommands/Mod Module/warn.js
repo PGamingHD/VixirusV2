@@ -39,8 +39,8 @@ module.exports = {
      * @param {String[]} args
      */
     run: async (client, interaction, con, args) => {
-        let memberToWarn = interaction.options.getMember('member');
-        let reasonForWarn = interaction.options.getString('reason');
+        const memberToWarn = interaction.options.getMember('member');
+        const reasonForWarn = interaction.options.getString('reason');
         const highestRoleTarget = memberToWarn.roles.highest.rawPosition;
         const highestRoleMod = interaction.member.roles.highest.rawPosition;
         const caseID = genGuid();

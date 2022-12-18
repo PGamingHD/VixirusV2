@@ -49,7 +49,6 @@ module.exports = {
         const highestRoleTarget = memberToTimeout.roles.highest.rawPosition;
         const highestRoleMod = interaction.member.roles.highest.rawPosition;
         const highestRoleBot = interaction.guild.members.me.roles.highest.rawPosition;
-        const caseID = genGuid();
 
         if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.ModerateMembers)) {
             return interaction.reply({
