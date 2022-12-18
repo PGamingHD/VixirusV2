@@ -85,7 +85,7 @@ module.exports = {
             ]
         });
 
-        await interaction.guild.channels.cache.filter(channel => channel.type === ChannelType.GuildText && channel.permissionsFor(everyoneRole).has(PermissionFlagsBits.SendMessages)).map(async (channel) => {
+        await interaction.guild.channels.cache.filter(channel => channel.type === ChannelType.GuildText && channel.permissionsFor(everyoneRole).has(PermissionFlagsBits.SendMessages) && channel.permissionsFor(everyoneRole).has(PermissionFlagsBits.ViewChannel)).map(async (channel) => {
             await channel.permissionOverwrites.set([{
                 id: interaction.guild.id,
                 deny: [PermissionFlagsBits.SendMessages]
