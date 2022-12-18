@@ -19,22 +19,17 @@ const {
 const fs = require("fs");
 
 module.exports = {
-    name: 'mute',
-    description: 'Mute someone for saying something naughty.',
+    name: 'unmute',
+    description: 'Unmute someone that is muted.',
     module: 'mod',
     options: [{
         name: 'member',
-        description: 'The member you wish to mute.',
+        description: 'The member you wish to unmute.',
         type: ApplicationCommandOptionType.User,
         required: true
     }, {
-        name: 'minutes',
-        description: 'The amount of minutes you wish to mute the user for.',
-        type: ApplicationCommandOptionType.Integer,
-        required: true
-    }, {
         name: 'reason',
-        description: 'The reason you wish to mute the member for.',
+        description: 'The reason you wish to unmute the member for.',
         type: ApplicationCommandOptionType.String,
         required: true
     }],
@@ -46,12 +41,10 @@ module.exports = {
     run: async (client, interaction, con, args) => {
         const memberToWarn = interaction.options.getMember('member');
         const reasonForWarn = interaction.options.getString('reason');
-        let muteMinutes = interaction.options.getInteger('minutes');
         const highestRoleTarget = memberToWarn.roles.highest.rawPosition;
         const highestRoleMod = interaction.member.roles.highest.rawPosition;
         const highestRoleBot = interaction.guild.members.me.roles.highest.rawPosition;
         const mutedRole = await client.cachedMuteds.get(`${interaction.guild.id}`);
-        const everyoneRole = interaction.guild.roles.everyone;
 
         if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.ManageRoles)) {
             return interaction.reply({
@@ -137,71 +130,58 @@ module.exports = {
             })
         }
 
-        if (muteMinutes <= 0) {
-            muteMinutes = 1;
-        }
-        if (muteMinutes > 10080) {
-            muteMinutes = 10080;
+        if (mutedRole === "0") {
+            return interaction.reply({
+                embeds: [
+                    new EmbedBuilder()
+                    .setColor(ee.errorColor)
+                    .setTitle(`:x: Error :x:`)
+                    .setDescription(`***Woops, seems like the muted role is not cached for this server. Please mute someone to cache it!***`)
+                ],
+                ephemeral: true
+            })
         }
 
         let roleExists = null;
-        if (mutedRole === "0") {
-            roleExists = await interaction.guild.roles.cache.filter(role => role.name.toLowerCase() === 'muted').first();
+        try {
+            roleExists = await interaction.guild.roles.fetch(mutedRole);
+        } catch {}
 
-            if (!roleExists) {
-                roleExists = await interaction.guild.roles.create({
-                    name: "Muted",
-                    color: ee.errorColor,
-                    position: highestRoleBot - 1,
-                });
+        if (roleExists === null) {
+            return interaction.reply({
+                embeds: [
+                    new EmbedBuilder()
+                    .setColor(ee.errorColor)
+                    .setTitle(`:x: Error :x:`)
+                    .setDescription(`***Woops, seems like the muted role could not be cached. Please try again in a couple of minutes!***`)
+                ],
+                ephemeral: true
+            })
+        }
 
-                await interaction.guild.channels.cache.filter(channel => channel.type === ChannelType.GuildText && channel.permissionsFor(everyoneRole).has(PermissionFlagsBits.SendMessages) && channel.permissionsFor(everyoneRole).has(PermissionFlagsBits.ViewChannel)).map(async (channel) => {
-                    await channel.permissionOverwrites.set([{
-                        id: roleExists.id,
-                        deny: [PermissionFlagsBits.SendMessages]
-                    }]);
-                });
-            }
-
-            await con.query(`UPDATE guild_data SET data_mutedrole = '${roleExists.id}' WHERE data_ServerId = ${interaction.guild.id}`);
-            await client.cachedMuteds.set(`${interaction.guild.id}`, roleExists.id);
-        } else {
-            try {
-                roleExists = await interaction.guild.roles.fetch(mutedRole);
-            } catch {
-                roleExists = await interaction.guild.roles.create({
-                    name: "Muted",
-                    color: ee.errorColor,
-                    position: highestRoleBot - 1
-                });
-
-                await interaction.guild.channels.cache.filter(channel => channel.type === ChannelType.GuildText && channel.permissionsFor(everyoneRole).has(PermissionFlagsBits.SendMessages) && channel.permissionsFor(everyoneRole).has(PermissionFlagsBits.ViewChannel)).map(async (channel) => {
-                    await channel.permissionOverwrites.set([{
-                        id: roleExists.id,
-                        deny: [PermissionFlagsBits.SendMessages]
-                    }]);
-                });
-
-                await con.query(`UPDATE guild_data SET data_mutedrole = '${roleExists.id}' WHERE data_ServerId = ${interaction.guild.id}`);
-                await client.cachedMuteds.set(`${interaction.guild.id}`, roleExists.id);
-            }
+        if (!memberToWarn.roles.cache.has(roleExists.id)) {
+            return interaction.reply({
+                embeds: [
+                    new EmbedBuilder()
+                    .setColor(ee.errorColor)
+                    .setTitle(`:x: Error :x:`)
+                    .setDescription(`***Woops, that user does not seem to currently be muted.***`)
+                ],
+                ephemeral: true
+            })
         }
 
         try {
-            await memberToWarn.roles.add(roleExists);
+            await memberToWarn.roles.remove(roleExists);
 
             await memberToWarn.user.send({
                 embeds: [
                     new EmbedBuilder()
                     .setColor(ee.color)
-                    .setTitle(`:x: You have been muted in ${interaction.guild.name} :x:`)
+                    .setTitle(`:white_check_mark: You have been unmuted in ${interaction.guild.name} :white_check_mark:`)
                     .addFields([{
                         name: 'Moderator',
                         value: `\`\`\`${interaction.user.username}#${interaction.user.discriminator}\`\`\``,
-                        inline: true
-                    }, {
-                        name: 'Duration',
-                        value: `\`\`\`${muteMinutes} minute(s)\`\`\``,
                         inline: true
                     }, {
                         name: 'Reason',
@@ -213,11 +193,11 @@ module.exports = {
             });
         } catch {}
 
-        await interaction.reply({
+        return interaction.reply({
             embeds: [
                 new EmbedBuilder()
                 .setColor(ee.color)
-                .setTitle(`:white_check_mark: Member was Muted :white_check_mark:`)
+                .setTitle(`:white_check_mark: Member was Unmuted :white_check_mark:`)
                 .addFields([{
                     name: 'Moderator',
                     value: `\`\`\`${interaction.user.username}#${interaction.user.discriminator}\`\`\``,
@@ -227,10 +207,6 @@ module.exports = {
                     value: `\`\`\`${memberToWarn.user.username}#${memberToWarn.user.discriminator}\`\`\``,
                     inline: true
                 }, {
-                    name: 'Duration',
-                    value: `\`\`\`${muteMinutes} minute(s)\`\`\``,
-                    inline: true
-                }, {
                     name: 'Reason',
                     value: `\`\`\`${reasonForWarn}\`\`\``
                 }])
@@ -238,33 +214,5 @@ module.exports = {
                 .setThumbnail(`https://cdn.discordapp.com/attachments/1010999257899204769/1053662138251624488/hammer.png`)
             ]
         });
-
-        setTimeout(async () => {
-            try {
-                if (memberToWarn.roles.cache.has(roleExists.id)) {
-                    await memberToWarn.roles.remove(roleExists);
-
-                    return await memberToWarn.user.send({
-                        embeds: [
-                            new EmbedBuilder()
-                            .setColor(ee.color)
-                            .setTitle(`:white_check_mark: You have been unmuted in ${interaction.guild.name} :white_check_mark:`)
-                            .addFields([{
-                                name: 'Moderator',
-                                value: `\`\`\`${interaction.user.username}#${interaction.user.discriminator}\`\`\``,
-                                inline: true
-                            }, {
-                                name: 'Reason',
-                                value: `\`\`\`Automatic Unmute\`\`\``
-                            }])
-                            .setTimestamp()
-                            .setThumbnail(`https://cdn.discordapp.com/attachments/1010999257899204769/1053662138251624488/hammer.png`)
-                        ]
-                    });
-                } else {
-                    return;
-                }
-            } catch {}
-        }, 1000 * 60 * muteMinutes);
     }
 }
