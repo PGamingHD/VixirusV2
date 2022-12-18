@@ -109,6 +109,31 @@ module.exports = {
         await con.query(`UPDATE guild_data SET data_warns = '${JSON.stringify(newCachedWarns)}' WHERE data_ServerId = ${interaction.guild.id}`);
         await client.cachedWarns.set(`${interaction.guild.id}`, newCachedWarns);
 
+        try {
+            const targetUser = await interaction.guild.members.fetch(target);
+            
+            await targetUser.user.send({
+                embeds: [
+                    new EmbedBuilder()
+                    .setColor(ee.color)
+                    .setTitle(`:white_check_mark: One of your warnings were removed in ${interaction.guild.name} :white_check_mark:`)
+                    .addFields([{
+                        name: 'Moderator',
+                        value: `\`\`\`${interaction.user.username}#${interaction.user.discriminator}\`\`\``,
+                        inline: true
+                    }, {
+                        name: 'CaseID',
+                        value: `\`\`\`${caseId}\`\`\``,
+                        inline: true
+                    }, {
+                        name: 'Reason',
+                        value: `\`\`\`${clearReason}\`\`\``
+                    }])
+                    .setThumbnail(`https://cdn.discordapp.com/attachments/1010999257899204769/1053662138251624488/hammer.png`)
+                ]
+            });
+        } catch {}
+
         return interaction.reply({
             embeds: [
                 new EmbedBuilder()

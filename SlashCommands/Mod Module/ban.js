@@ -118,6 +118,26 @@ module.exports = {
             })
         }
 
+        try {
+            await memberToBan.user.send({
+                embeds: [
+                    new EmbedBuilder()
+                    .setColor(ee.color)
+                    .setTitle(`:x: You have been banned in ${interaction.guild.name} :x:`)
+                    .addFields([{
+                        name: 'Moderator',
+                        value: `\`\`\`${interaction.user.username}#${interaction.user.discriminator}\`\`\``,
+                        inline: true
+                    }, {
+                        name: 'Reason',
+                        value: `\`\`\`${banReason}\`\`\``
+                    }])
+                    .setTimestamp()
+                    .setThumbnail(`https://cdn.discordapp.com/attachments/1010999257899204769/1053662138251624488/hammer.png`)
+                ]
+            })
+        } catch {}
+
         await memberToBan.ban({days: 7, reason: `[BAN] Reason: ${banReason} | Moderator: ${interaction.user.username}#${interaction.user.discriminator}`});
 
         return interaction.reply({
@@ -137,9 +157,7 @@ module.exports = {
                     name: 'Reason',
                     value: `\`\`\`${banReason}\`\`\``
                 }])
-                .setFooter({
-                    text: `Case ID: ${caseID}`
-                })
+                .setTimestamp()
                 .setThumbnail(`https://cdn.discordapp.com/attachments/1010999257899204769/1053662138251624488/hammer.png`)
             ]
         });

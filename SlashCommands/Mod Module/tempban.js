@@ -18,17 +18,22 @@ const {
 const fs = require("fs");
 
 module.exports = {
-    name: 'softban',
-    description: 'Ban a member of your Guild and unban again to remove messages.',
+    name: 'tempban',
+    description: 'Tempban a member of your Guild.',
     module: 'mod',
     options: [{
         name: 'member',
-        description: 'The member you wish to softban.',
+        description: 'The member you wish to tempban.',
         type: ApplicationCommandOptionType.User,
         required: true
     }, {
+        name: 'minutes',
+        description: 'The amount of minutes you wish to tempban the user for.',
+        type: ApplicationCommandOptionType.Integer,
+        required: true
+    }, {
         name: 'reason',
-        description: 'The reason for softbanning this member.',
+        description: 'The reason you wish to tempban the member for.',
         type: ApplicationCommandOptionType.String,
         required: true
     }],
@@ -39,6 +44,7 @@ module.exports = {
      */
     run: async (client, interaction, con, args) => {
         const memberToBan = interaction.options.getMember('member');
+        let banMinutes = interaction.options.getInteger('minutes');
         const banReason = interaction.options.getString('reason');
         const highestRoleTarget = memberToBan.roles.highest.rawPosition;
         const highestRoleMod = interaction.member.roles.highest.rawPosition;
@@ -62,7 +68,7 @@ module.exports = {
                     new EmbedBuilder()
                     .setColor(ee.errorColor)
                     .setTitle(`:x: Error :x:`)
-                    .setDescription(`***You may not softban yourself from the server.***`)
+                    .setDescription(`***You may not tempban yourself from the server.***`)
                 ],
                 ephemeral: true
             });
@@ -75,7 +81,7 @@ module.exports = {
                     new EmbedBuilder()
                     .setColor(ee.errorColor)
                     .setTitle(`:x: Error :x:`)
-                    .setDescription(`***You may not softban me from the server.***`)
+                    .setDescription(`***You may not tempban me from the server.***`)
                 ],
                 ephemeral: true
             })
@@ -87,7 +93,7 @@ module.exports = {
                     new EmbedBuilder()
                     .setColor(ee.errorColor)
                     .setTitle(`:x: Error :x:`)
-                    .setDescription(`***You may not softban the Guild Owner.***`)
+                    .setDescription(`***You may not tempban the Guild Owner.***`)
                 ],
                 ephemeral: true
             });
@@ -99,7 +105,7 @@ module.exports = {
                     new EmbedBuilder()
                     .setColor(ee.errorColor)
                     .setTitle(`:x: Error :x:`)
-                    .setDescription(`***It seems as if my role is not high enough to softban that user.***`)
+                    .setDescription(`***It seems as if my role is not high enough to tempban that user.***`)
                 ],
                 ephemeral: true
             })
@@ -111,7 +117,7 @@ module.exports = {
                     new EmbedBuilder()
                     .setColor(ee.errorColor)
                     .setTitle(`:x: Error :x:`)
-                    .setDescription(`***You may not softban someone at the same or higher rank than you.***`)
+                    .setDescription(`***You may not tempban someone at the same or higher rank than you.***`)
                 ],
                 ephemeral: true
             })
@@ -122,18 +128,19 @@ module.exports = {
                 embeds: [
                     new EmbedBuilder()
                     .setColor(ee.color)
-                    .setTitle(`:x: You have been softbanned in ${interaction.guild.name} :x:`)
+                    .setTitle(`:x: You have been tempbanned in ${interaction.guild.name} :x:`)
                     .addFields([{
                         name: 'Moderator',
                         value: `\`\`\`${interaction.user.username}#${interaction.user.discriminator}\`\`\``,
                         inline: true
                     }, {
+                        name: 'Duration',
+                        value: `\`\`\`${banMinutes} minute(s)\`\`\``,
+                        inline: true
+                    }, {
                         name: 'Reason',
-                        value: `\`\`\`${banReason}\`\`\``
+                        value: `\`\`\`${reasonForWarn}\`\`\``
                     }])
-                    .setAuthor({
-                        name: 'This is only a SOFTBAN to remove your messages, you may REJOIN again now!'
-                    })
                     .setTimestamp()
                     .setThumbnail(`https://cdn.discordapp.com/attachments/1010999257899204769/1053662138251624488/hammer.png`)
                 ]
@@ -142,16 +149,14 @@ module.exports = {
 
         await memberToBan.ban({
             days: 7,
-            reason: `[SOFTBAN] Reason: ${banReason} | Moderator: ${interaction.user.username}#${interaction.user.discriminator}`
+            reason: `[TEMPBAN] Reason: ${banReason} | Moderator: ${interaction.user.username}#${interaction.user.discriminator} | Duration: ${banMinutes} minute(s)`
         });
 
-        await interaction.guild.members.unban(memberToBan, `[SOFTBAN] Reason: ${banReason} | Moderator: ${interaction.user.username}#${interaction.user.discriminator}`);
-
-        return interaction.reply({
+        await interaction.reply({
             embeds: [
                 new EmbedBuilder()
                 .setColor(ee.color)
-                .setTitle(`:white_check_mark: Member was Softbanned :white_check_mark:`)
+                .setTitle(`:white_check_mark: Member was Tempbanned :white_check_mark:`)
                 .addFields([{
                     name: 'Moderator',
                     value: `\`\`\`${interaction.user.username}#${interaction.user.discriminator}\`\`\``,
@@ -161,6 +166,10 @@ module.exports = {
                     value: `\`\`\`${memberToBan.user.username}#${memberToBan.user.discriminator}\`\`\``,
                     inline: true
                 }, {
+                    name: 'Duration',
+                    value: `\`\`\`${banMinutes} minute(s)\`\`\``,
+                    inline: true
+                }, {
                     name: 'Reason',
                     value: `\`\`\`${banReason}\`\`\``
                 }])
@@ -168,5 +177,9 @@ module.exports = {
                 .setThumbnail(`https://cdn.discordapp.com/attachments/1010999257899204769/1053662138251624488/hammer.png`)
             ]
         });
+
+        setTimeout(async () => {
+            await interaction.guild.members.unban(memberToBan, `[TEMPUNBAN] Reason: ${banReason} | Moderator: ${interaction.user.username}#${interaction.user.discriminator} | Duration: ${banMinutes} minute(s)`);
+        }, 1000 * 60 * banMinutes);
     }
 }

@@ -144,7 +144,7 @@ module.exports = {
                 embeds: [
                     new EmbedBuilder()
                     .setColor(ee.color)
-                    .setTitle(`:x: Your warnings were cleared in ${interaction.guild.name} :x:`)
+                    .setTitle(`:white_check_mark: Your warnings were cleared in ${interaction.guild.name} :white_check_mark:`)
                     .addFields([{
                         name: 'Moderator',
                         value: `\`\`\`${interaction.user.username}#${interaction.user.discriminator}\`\`\``,

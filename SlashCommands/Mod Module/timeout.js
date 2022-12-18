@@ -131,6 +131,30 @@ module.exports = {
             timeoutMinutes = 40319;
         }
 
+        try{
+            await memberToTimeout.user.send({
+                embeds: [
+                    new EmbedBuilder()
+                    .setColor(ee.color)
+                    .setTitle(`:x: You have been timed out in ${interaction.guild.name} :x:`)
+                    .addFields([{
+                        name: 'Moderator',
+                        value: `\`\`\`${interaction.user.username}#${interaction.user.discriminator}\`\`\``,
+                        inline: true
+                    }, {
+                        name: 'Duration',
+                        value: `\`\`\`${timeoutMinutes} minute(s)\`\`\``,
+                        inline: true
+                    }, {
+                        name: 'Reason',
+                        value: `\`\`\`${timeoutReason}\`\`\``
+                    }])
+                    .setTimestamp()
+                    .setThumbnail(`https://cdn.discordapp.com/attachments/1010999257899204769/1053662138251624488/hammer.png`)
+                ]
+            })
+        } catch {}
+
         await memberToTimeout.timeout(timeoutMinutes * 60 * 1000, `[TIMEOUT] Reason: ${timeoutReason} | Moderator: ${interaction.user.username}#${interaction.user.discriminator}`);
 
         return interaction.reply({
