@@ -64,7 +64,7 @@ module.exports = {
 
         const purged = await purgeChannel.bulkDelete(purgeAmount, true);
 
-        await interaction.deferReply({
+        await interaction.reply({
             content: ':white_check_mark:',
             ephemeral: true
         });
