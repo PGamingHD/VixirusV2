@@ -1,5 +1,10 @@
 const client = require("../../index.js");
 const config = require("../../botconfig/config.json");
+const {createCanvas, loadImage} = require("@napi-rs/canvas");
+const Discord = require("discord.js");
+const {
+    AttachmentBuilder
+} = require("discord.js");
 const {
     stringTemplateParser,
     sendVerification,
@@ -10,6 +15,58 @@ client.on("guildMemberAdd", async (member) => {
     if (client.welcomemodule.has(`${member.guild.id}`) && client.joinmodule.has(`${member.guild.id}`) && client.cachedWelcomeChannels.get(`${member.guild.id}`) && client.cachedWelcomeMessages.get(`${member.guild.id}`) !== "") {
         try {
             const cachedChannel = await client.channels.fetch(`${client.cachedWelcomeChannels.get(`${member.guild.id}`)}`);
+
+            const canvas = createCanvas(1024, 450);
+            const ctx = canvas.getContext('2d');
+
+            ctx.fillStyle = "#FFFFFF";
+            ctx.fillRect(0,0, canvas.width, canvas.height);
+            let img = await loadImage("https://wallpaperaccess.com/full/86407.jpg");
+            ctx.drawImage(img, canvas.width / 2 - img.width / 2, canvas.height / 2 - img.height / 2);
+
+            ctx.fillStyle = "#000000";
+            ctx.globalAlpha = 0.5;
+            ctx.fillRect(0,0,25, canvas.height);
+            ctx.fillRect(canvas.width - 25, 0, 25, canvas.height);
+            ctx.fillRect(25, 0, canvas.width - 50, 25);
+            ctx.fillRect(25, canvas.height - 25, canvas.width - 50, 25);
+            ctx.globalAlpha = 1;
+
+            ctx.font = "bold 90px Sans";
+            ctx.strokeStyle = "#000000";
+            ctx.lineWidth = 12;
+            ctx.strokeText("WELCOME", 400, 200);
+            ctx.fillStyle = "#FFFFFF";
+            ctx.fillText("WELCOME", 400, 200);
+
+            ctx.font = "bold 45px Sans";
+            ctx.strokeStyle = "#000000";
+            ctx.lineWidth = 10;
+            ctx.strokeText(`${member.user.username}#${member.user.discriminator}`, canvas.width - 565, canvas.height - 175);
+            ctx.fillStyle = "#eb6123";
+            ctx.fillText(`${member.user.username}#${member.user.discriminator}`, canvas.width - 565, canvas.height - 175);
+
+
+            ctx.font = "bold 40px Sans";
+            ctx.strokeStyle = "#000000";
+            ctx.lineWidth = 10;
+            ctx.strokeText(`Member #${member.guild.memberCount}`, 535, canvas.height - 100);
+            ctx.fillStyle = "#FFFFFF";
+            ctx.fillText(`Member #${member.guild.memberCount}`, 535, canvas.height - 100);
+
+            ctx.beginPath();
+            ctx.lineWidth = 10;
+            ctx.strokeStyle = "#e96423";
+            ctx.arc(180, 225, 135, 0, Math.PI * 2, true);
+            ctx.stroke();
+            ctx.closePath();
+            ctx.clip();
+            img = await loadImage(member.displayAvatarURL({extension: "png"}));
+            ctx.drawImage(img, 45, 90, 270, 270);
+            ctx.restore();
+
+            const attachment = new AttachmentBuilder(await canvas.encode("png"), {name: `welcome-${member.id}.png`});
+
             await cachedChannel.send({
                 content: await stringTemplateParser(client.cachedWelcomeMessages.get(`${member.guild.id}`), {
                     user: member.user,
@@ -20,7 +77,8 @@ client.on("guildMemberAdd", async (member) => {
                     serverowner: await client.users.fetch(`${member.guild.ownerId}`),
                     verificationlevel: member.guild.verificationLevel,
                     membercount: member.guild.memberCount,
-                })
+                }),
+                files: [attachment]
             })
         } catch (error) {
             console.log(error);

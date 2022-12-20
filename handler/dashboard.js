@@ -210,7 +210,7 @@ require('dotenv').config();
             },
             admin: {
                 pterodactyl: {
-                    enabled: true,
+                    enabled: false,
                     apiKey: "apiKey",
                     panelLink: "https://panel.website.com",
                     serverUUIDs: []

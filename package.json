@@ -20,6 +20,7 @@
   "dependencies": {
     "@haileybot/captcha-generator": "^1.7.0",
     "@keyv/mysql": "^1.5.1",
+    "@napi-rs/canvas": "^0.1.30",
     "@twurple/api": "^5.2.7",
     "@twurple/auth": "^5.2.7",
     "@twurple/eventsub": "^5.2.7",
