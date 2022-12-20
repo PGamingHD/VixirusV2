@@ -13,7 +13,8 @@ const emoji = require('../../botconfig/embed.json')
 const prettyMilliseconds = require('pretty-ms');
 const config = require('../../botconfig/config.json');
 const {
-    genGuid
+    genGuid,
+    modLog
 } = require("../../handler/functions");
 const fs = require("fs");
 
@@ -63,6 +64,30 @@ module.exports = {
         }
 
         const purged = await purgeChannel.bulkDelete(purgeAmount, true);
+
+        try {
+            await modLog(interaction.guild, {
+                embeds: [
+                    new EmbedBuilder()
+                    .setColor(ee.maintenanceColor)
+                    .setTitle(`:warning: Messages Purged :warning:`)
+                    .addFields([{
+                        name: 'Amount Purged',
+                        value: `\`\`\`${purged.size} message(s)\`\`\``,
+                        inline: true
+                    }, {
+                        name: 'Channel',
+                        value: `${purgeChannel}`,
+                        inline: true
+                    }, {
+                        name: 'Moderator',
+                        value: `\`\`\`${interaction.user.username}#${interaction.user.discriminator} (${interaction.user.id})\`\`\``,
+                    }])
+                    .setThumbnail(`https://cdn.discordapp.com/attachments/1010999257899204769/1054749803193585714/support.png`)
+                    .setTimestamp()
+                ]
+            });
+        } catch {}
 
         await interaction.reply({
             content: ':white_check_mark:',

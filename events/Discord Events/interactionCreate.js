@@ -103,6 +103,8 @@ client.on("interactionCreate", async (interaction) => {
                 })
             }
 
+            if (interaction.guild.ownerId === interaction.user.id) hasAccess = true;
+
             await guildModRoles.forEach(role => {
                 if (interaction.member.roles.cache.has(role)) hasAccess = true;
             });

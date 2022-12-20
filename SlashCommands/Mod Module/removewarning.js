@@ -13,6 +13,9 @@ const emoji = require('../../botconfig/embed.json')
 const prettyMilliseconds = require('pretty-ms');
 const config = require('../../botconfig/config.json');
 const fs = require("fs");
+const {
+    modLog
+} = require("../../handler/functions");
 
 module.exports = {
     name: 'removewarning',
@@ -130,6 +133,30 @@ module.exports = {
                         value: `\`\`\`${clearReason}\`\`\``
                     }])
                     .setThumbnail(`https://cdn.discordapp.com/attachments/1010999257899204769/1053662138251624488/hammer.png`)
+                ]
+            });
+        } catch {}
+
+        try {
+            await modLog(interaction.guild, {
+                embeds: [
+                    new EmbedBuilder()
+                    .setColor(ee.successColor)
+                    .setTitle(`:warning: Member Warning Removed :warning:`)
+                    .addFields([{
+                        name: 'Reason',
+                        value: `\`\`\`${clearReason}\`\`\``,
+                        inline: true
+                    }, {
+                        name: 'CaseID',
+                        value: `\`\`\`${caseId}\`\`\``,
+                        inline: true
+                    }, {
+                        name: 'Moderator',
+                        value: `\`\`\`${interaction.user.username}#${interaction.user.discriminator} (${interaction.user.id})\`\`\``,
+                    }])
+                    .setThumbnail(`https://cdn.discordapp.com/attachments/1010999257899204769/1054749803193585714/support.png`)
+                    .setTimestamp()
                 ]
             });
         } catch {}

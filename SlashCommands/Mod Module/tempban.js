@@ -13,7 +13,8 @@ const emoji = require('../../botconfig/embed.json')
 const prettyMilliseconds = require('pretty-ms');
 const config = require('../../botconfig/config.json');
 const {
-    genGuid
+    genGuid,
+    modLog
 } = require("../../handler/functions");
 const fs = require("fs");
 
@@ -151,6 +152,33 @@ module.exports = {
             days: 7,
             reason: `[TEMPBAN] Reason: ${banReason} | Moderator: ${interaction.user.username}#${interaction.user.discriminator} | Duration: ${banMinutes} minute(s)`
         });
+
+        try {
+            await modLog(interaction.guild, {
+                embeds: [
+                    new EmbedBuilder()
+                    .setColor(ee.errorColor)
+                    .setTitle(`:warning: Member Tempbanned :warning:`)
+                    .addFields([{
+                        name: 'Duration',
+                        value: `\`\`\`${banMinutes} minute(s)\`\`\``,
+                        inline: true
+                    }, {
+                        name: 'Reason',
+                        value: `\`\`\`${banReason}\`\`\``,
+                        inline: true
+                    }, {
+                        name: 'Target',
+                        value: `\`\`\`${memberToBan.user.username}#${memberToBan.user.discriminator} (${memberToBan.user.id})\`\`\``
+                    }, {
+                        name: 'Moderator',
+                        value: `\`\`\`${interaction.user.username}#${interaction.user.discriminator} (${interaction.user.id})\`\`\``,
+                    }])
+                    .setThumbnail(`https://cdn.discordapp.com/attachments/1010999257899204769/1054749803193585714/support.png`)
+                    .setTimestamp()
+                ]
+            });
+        } catch {}
 
         await interaction.reply({
             embeds: [

@@ -13,6 +13,9 @@ const emoji = require('../../botconfig/embed.json')
 const prettyMilliseconds = require('pretty-ms');
 const config = require('../../botconfig/config.json');
 const fs = require("fs");
+const {
+    modLog
+} = require("../../handler/functions");
 
 module.exports = {
     name: 'setnick',
@@ -94,6 +97,30 @@ module.exports = {
 
         await memberToNick.setNickname(nick);
 
+        try {
+            await modLog(interaction.guild, {
+                embeds: [
+                    new EmbedBuilder()
+                    .setColor(ee.maintenanceColor)
+                    .setTitle(`:warning: Slowmode Changed :warning:`)
+                    .addFields([{
+                        name: 'Old Nickname',
+                        value: `\`\`\`${oldNick === null ? "No previous nickname" : oldNick}\`\`\``,
+                        inline: true
+                    }, {
+                        name: 'New Nickname',
+                        value: `\`\`\`${nick === "" ? "Removed nickname" : nick}\`\`\``,
+                        inline: true
+                    }, {
+                        name: 'Moderator',
+                        value: `\`\`\`${interaction.user.username}#${interaction.user.discriminator} (${interaction.user.id})\`\`\``,
+                    }])
+                    .setThumbnail(`https://cdn.discordapp.com/attachments/1010999257899204769/1054749803193585714/support.png`)
+                    .setTimestamp()
+                ]
+            });
+        } catch {}
+
         return interaction.reply({
             embeds: [
                 new EmbedBuilder()
@@ -113,6 +140,7 @@ module.exports = {
                     inline: true
                 }])
                 .setTimestamp()
+                .setThumbnail(`https://cdn.discordapp.com/attachments/1010999257899204769/1053662138251624488/hammer.png`)
             ]
         })
     }

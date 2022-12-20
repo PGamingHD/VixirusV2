@@ -22,6 +22,7 @@ module.exports.escapeRegex = escapeRegex;
 module.exports.writeError = writeError;
 module.exports.genGuid = genGuid;
 module.exports.dateNow = dateNow;
+module.exports.modLog = modLog;
 //FUNCTIONS
 
 async function languageControl(guild, translateLine) {
@@ -149,4 +150,16 @@ function dateNow() {
 
 function genGuid() {
     return uuidv4();
+}
+
+async function modLog(guild, returnObject) {
+    const logChannel = await client.cachedModLogs.get(`${guild.id}`);
+    if (client.modlogmodule.has(`${guild.id}`) && logChannel !== "0") {
+        try {
+            const actualChannel = await guild.channels.fetch(logChannel);
+            return await actualChannel.send(returnObject);
+        } catch {}
+    } else {
+        return;
+    }
 }

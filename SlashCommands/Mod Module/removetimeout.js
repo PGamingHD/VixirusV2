@@ -13,7 +13,8 @@ const emoji = require('../../botconfig/embed.json')
 const prettyMilliseconds = require('pretty-ms');
 const config = require('../../botconfig/config.json');
 const {
-    genGuid
+    genGuid,
+    modLog
 } = require("../../handler/functions");
 const fs = require("fs");
 
@@ -43,7 +44,6 @@ module.exports = {
         const highestRoleTarget = memberToTimeout.roles.highest.rawPosition;
         const highestRoleMod = interaction.member.roles.highest.rawPosition;
         const highestRoleBot = interaction.guild.members.me.roles.highest.rawPosition;
-        const caseID = genGuid();
 
         if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.ModerateMembers)) {
             return interaction.reply({
@@ -119,6 +119,29 @@ module.exports = {
         }
 
         await memberToTimeout.timeout(null, `[REMOVETIMEOUT] Reason: ${timeoutReason} | Moderator: ${interaction.user.username}#${interaction.user.discriminator}`);
+
+        try {
+            await modLog(interaction.guild, {
+                embeds: [
+                    new EmbedBuilder()
+                    .setColor(ee.successColor)
+                    .setTitle(`:warning: Member Timeout Removed :warning:`)
+                    .addFields([{
+                        name: 'Reason',
+                        value: `\`\`\`${timeoutReason}\`\`\``,
+                        inline: true
+                    }, {
+                        name: 'Target',
+                        value: `\`\`\`${memberToTimeout.user.username}#${memberToTimeout.user.discriminator} (${memberToTimeout.user.id})\`\`\``
+                    }, {
+                        name: 'Moderator',
+                        value: `\`\`\`${interaction.user.username}#${interaction.user.discriminator} (${interaction.user.id})\`\`\``,
+                    }])
+                    .setThumbnail(`https://cdn.discordapp.com/attachments/1010999257899204769/1054749803193585714/support.png`)
+                    .setTimestamp()
+                ]
+            });
+        } catch {}
 
         return interaction.reply({
             embeds: [

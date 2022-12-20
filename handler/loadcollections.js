@@ -33,6 +33,8 @@ module.exports = async (client) => {
         await client.cachedWarns.set(`${guild.data_ServerId}`, guild.data_warns);
 
         await client.cachedMuteds.set(`${guild.data_ServerId}`, guild.data_mutedrole);
+
+        await client.cachedModLogs.set(`${guild.data_ServerId}`, guild.data_modlogs);
     });
 
     const [guildModules, modulesGuild] = await pool.query(`SELECT * FROM guild_modules;`);
@@ -75,6 +77,10 @@ module.exports = async (client) => {
 
         if (guild.module_mod) {
             await client.modmodule.set(`${guild.module_ServerId}`, "Mod Enabled!");
+        }
+
+        if (guild.module_modlogs) {
+            await client.modlogmodule.set(`${guild.module_ServerId}`, "Modlogs Enabled!");
         }
     });
     

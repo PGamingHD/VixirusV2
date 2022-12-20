@@ -13,7 +13,8 @@ const emoji = require('../../botconfig/embed.json')
 const prettyMilliseconds = require('pretty-ms');
 const config = require('../../botconfig/config.json');
 const {
-    genGuid
+    genGuid,
+    modLog
 } = require("../../handler/functions");
 const fs = require("fs");
 
@@ -40,23 +41,6 @@ module.exports = {
     run: async (client, interaction, con, args) => {
         const memberToBan = interaction.options.getString('memberid');
         const banReason = interaction.options.getString('reason');
-        const caseID = genGuid();
-
-        try {
-            var fetchBan = await interaction.guild.bans.fetch(memberToBan)
-        } catch (e) {
-            if (e.message === "Unknown Ban") {
-                return interaction.reply({
-                    embeds: [
-                        new EmbedBuilder()
-                        .setColor(ee.errorColor)
-                        .setTitle(`:x: Error :x:`)
-                        .setDescription(`***It seems like there is no user with that UserID that is banned.***`)
-                    ],
-                    ephemeral: true
-                })
-            }
-        }
 
         if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.BanMembers)) {
             return interaction.reply({
@@ -107,7 +91,46 @@ module.exports = {
             });
         }
 
+        try {
+            var fetchBan = await interaction.guild.bans.fetch(memberToBan);
+        } catch (e) {
+            if (e.message === "Unknown Ban") {
+                return interaction.reply({
+                    embeds: [
+                        new EmbedBuilder()
+                        .setColor(ee.errorColor)
+                        .setTitle(`:x: Error :x:`)
+                        .setDescription(`***It seems like there is no user with that UserID that is banned.***`)
+                    ],
+                    ephemeral: true
+                })
+            }
+        }
+
         await interaction.guild.members.unban(memberToBan, `[UNBAN] Reason: ${banReason} | Moderator: ${interaction.user.username}#${interaction.user.discriminator}`);
+
+        try {
+            await modLog(interaction.guild, {
+                embeds: [
+                    new EmbedBuilder()
+                    .setColor(ee.successColor)
+                    .setTitle(`:warning: Member Unbanned :warning:`)
+                    .addFields([{
+                        name: 'Reason',
+                        value: `\`\`\`${banReason}\`\`\``,
+                        inline: true
+                    }, {
+                        name: 'Target',
+                        value: `\`\`\`${fetchBan.user.username}#${fetchBan.user.discriminator} (${fetchBan.user.id})\`\`\``
+                    }, {
+                        name: 'Moderator',
+                        value: `\`\`\`${interaction.user.username}#${interaction.user.discriminator} (${interaction.user.id})\`\`\``,
+                    }])
+                    .setThumbnail(`https://cdn.discordapp.com/attachments/1010999257899204769/1054749803193585714/support.png`)
+                    .setTimestamp()
+                ]
+            });
+        } catch {}
 
         return interaction.reply({
             embeds: [
@@ -126,9 +149,6 @@ module.exports = {
                     name: 'Reason',
                     value: `\`\`\`${banReason}\`\`\``
                 }])
-                .setFooter({
-                    text: `Case ID: ${caseID}`
-                })
                 .setThumbnail(`https://cdn.discordapp.com/attachments/1010999257899204769/1053662138251624488/hammer.png`)
             ]
         });

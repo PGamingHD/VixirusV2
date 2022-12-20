@@ -13,7 +13,8 @@ const emoji = require('../../botconfig/embed.json')
 const prettyMilliseconds = require('pretty-ms');
 const config = require('../../botconfig/config.json');
 const {
-    genGuid
+    genGuid,
+    modLog
 } = require("../../handler/functions");
 const fs = require("fs");
 
@@ -66,7 +67,31 @@ module.exports = {
 
         await channelToSM.setRateLimitPerUser(smRate, `[SLOWMODE] Moderator: ${interaction.user.username}#${interaction.user.discriminator}`);
 
-        await interaction.reply({content: ':white_check_mark:', ephemeral: true})
+        await interaction.reply({content: ':white_check_mark:', ephemeral: true});
+
+        try {
+            await modLog(interaction.guild, {
+                embeds: [
+                    new EmbedBuilder()
+                    .setColor(ee.maintenanceColor)
+                    .setTitle(`:warning: Slowmode Changed :warning:`)
+                    .addFields([{
+                        name: 'Rate',
+                        value: `\`\`\`${smRate === 0 ? 'Slowmode Disabled' : `1 msg/${smRate}s`}\`\`\``,
+                        inline: true
+                    }, {
+                        name: 'Channel',
+                        value: `${channelToSM}`,
+                        inline: true
+                    }, {
+                        name: 'Moderator',
+                        value: `\`\`\`${interaction.user.username}#${interaction.user.discriminator} (${interaction.user.id})\`\`\``,
+                    }])
+                    .setThumbnail(`https://cdn.discordapp.com/attachments/1010999257899204769/1054749803193585714/support.png`)
+                    .setTimestamp()
+                ]
+            });
+        } catch {}
 
         return channelToSM.send({
             embeds: [
@@ -81,6 +106,7 @@ module.exports = {
                     name: 'Rate',
                     value: `\`\`\`${smRate === 0 ? 'Slowmode Disabled' : `1 msg/${smRate}s`}\`\`\``
                 }])
+                .setTimestamp()
                 .setThumbnail(`https://cdn.discordapp.com/attachments/1010999257899204769/1053662138251624488/hammer.png`)
             ]
         });

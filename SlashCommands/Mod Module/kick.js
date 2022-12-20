@@ -13,7 +13,8 @@ const emoji = require('../../botconfig/embed.json')
 const prettyMilliseconds = require('pretty-ms');
 const config = require('../../botconfig/config.json');
 const {
-    genGuid
+    genGuid,
+    modLog
 } = require("../../handler/functions");
 const fs = require("fs");
 
@@ -43,7 +44,6 @@ module.exports = {
         const highestRoleTarget = memberToBan.roles.highest.rawPosition;
         const highestRoleMod = interaction.member.roles.highest.rawPosition;
         const highestRoleBot = interaction.guild.members.me.roles.highest.rawPosition;
-        const caseID = genGuid();
 
         if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.KickMembers)) {
             return interaction.reply({
@@ -138,6 +138,29 @@ module.exports = {
             })
         } catch {}
 
+        try {
+            await modLog(interaction.guild, {
+                embeds: [
+                    new EmbedBuilder()
+                    .setColor(ee.errorColor)
+                    .setTitle(`:warning: Member Kicked :warning:`)
+                    .addFields([{
+                        name: 'Reason',
+                        value: `\`\`\`${lockdownReason}\`\`\``,
+                        inline: true
+                    },{
+                        name: 'Target',
+                        value: `\`\`\`${memberToBan.user.username}#${memberToBan.user.discriminator} (${memberToBan.user.id})\`\`\``
+                    }, {
+                        name: 'Moderator',
+                        value: `\`\`\`${interaction.user.username}#${interaction.user.discriminator} (${interaction.user.id})\`\`\``,
+                    }])
+                    .setThumbnail(`https://cdn.discordapp.com/attachments/1010999257899204769/1054749803193585714/support.png`)
+                    .setTimestamp()
+                ]
+            });
+        } catch {}
+
         await memberToBan.kick(`[KICK] Reason: ${banReason} | Moderator: ${interaction.user.username}#${interaction.user.discriminator}`)
 
         return interaction.reply({
@@ -157,9 +180,6 @@ module.exports = {
                     name: 'Reason',
                     value: `\`\`\`${banReason}\`\`\``
                 }])
-                .setFooter({
-                    text: `Case ID: ${caseID}`
-                })
                 .setThumbnail(`https://cdn.discordapp.com/attachments/1010999257899204769/1053662138251624488/hammer.png`)
             ]
         });
