@@ -6,7 +6,7 @@ const {
 const { EmbedBuilder } = require("discord.js");
 
 client.on("messageDelete", async (message) => {
-    if (await client.messageDelete.has(`${message.guild.id}`) && await client.loggingmodule.has(`${message.guild.id}`)) {
+    if (await client.messageDelete.has(`${message.guild.id}`) && await client.loggingmodule.has(`${message.guild.id}`) && !message.author.bot) {
         await LoggerLog(message.guild, {
             embeds: [
                 new EmbedBuilder()

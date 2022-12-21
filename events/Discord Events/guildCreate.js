@@ -21,7 +21,7 @@ client.on("guildCreate", async (guild) => {
     const [isAvailable, guildRows] = await pool.query(`SELECT * FROM guild_modules WHERE module_ServerId = ${guild.id}`);
 
     if (isAvailable.length === 0) {
-        await pool.query(`INSERT INTO guild_data(data_ServerId,data_language) VALUES("${guild.id}")`);
+        await pool.query(`INSERT INTO guild_data(data_ServerId) VALUES("${guild.id}")`);
         await pool.query(`INSERT INTO guild_commands(command_ServerId) VALUES("${guild.id}")`);
         await pool.query(`INSERT INTO guild_modules(module_ServerId) VALUES("${guild.id}")`);
         await pool.query(`INSERT INTO guild_logs(log_ServerId) VALUES("${guild.id}")`);
@@ -37,7 +37,15 @@ client.on("guildCreate", async (guild) => {
         
         await client.funmodule.set(`${guild.id}`, "Fun Enabled!");
 
-        await client.slowmodeCmd.set(`${guild.id}`, "Slowmode Enabled!");
+        await client.slowmodeCmd.set(`${guild.id}`, "SlowmodeCMD Enabled!");
+        await client.banCmd.set(`${guild.id}`, "BanCMD Enabled!");
+        await client.warnCmd.set(`${guild.id}`, "WarnCMD Enabled!");
+        await client.kickCmd.set(`${guild.id}`, "KickCMD Enabled!");
+        await client.lockdownCmd.set(`${guild.id}`, "LockdownCMD Enabled!");
+        await client.muteCmd.set(`${guild.id}`, "MuteCMD Enabled!");
+        await client.timeoutCmd.set(`${guild.id}`, "TimeoutCMD Enabled!");
+        await client.nickCmd.set(`${guild.id}`, "NicknameCMD Enabled!");
+        await client.purgeCmd.set(`${guild.id}`, "PurgeCMD Enabled!");
 
         await client.roleUpdate.set(`${guild.id}`, "RoleUpdate Enabled!");
         await client.roleDelete.set(`${guild.id}`, "RoleDelete Enabled!");

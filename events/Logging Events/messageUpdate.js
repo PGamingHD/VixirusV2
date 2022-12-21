@@ -6,7 +6,7 @@ const {
 const { EmbedBuilder } = require("discord.js");
 
 client.on("messageUpdate", async (oldMessage, newMessage) => {
-    if (await client.messageUpdate.has(`${newMessage.guild.id}`) && await client.loggingmodule.has(`${newMessage.guild.id}`)) {
+    if (await client.messageUpdate.has(`${newMessage.guild.id}`) && await client.loggingmodule.has(`${newMessage.guild.id}`) && !newMessage.author.bot) {
         await LoggerLog(newMessage.guild, {
             embeds: [
                 new EmbedBuilder()

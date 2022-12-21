@@ -63,6 +63,17 @@ module.exports = {
             });
         };
 
+        if (!await client.timeoutCmd.has(`${interaction.guild.id}`)) {
+            return interaction.reply({
+                embeds: [
+                    new EmbedBuilder()
+                    .setColor(ee.errorColor)
+                    .setTitle(`:x: Error :x:`)
+                    .setDescription(`***Woops, looks like this command is currently disabled.***`)
+                ]
+            })
+        }
+
         if (interaction.user.id === memberToTimeout.id) {
             return interaction.reply({
                 embeds: [

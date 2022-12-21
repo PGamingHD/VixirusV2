@@ -111,6 +111,14 @@ client.cachedLoggingChannels = new Collection();
 
 //COMMANDS
 client.slowmodeCmd = new Collection();
+client.banCmd = new Collection();
+client.warnCmd = new Collection();
+client.kickCmd = new Collection();
+client.lockdownCmd = new Collection();
+client.muteCmd = new Collection();
+client.timeoutCmd = new Collection();
+client.nickCmd = new Collection();
+client.purgeCmd = new Collection();
 
 //LOGS
 client.roleUpdate = new Collection();

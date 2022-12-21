@@ -53,7 +53,18 @@ module.exports = {
                 ephemeral: true
             });
         };
-
+        
+        if (!await client.warnCmd.has(`${interaction.guild.id}`)) {
+            return interaction.reply({
+                embeds: [
+                    new EmbedBuilder()
+                    .setColor(ee.errorColor)
+                    .setTitle(`:x: Error :x:`)
+                    .setDescription(`***Woops, looks like this command is currently disabled.***`)
+                ]
+            })
+        }
+        
         const totalWarnings = await client.cachedWarns.get(`${interaction.guild.id}`);
 
         const newCachedWarns = [];

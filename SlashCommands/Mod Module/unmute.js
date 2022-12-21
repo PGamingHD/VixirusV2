@@ -59,6 +59,17 @@ module.exports = {
             });
         };
 
+        if (!await client.muteCmd.has(`${interaction.guild.id}`)) {
+            return interaction.reply({
+                embeds: [
+                    new EmbedBuilder()
+                    .setColor(ee.errorColor)
+                    .setTitle(`:x: Error :x:`)
+                    .setDescription(`***Woops, looks like this command is currently disabled.***`)
+                ]
+            })
+        }
+
         if (interaction.user.id === memberToWarn.id) {
             return interaction.reply({
                 embeds: [

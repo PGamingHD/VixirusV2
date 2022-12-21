@@ -53,6 +53,17 @@ module.exports = {
             });
         };
 
+        if (!await client.purgeCmd.has(`${interaction.guild.id}`)) {
+            return interaction.reply({
+                embeds: [
+                    new EmbedBuilder()
+                    .setColor(ee.errorColor)
+                    .setTitle(`:x: Error :x:`)
+                    .setDescription(`***Woops, looks like this command is currently disabled.***`)
+                ]
+            })
+        }
+
         if (!purgeChannel) purgeChannel = interaction.channel;
 
         if (purgeAmount <= 0) {

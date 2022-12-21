@@ -6,16 +6,17 @@ const {
 const client = require("../../../index");
 
 module.exports = {
-    optionId: 'mod_roles',
-    optionName: "Moderation Roles",
-    optionDescription: "Change the Moderation Roles, these roles will be able to execute ALL Moderation Commands.",
-    optionType: DBD.formTypes.rolesMultiSelect(false, true, false),
+    optionId: 'mod_timeout',
+    optionName: "Timeout Commands",
+    optionDescription: "Enable the Timeout/Removetimeout commands to be used by Moderators.",
+    optionType: DBD.formTypes.switch(false),
     getActualSet: async ({
-        guild,user
+        guild,
+        user
     }) => {
         try {
-            return await client.cachedModRoles.get(`${guild.id}`);
-        } catch(error) {
+            return await client.timeoutCmd.has(`${guild.id}`);
+        } catch (error) {
             return writeError(error, guild);
         }
     },
@@ -27,10 +28,13 @@ module.exports = {
         try {
             const [guildData, guildRows] = await pool.query(`SELECT * FROM guild_data WHERE data_ServerId = ${guild.id}`);
             if (guildData.length === 0) return;
-            const roles = "'" + newData.join("','") + "'";
-            await pool.query(`UPDATE guild_data SET data_modroles = JSON_ARRAY(${roles}) WHERE data_ServerId = ${guild.id}`);
+            await pool.query(`UPDATE guild_commands SET command_timeout = ${newData} WHERE command_ServerId = ${guild.id}`);
 
-            await client.cachedModRoles.set(`${guild.id}`, newData);
+            if (newData) {
+                client.timeoutCmd.set(`${guild.id}`, "TimeoutCMD Enabled!");
+            } else {
+                client.timeoutCmd.delete(`${guild.id}`);
+            }
 
             return await pool.release();
         } catch (error) {

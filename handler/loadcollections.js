@@ -89,7 +89,39 @@ module.exports = async (client) => {
     const [guildCommands, commandsGuild] = await pool.query(`SELECT * FROM guild_commands;`);
     guildCommands.forEach(async (guild) => {
         if (guild.command_slowmode) {
-            await client.slowmodeCmd.set(`${guild.command_ServerId}`, "Slowmode Enabled!");
+            await client.slowmodeCmd.set(`${guild.command_ServerId}`, "SlowmodeCMD Enabled!");
+        }
+
+        if (guild.command_ban) {
+            await client.banCmd.set(`${guild.command_ServerId}`, "BanCMD Enabled!");
+        }
+
+        if (guild.command_warn) {
+            await client.warnCmd.set(`${guild.command_ServerId}`, "WarnCMD Enabled!");
+        }
+
+        if (guild.command_kick) {
+            await client.kickCmd.set(`${guild.command_ServerId}`, "KickCMD Enabled!");
+        }
+
+        if (guild.command_lockdown) {
+            await client.lockdownCmd.set(`${guild.command_ServerId}`, "KickCMD Enabled!");
+        }
+
+        if (guild.command_mute) {
+            await client.muteCmd.set(`${guild.command_ServerId}`, "MuteCMD Enabled!");
+        }
+
+        if (guild.command_timeout) {
+            await client.timeoutCmd.set(`${guild.command_ServerId}`, "TimeoutCMD Enabled!");
+        }
+
+        if (guild.command_nickname) {
+            await client.nickCmd.set(`${guild.command_ServerId}`, "NicknameCMD Enabled!");
+        }
+
+        if (guild.command_purge) {
+            await client.purgeCmd.set(`${guild.command_ServerId}`, "PurgeCMD Enabled!");
         }
     });
 
