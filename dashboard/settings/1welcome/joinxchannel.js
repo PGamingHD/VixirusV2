@@ -28,6 +28,7 @@ module.exports = {
         try {
             const [guildData, guildRows] = await pool.query(`SELECT * FROM guild_data WHERE data_ServerId = ${guild.id}`);
             if (guildData.length === 0) return;
+            if (newData === "") newData = "0";
             await pool.query(`UPDATE guild_data SET data_welcomechannel = '${newData}' WHERE data_ServerId = ${guild.id}`);
 
             await client.cachedWelcomeChannels.set(`${guild.id}`, newData);

@@ -125,7 +125,9 @@ module.exports = {
         });
 
         setTimeout(async () => {
-            return await msg.delete();
+            try{
+                return await msg.delete();
+            } catch {}
         }, 1000 * 15);
     }
 }

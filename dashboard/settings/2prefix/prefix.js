@@ -29,6 +29,7 @@ module.exports = {
         try {
             const [guildData, guildRows] = await pool.query(`SELECT * FROM guild_data WHERE data_ServerId = ${guild.id}`);
             if (guildData.length === 0) return;
+            if (newData === "") newData = "v!";
             await pool.query(`UPDATE guild_data SET data_prefix = '${newData}' WHERE data_ServerId = ${guild.id}`);
 
             await client.cachedServerPrefixes.set(`${guild.id}`, newData);

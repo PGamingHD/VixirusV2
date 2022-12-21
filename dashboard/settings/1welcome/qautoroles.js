@@ -27,7 +27,8 @@ module.exports = {
         try {
             const [guildData, guildRows] = await pool.query(`SELECT * FROM guild_data WHERE data_ServerId = ${guild.id}`);
             if (guildData.length === 0) return;
-            const roles = "'" + newData.join("','") + "'";
+            let roles = "'" + newData.join("','") + "'";
+            if (newData[0] === "" || newData[0] === undefined) roles = [];
             await pool.query(`UPDATE guild_data SET data_autoroles = JSON_ARRAY(${roles}) WHERE data_ServerId = ${guild.id}`);
 
             await client.cachedAutoRoles.set(`${guild.id}`, newData);

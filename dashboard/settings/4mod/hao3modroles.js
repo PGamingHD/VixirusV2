@@ -27,8 +27,8 @@ module.exports = {
         try {
             const [guildData, guildRows] = await pool.query(`SELECT * FROM guild_data WHERE data_ServerId = ${guild.id}`);
             if (guildData.length === 0) return;
-            console.log(newData)
-            const roles = "'" + newData.join("','") + "'";
+            let roles = "'" + newData.join("','") + "'";
+            if (newData[0] === "" || newData[0] === undefined) roles = [];
             await pool.query(`UPDATE guild_data SET data_modroles = JSON_ARRAY(${roles}) WHERE data_ServerId = ${guild.id}`);
 
             await client.cachedModRoles.set(`${guild.id}`, newData);
