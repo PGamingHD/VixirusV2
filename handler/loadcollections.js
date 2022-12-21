@@ -35,6 +35,8 @@ module.exports = async (client) => {
         await client.cachedMuteds.set(`${guild.data_ServerId}`, guild.data_mutedrole);
 
         await client.cachedModLogs.set(`${guild.data_ServerId}`, guild.data_modlogs);
+
+        await client.cachedLoggingChannels.set(`${guild.data_ServerId}`, guild.data_logchannel);
     });
 
     const [guildModules, modulesGuild] = await pool.query(`SELECT * FROM guild_modules;`);
@@ -67,10 +69,6 @@ module.exports = async (client) => {
             await client.rolemodule.set(`${guild.module_ServerId}`, "Autoroles Enabled!");
         }
 
-        if (guild.module_slowmode) {
-            await client.slowmodemodule.set(`${guild.module_ServerId}`, "Slowmode Enabled!");
-        }
-
         if (guild.module_fun) {
             await client.funmodule.set(`${guild.module_ServerId}`, "Fun Enabled!");
         }
@@ -81,6 +79,100 @@ module.exports = async (client) => {
 
         if (guild.module_modlogs) {
             await client.modlogmodule.set(`${guild.module_ServerId}`, "Modlogs Enabled!");
+        }
+
+        if (guild.module_logging) {
+            await client.loggingmodule.set(`${guild.module_ServerId}`, "Logging Enabled!");
+        }
+    });
+
+    const [guildCommands, commandsGuild] = await pool.query(`SELECT * FROM guild_commands;`);
+    guildCommands.forEach(async (guild) => {
+        if (guild.command_slowmode) {
+            await client.slowmodeCmd.set(`${guild.command_ServerId}`, "Slowmode Enabled!");
+        }
+    });
+
+    const [guildLogs, logsGuild] = await pool.query(`SELECT * FROM guild_logs;`);
+    guildLogs.forEach(async (guild) => {
+        if (guild.log_roleupdate) {
+            await client.roleUpdate.set(`${guild.log_ServerId}`, "RoleUpdate Enabled!");
+        }
+
+        if (guild.log_roledelete) {
+            await client.roleDelete.set(`${guild.log_ServerId}`, "RoleDelete Enabled!");
+        }
+
+        if (guild.log_rolecreate) {
+            await client.roleCreate.set(`${guild.log_ServerId}`, "RoleCreate Enabled!");
+        }
+
+        if (guild.log_messageupdate) {
+            await client.messageUpdate.set(`${guild.log_ServerId}`, "MessageUpdate Enabled!");
+        }
+
+        if (guild.log_messagedelete) {
+            await client.messageDelete.set(`${guild.log_ServerId}`, "MessageDelete Enabled!");
+        }
+
+        if (guild.log_guildupdate) {
+            await client.guildUpdate.set(`${guild.log_ServerId}`, "GuildUpdate Enabled!");
+        }
+
+        if (guild.log_guildbanremove) {
+            await client.guildBanRemove.set(`${guild.log_ServerId}`, "GuildBanRemove Enabled!");
+        }
+
+        if (guild.log_guildbanadd) {
+            await client.guildBanAdd.set(`${guild.log_ServerId}`, "GuildBanAdd Enabled!");
+        }
+
+        if (guild.log_emojiupdate) {
+            await client.emojiUpdate.set(`${guild.log_ServerId}`, "EmojiUpdate Enabled!");
+        }
+
+        if (guild.log_emojidelete) {
+            await client.emojiDelete.set(`${guild.log_ServerId}`, "EmojiDelete Enabled!");
+        }
+
+        if (guild.log_emojicreate) {
+            await client.emojiCreate.set(`${guild.log_ServerId}`, "EmojiCreate Enabled!");
+        }
+
+        if (guild.log_channelupdate) {
+            await client.channelUpdate.set(`${guild.log_ServerId}`, "ChannelUpdate Enabled!");
+        }
+
+        if (guild.log_channeldelete) {
+            await client.channelDelete.set(`${guild.log_ServerId}`, "ChannelDelete Enabled!");
+        }
+
+        if (guild.log_channelcreate) {
+            await client.channelCreate.set(`${guild.log_ServerId}`, "ChannelCreate Enabled!");
+        }
+
+        if (guild.log_guildmemberremove) {
+            await client.guildMemberRemove.set(`${guild.log_ServerId}`, "GuildMemberRemove Enabled!");
+        }
+
+        if (guild.log_guildmemberadd) {
+            await client.guildMemberAdd.set(`${guild.log_ServerId}`, "GuildMemberAdd Enabled!");
+        }
+
+        if (guild.log_roleupdates) {
+            await client.roleUpdates.set(`${guild.log_ServerId}`, "RoleUpdatez Enabled!");
+        }
+
+        if (guild.log_nicknamechanges) {
+            await client.nicknameUpdates.set(`${guild.log_ServerId}`, "NicknameChanges Enabled!");
+        }
+
+        if (guild.log_avatarchanges) {
+            await client.avatarUpdates.set(`${guild.log_ServerId}`, "AvatarUpdates Enabled!");
+        }
+
+        if (guild.log_timeoutchanges) {
+            await client.timeoutUpdates.set(`${guild.log_ServerId}`, "TimeoutUpdates Enabled!");
         }
     });
     

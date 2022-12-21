@@ -2,7 +2,7 @@ const {
     readdirSync
 } = require("fs");
 
-const langFiles = readdirSync("./dashboard/settings/5slowmode/");
+const langFiles = readdirSync("./dashboard/settings/5logging/");
 
 const fileArray = [];
 langFiles.forEach(file => {
@@ -13,9 +13,9 @@ langFiles.forEach(file => {
 });
 
 module.exports = {
-    categoryId: 'slowmode',
-    categoryName: "Slowmode Module",
-    categoryDescription: "Enable/Disable the slowmode module and allow your moderators to switch on/off channel slowmodes.",
+    categoryId: 'logging',
+    categoryName: "Logging Module",
+    categoryDescription: "Enable/Disable the logging module and log most server events.",
     categoryImageURL: "https://cdn.discordapp.com/attachments/1010999257899204769/1049750491967520798/onlyV.png",
     categoryOptionsList: fileArray,
 }

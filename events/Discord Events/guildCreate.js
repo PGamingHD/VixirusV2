@@ -21,9 +21,10 @@ client.on("guildCreate", async (guild) => {
     const [isAvailable, guildRows] = await pool.query(`SELECT * FROM guild_modules WHERE module_ServerId = ${guild.id}`);
 
     if (isAvailable.length === 0) {
-        await pool.query(`INSERT INTO guild_data(data_ServerId,data_language) VALUES("${guild.id}","en")`);
+        await pool.query(`INSERT INTO guild_data(data_ServerId,data_language) VALUES("${guild.id}")`);
         await pool.query(`INSERT INTO guild_commands(command_ServerId) VALUES("${guild.id}")`);
         await pool.query(`INSERT INTO guild_modules(module_ServerId) VALUES("${guild.id}")`);
+        await pool.query(`INSERT INTO guild_logs(log_ServerId) VALUES("${guild.id}")`);
 
         //STARTER VALUES THAT MUST BE RE-SET!
         await client.cachedGuildLanguages.set(`${guild.id}`, "en");
@@ -34,8 +35,30 @@ client.on("guildCreate", async (guild) => {
         await client.cachedLeaveChannels.set(`${guild.id}`, null);
         await client.cachedPrivateMessages.set(`${guild.id}`, "Have a great time in **{server}**!");
         
-        await client.slowmodemodule.set(`${guild.id}`, "Slowmode Enabled!");
         await client.funmodule.set(`${guild.id}`, "Fun Enabled!");
+
+        await client.slowmodeCmd.set(`${guild.id}`, "Slowmode Enabled!");
+
+        await client.roleUpdate.set(`${guild.id}`, "RoleUpdate Enabled!");
+        await client.roleDelete.set(`${guild.id}`, "RoleDelete Enabled!");
+        await client.roleCreate.set(`${guild.id}`, "RoleCreate Enabled!");
+        await client.messageUpdate.set(`${guild.id}`, "MessageUpdate Enabled!");
+        await client.messageDelete.set(`${guild.id}`, "MessageDelete Enabled!");
+        await client.guildUpdate.set(`${guild.id}`, "GuildUpdate Enabled!");
+        await client.guildBanRemove.set(`${guild.id}`, "GuildBanRemove Enabled!");
+        await client.guildBanAdd.set(`${guild.id}`, "GuildBanAdd Enabled!");
+        await client.emojiUpdate.set(`${guild.id}`, "EmojiUpdate Enabled!");
+        await client.emojiDelete.set(`${guild.id}`, "EmojiDelete Enabled!");
+        await client.emojiCreate.set(`${guild.id}`, "EmojiCreate Enabled!");
+        await client.channelUpdate.set(`${guild.id}`, "ChannelUpdate Enabled!");
+        await client.channelDelete.set(`${guild.id}`, "ChannelDelete Enabled!");
+        await client.channelCreate.set(`${guild.id}`, "ChannelCreate Enabled!");
+        await client.guildMemberRemove.set(`${guild.id}`, "GuildMemberRemove Enabled!");
+        await client.guildMemberAdd.set(`${guild.id}`, "GuildMemberAdd Enabled!");
+        await client.roleUpdates.set(`${guild.id}`, "RoleUpdatez Enabled!");
+        await client.nicknameUpdates.set(`${guild.id}`, "NicknameUpdates Enabled!");
+        await client.avatarUpdates.set(`${guild.id}`, "AvatarUpdates Enabled!");
+        await client.timeoutUpdates.set(`${guild.id}`, "TimeoutUpdates Enabled!");
     }
 
     try {
@@ -43,7 +66,7 @@ client.on("guildCreate", async (guild) => {
 
         if (!ch) return;
 
-        return ch.send({
+        return await ch.send({
             content: await languageControl(guild, 'WELCOME_MSG')
         });
     } catch (error) {

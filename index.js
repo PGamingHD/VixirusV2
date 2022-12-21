@@ -37,6 +37,7 @@ const client = new Client({
         GatewayIntentBits.MessageContent,
         GatewayIntentBits.GuildMessageReactions,
         GatewayIntentBits.GuildVoiceStates,
+        GatewayIntentBits.GuildEmojisAndStickers
     ],
 
     partials: [
@@ -87,9 +88,9 @@ client.languagemodule = new Collection();
 client.modmodule = new Collection();
 client.modlogmodule = new Collection();
 
-client.slowmodemodule = new Collection();
-
 client.funmodule = new Collection();
+
+client.loggingmodule = new Collection();
 
 //SETTINGS
 client.cachedGuildLanguages = new Collection();
@@ -106,6 +107,33 @@ client.cachedModRoles = new Collection();
 client.cachedWarns = new Collection();
 client.cachedMuteds = new Collection();
 client.cachedModLogs = new Collection();
+client.cachedLoggingChannels = new Collection();
+
+//COMMANDS
+client.slowmodeCmd = new Collection();
+
+//LOGS
+client.roleUpdate = new Collection();
+client.roleDelete = new Collection();
+client.roleCreate = new Collection();
+client.messageUpdate = new Collection();
+client.messageDelete = new Collection();
+client.guildUpdate = new Collection();
+client.guildBanRemove = new Collection();
+client.guildBanAdd = new Collection();
+client.emojiUpdate = new Collection();
+client.emojiDelete = new Collection();
+client.emojiCreate = new Collection();
+client.channelUpdate = new Collection();
+client.channelDelete = new Collection();
+client.channelCreate = new Collection();
+client.guildMemberRemove = new Collection();
+client.guildMemberAdd = new Collection();
+client.roleUpdates = new Collection();
+client.nicknameUpdates = new Collection();
+client.avatarUpdates = new Collection();
+client.timeoutUpdates = new Collection();
+
 
 
 //           --------------------<DB VARIABLES CONTSTRUCTION>--------------------

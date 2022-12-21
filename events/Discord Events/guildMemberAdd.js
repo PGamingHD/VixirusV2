@@ -1,14 +1,17 @@
 const client = require("../../index.js");
 const config = require("../../botconfig/config.json");
+const ee = require("../../botconfig/embed.json");
 const {createCanvas, loadImage} = require("@napi-rs/canvas");
-const Discord = require("discord.js");
+const prettyMilliSeconds = require("pretty-ms"); 
 const {
-    AttachmentBuilder
+    AttachmentBuilder,
+    EmbedBuilder
 } = require("discord.js");
 const {
     stringTemplateParser,
     sendVerification,
-    confirmUserData
+    confirmUserData,
+    LoggerLog
 } = require("../../handler/functions");
 
 client.on("guildMemberAdd", async (member) => {
@@ -110,6 +113,29 @@ client.on("guildMemberAdd", async (member) => {
                 const fetchedRole = await fetchedGuild.roles.fetch(`${role}`);
                 await member.roles.add(fetchedRole);
             } catch {}
+        });
+    }
+
+    if (await client.guildMemberAdd.has(`${member.guild.id}`) && await client.loggingmodule.has(`${member.guild.id}`)) {
+        await LoggerLog(member.guild, {
+            embeds: [
+                new EmbedBuilder()
+                .setColor(ee.successColor)
+                .setTitle(`:warning: Member Joined :warning:`)
+                .addFields([{
+                    name: 'Member',
+                    value: `${member}`
+                }, {
+                    name: 'Join Position',
+                    value: `${member.guild.memberCount}`
+                }, {
+                    name: 'Member Account Created',
+                    value: `${prettyMilliSeconds(Date.now() - member.user.createdTimestamp, {verbose: true})} ago`
+                }])
+                .setFooter({text: `User ID: ${member.user.id}`})
+                .setThumbnail(`https://cdn.discordapp.com/attachments/1010999257899204769/1054749803193585714/support.png`)
+                .setTimestamp()
+            ]
         });
     }
     return;

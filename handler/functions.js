@@ -10,7 +10,10 @@ const Discord = require("discord.js")
 const config = require("../botconfig/config.json");
 const ee = require("../botconfig/embed.json");
 const fs = require("fs");
-const { v4: uuidv4 } = require('uuid');
+const {
+    v4: uuidv4
+} = require('uuid');
+const logchannel = require("../dashboard/settings/5logging/logchannel");
 
 //MODULE EXPORTS
 module.exports.stringTemplateParser = stringTemplateParser;
@@ -23,13 +26,14 @@ module.exports.writeError = writeError;
 module.exports.genGuid = genGuid;
 module.exports.dateNow = dateNow;
 module.exports.modLog = modLog;
+module.exports.LoggerLog = LoggerLog;
 //FUNCTIONS
 
 async function languageControl(guild, translateLine) {
     const guildLanguageRows = client.cachedGuildLanguages.get(`${guild.id}`);
     let guildLanguage = 'en';
     if (guildLanguageRows !== undefined) {
-       guildLanguage = guildLanguageRows;
+        guildLanguage = guildLanguageRows;
     }
 
     const dataFile = require(`../language/${guildLanguage}.json`)
@@ -45,8 +49,8 @@ async function languageControl(guild, translateLine) {
 function stringTemplateParser(expression, valueObj) {
     const templateMatcher = /{\s?([^{}\s]*)\s?}/g;
     let text = expression.replace(templateMatcher, (substring, value, index) => {
-      value = valueObj[value];
-      return value;
+        value = valueObj[value];
+        return value;
     });
     return text
 }
@@ -96,7 +100,7 @@ function writeError(error, guild) {
         let ADH = AD.getHours();
         let ADMI = AD.getMinutes();
         let ADS = AD.getSeconds();
-    
+
         if (ADD < 10) {
             ADD = '0' + AD.getDate();
         }
@@ -112,7 +116,7 @@ function writeError(error, guild) {
         if (ADS < 10) {
             ADS = '0' + AD.getSeconds();
         }
-    
+
         const msg = `[${ADY}/${ADM}/${ADD} ${ADH}:${ADMI}:${ADS}] - ` + error.message + '\r\n';
         fs.appendFileSync(`./dashboard/errors/${guild.id}.txt`, msg);
     } catch (error) {
@@ -158,6 +162,18 @@ async function modLog(guild, returnObject) {
         try {
             const actualChannel = await guild.channels.fetch(logChannel);
             return await actualChannel.send(returnObject);
+        } catch {}
+    } else {
+        return;
+    }
+}
+
+async function LoggerLog(guild, returnObject) {
+    const logChannel = await client.cachedLoggingChannels.get(`${guild.id}`);
+    if (client.loggingmodule.has(`${guild.id}`) && logChannel !== "0") {
+        try {
+            const loggerChannel = await guild.channels.fetch(logChannel);
+            return await loggerChannel.send(returnObject);
         } catch {}
     } else {
         return;
