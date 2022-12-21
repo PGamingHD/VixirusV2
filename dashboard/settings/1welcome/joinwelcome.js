@@ -8,7 +8,7 @@ const client = require("../../../index");
 module.exports = {
     optionId: 'welcome',
     optionName: "Welcome Message",
-    optionDescription: "Change the Welcome message",
+    optionDescription: "Change the Welcome message, variables can be used! {user}, {username}, {server}, {serverid}, {servericon}, {serverowner}, {verificationlevel}, {membercount}!",
     optionType: DBD.formTypes.textarea("Hey {user}, welcome to **{server}**!", 1, 1024, false, true),
     getActualSet: async ({
         guild,user
