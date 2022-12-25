@@ -7,6 +7,7 @@
     totalShards: "auto",
     shardList: "auto",
   });
+  
   shards.on("shardCreate", shard => console.log(`[SHARDS] <==> [${String(new Date).split(" ", 5).join(" ")}] || <==> || Shard #${shard.id} has been LAUNCHED || <==> [SHARDS]`))
   shards.spawn({
     amount: shards.totalShards,
