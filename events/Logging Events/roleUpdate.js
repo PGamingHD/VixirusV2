@@ -21,7 +21,7 @@ client.on("roleUpdate", async (oldRole, newRole) => {
                         value: `${newRole.name}`
                     }, {
                         name: 'Old Color',
-                        value: `#${Math.abs(oldRole.color).toString(16)}`
+                        value: `#${oldRole.color === 0 ? "000000" : Math.abs(oldRole.color).toString(16)}`
                     }, {
                         name: 'New Color',
                         value: `#${Math.abs(newRole.color).toString(16)}`
@@ -57,7 +57,7 @@ client.on("roleUpdate", async (oldRole, newRole) => {
                         value: `${newRole.name}`
                     }, {
                         name: 'Old Color',
-                        value: `#${Math.abs(oldRole.color).toString(16)}`
+                        value: `#${oldRole.color === 0 ? "000000" : Math.abs(oldRole.color).toString(16)}`
                     }, {
                         name: 'New Color',
                         value: `#${Math.abs(newRole.color).toString(16)}`
@@ -111,7 +111,7 @@ client.on("roleUpdate", async (oldRole, newRole) => {
                     .setTitle(`:warning: Role Updated :warning:`)
                     .addFields([{
                         name: 'Old Color',
-                        value: `#${Math.abs(oldRole.color).toString(16)}`
+                        value: `#${oldRole.color === 0 ? "000000" : Math.abs(oldRole.color).toString(16)}`
                     }, {
                         name: 'New Color',
                         value: `#${Math.abs(newRole.color).toString(16)}`
@@ -147,7 +147,7 @@ client.on("roleUpdate", async (oldRole, newRole) => {
                         value: `${newRole.name}`
                     }, {
                         name: 'Old Color',
-                        value: `#${Math.abs(oldRole.color).toString(16)}`
+                        value: `#${oldRole.color === 0 ? "000000" : Math.abs(oldRole.color).toString(16)}`
                     }, {
                         name: 'New Color',
                         value: `#${Math.abs(newRole.color).toString(16)}`
@@ -177,7 +177,7 @@ client.on("roleUpdate", async (oldRole, newRole) => {
                         value: `${newRole.name}`
                     }, {
                         name: 'Old Color',
-                        value: `#${Math.abs(oldRole.color).toString(16)}`
+                        value: `#${oldRole.color === 0 ? "000000" : Math.abs(oldRole.color).toString(16)}`
                     }, {
                         name: 'New Color',
                         value: `#${Math.abs(newRole.color).toString(16)}`
@@ -195,7 +195,7 @@ client.on("roleUpdate", async (oldRole, newRole) => {
                     .setTitle(`:warning: Role Updated :warning:`)
                     .addFields([{
                         name: 'Old Color',
-                        value: `#${Math.abs(oldRole.color).toString(16)}`
+                        value: `#${oldRole.color === 0 ? "000000" : Math.abs(oldRole.color).toString(16)}`
                     }, {
                         name: 'New Color',
                         value: `#${Math.abs(newRole.color).toString(16)}`
@@ -267,7 +267,7 @@ client.on("roleUpdate", async (oldRole, newRole) => {
                     .setTitle(`:warning: Role Updated :warning:`)
                     .addFields([{
                         name: 'Old Color',
-                        value: `#${Math.abs(oldRole.color).toString(16)}`
+                        value: `#${oldRole.color === 0 ? "000000" : Math.abs(oldRole.color).toString(16)}`
                     }, {
                         name: 'New Color',
                         value: `#${Math.abs(newRole.color).toString(16)}`
@@ -333,7 +333,7 @@ client.on("roleUpdate", async (oldRole, newRole) => {
                     .setTitle(`:warning: Role Updated :warning:`)
                     .addFields([{
                         name: 'Old Color',
-                        value: `#${Math.abs(oldRole.color).toString(16)}`
+                        value: `#${oldRole.color === 0 ? "000000" : Math.abs(oldRole.color).toString(16)}`
                     }, {
                         name: 'New Color',
                         value: `#${Math.abs(newRole.color).toString(16)}`
