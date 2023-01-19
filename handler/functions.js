@@ -158,7 +158,7 @@ function genGuid() {
 
 async function modLog(guild, returnObject) {
     const logChannel = await client.cachedModLogs.get(`${guild.id}`);
-    if (client.modlogmodule.has(`${guild.id}`) && logChannel !== "0") {
+    if (logChannel !== "0") {
         try {
             const actualChannel = await guild.channels.fetch(logChannel);
             return await actualChannel.send(returnObject);

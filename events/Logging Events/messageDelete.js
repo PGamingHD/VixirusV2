@@ -7,6 +7,7 @@ const { EmbedBuilder } = require("discord.js");
 
 client.on("messageDelete", async (message) => {
     if (await client.messageDelete.has(`${message.guild.id}`) && await client.loggingmodule.has(`${message.guild.id}`) && !message.author.bot) {
+        if (message.embeds.length !== 0) return; // Contains embeds, possible selfbot?
         await LoggerLog(message.guild, {
             embeds: [
                 new EmbedBuilder()
@@ -22,7 +23,7 @@ client.on("messageDelete", async (message) => {
                     name: 'Author',
                     value: `${message.author}`
                 }])
-                .setFooter({text: `User ID: ${message.author.id}`})
+                .setFooter({text: `Message ID: ${message.id}`})
                 .setThumbnail(`https://cdn.discordapp.com/attachments/1010999257899204769/1054749803193585714/support.png`)
                 .setTimestamp()
             ]

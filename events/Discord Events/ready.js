@@ -33,12 +33,8 @@ const {
 
 client.on("ready", async (client) => {
     try {
-        try {
-            client.logger.log(`I successfully logged into ${client.user.tag} and started ALL services`, "ready");
-            client.logger.log(`Entering bot cooldown for 60 seconds while the Database connects correctly`, "ready");
-        } catch (error) {
-            client.logger.log(error, "error")
-        }
+        client.logger.log(`I successfully logged into ${client.user.tag} and started ALL services`, "ready");
+        client.logger.log(`Entering bot cooldown for 60 seconds while the Database connects correctly`, "ready");
 
         Cron('0 */1 * * * *', () => {
             const currentMB = Math.round(process.memoryUsage().heapUsed / 1024 / 1024 * 100) / 100
@@ -61,7 +57,7 @@ client.on("ready", async (client) => {
 
             fs.writeFileSync('./botconfig/heapusage.json', JSON.stringify(newObj));
         });
-            /*const clientId = 'ft1bzbayhmf62hzlf4wytywx6yr5z0';
+        /*const clientId = 'ft1bzbayhmf62hzlf4wytywx6yr5z0';
             const clientSecret = 'gvp576i85a93wg3c06nrckrh2uxqd3';
 
             const authProvider = new ClientCredentialsAuthProvider(clientId, clientSecret);
@@ -144,14 +140,14 @@ QPgdYOQTcXAvQK0pu7LxaFHk84aKcOK2788UBbkg6iGClIfSxSBgmFoUbFQTqTM=
 
             console.log(await offlineSubscription.getCliTestCommand());*/ //NEED TO OPEN LISTEN PORT 443 TO RECIEVE EVENTS!
 
-            require("../../handler/loadcollections")(client);
+        require("../../handler/loadcollections")(client);
 
         client.user.setActivity('In Development', {
             type: ActivityType.Watching
         });
 
     } catch (e) {
-        console.log(String(e.stack))
+        client.logger.log(String(e.stack), 'error');
     }
 });
 

@@ -77,10 +77,6 @@ module.exports = async (client) => {
             await client.modmodule.set(`${guild.module_ServerId}`, "Mod Enabled!");
         }
 
-        if (guild.module_modlogs) {
-            await client.modlogmodule.set(`${guild.module_ServerId}`, "Modlogs Enabled!");
-        }
-
         if (guild.module_logging) {
             await client.loggingmodule.set(`${guild.module_ServerId}`, "Logging Enabled!");
         }

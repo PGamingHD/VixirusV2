@@ -7,25 +7,26 @@ const { EmbedBuilder } = require("discord.js");
 
 client.on("messageUpdate", async (oldMessage, newMessage) => {
     if (await client.messageUpdate.has(`${newMessage.guild.id}`) && await client.loggingmodule.has(`${newMessage.guild.id}`) && !newMessage.author.bot) {
+        let changedData = "";
+
+        if (oldMessage.content === newMessage.content && oldMessage.pinned === newMessage.pinned) return;
+
+        if (oldMessage.content !== newMessage.content) {
+            changedData += `ㅤㅤㅤㅤ**Content**\n\`\`\`Old: ${oldMessage.content}\n-----------------------\nNew: ${newMessage.content}\`\`\`\n`
+        }
+
+        if (oldMessage.pinned !== newMessage.pinned) {
+            changedData += `ㅤㅤㅤㅤ**Pinned**\n\`\`\`Old: ${oldMessage.pinned === false ? `❌` : `✅`}\n-----------------------\nNew: ${newMessage.pinned === false ? `❌` : `✅`}\`\`\`\n`
+        }
+
+        
         await LoggerLog(newMessage.guild, {
             embeds: [
                 new EmbedBuilder()
                 .setColor(ee.maintenanceColor)
                 .setTitle(`:warning: Message Updated :warning:`)
-                .addFields([{
-                    name: 'Old Message',
-                    value: `${oldMessage.content}`
-                }, {
-                    name: 'New Message',
-                    value: `${newMessage.content}`
-                }, {
-                    name: 'Message Channel',
-                    value: `${newMessage.channel}`
-                }, {
-                    name: 'Author',
-                    value: `${newMessage.author}`
-                }])
-                .setFooter({text: `User ID: ${newMessage.author.id}`})
+                .setDescription(`${changedData}`)
+                .setFooter({text: `Message ID: ${newMessage.id}`})
                 .setThumbnail(`https://cdn.discordapp.com/attachments/1010999257899204769/1054749803193585714/support.png`)
                 .setTimestamp()
             ]
