@@ -55,7 +55,7 @@ require('dotenv').config();
         },
         SSL: {
             enabled: true,
-            cert: fs.readFileSync('/etc/letsencrypt/live/lualock.com/fullchain.pem'),
+            cert: fs.readFileSync('/etc/letsencrypt/live/lualock.com/fullchain.pem', 'utf8'),
             key: fs.readFileSync('/etc/letsencrypt/live/lualock.com/privkey.pem', 'utf8')
         },
         useTheme404: true,
