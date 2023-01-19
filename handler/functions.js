@@ -13,7 +13,6 @@ const fs = require("fs");
 const {
     v4: uuidv4
 } = require('uuid');
-const logchannel = require("../dashboard/settings/5logging/logchannel");
 
 //MODULE EXPORTS
 module.exports.stringTemplateParser = stringTemplateParser;
