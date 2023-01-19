@@ -10,7 +10,7 @@ const client = require("../../../index");
 module.exports = {
     optionId: 'log_channels',
     optionName: "Logging Channel",
-    optionDescription: "Change the Moderation Channel, log all moderation command usages into this channel.",
+    optionDescription: "The channel that logs should be displayed in.",
     optionType: DBD.formTypes.channelsSelect(false, [ChannelType.GuildText], true, false),
     getActualSet: async ({
         guild,user
