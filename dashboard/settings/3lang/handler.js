@@ -3,7 +3,8 @@ const {
 } = require("fs");
 const getPool = require("../../../handler/database");
 const {
-    writeError
+    writeError,
+    guildHasData
 } = require("../../../handler/functions");
 const client = require("../../../index");
 

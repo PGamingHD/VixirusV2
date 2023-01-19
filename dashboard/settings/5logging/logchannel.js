@@ -2,7 +2,8 @@ const DBD = require('discord-dashboard');
 const getPool = require("../../../handler/database");
 const { ChannelType } = require('discord.js');
 const {
-    writeError
+    writeError,
+    guildHasData
 } = require("../../../handler/functions");
 const client = require("../../../index");
 

@@ -4,7 +4,8 @@ const {
 const DBD = require('discord-dashboard');
 const getPool = require("../../../handler/database");
 const {
-    writeError
+    writeError,
+    guildHasData
 } = require("../../../handler/functions");
 const client = require("../../../index");
 
