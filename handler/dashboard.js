@@ -8,7 +8,7 @@ require('dotenv').config();
 
 /* --- DASHBOARD --- */
 (async () => {
-    console.log(Buffer.from(fs.readFileSync('/etc/letsencrypt/live/lualock.com/fullchain.pem'), 'binary').toString('ascii'))
+    //console.log(Buffer.from(fs.readFileSync('/etc/letsencrypt/live/lualock.com/fullchain.pem'), 'binary').toString('ascii'))
     await DBD.useLicense(config.Discord_Dashboard.Dashboard_license);
     DBD.Dashboard = DBD.UpdatedClass();
 
@@ -55,8 +55,8 @@ require('dotenv').config();
         },
         SSL: {
             enabled: false,
-            cert: fs.readFileSync('/etc/letsencrypt/live/lualock.com/fullchain.pem'),
-            key: fs.readFileSync('/etc/letsencrypt/live/lualock.com/privkey.pem')
+            cert: Buffer.from(fs.readFileSync('/etc/letsencrypt/live/lualock.com/fullchain.pem'), 'binary').toString('ascii'),
+            key: Buffer.from(fs.readFileSync('/etc/letsencrypt/live/lualock.com/privkey.pem'), 'binary').toString('ascii')
         },
         useTheme404: true,
         bot: client,
