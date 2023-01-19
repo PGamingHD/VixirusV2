@@ -9,7 +9,7 @@ const client = require("../../../index");
 module.exports = {
     optionId: 'enable_roledeletes',
     optionName: "Role Delete",
-    optionDescription: "The channel that logs should be displayed in.",
+    optionDescription: "Log deleted server roles.",
     optionType: DBD.formTypes.switch(false),
     getActualSet: async ({
         guild,
