@@ -9,6 +9,8 @@ const {
 } = require("../../../handler/functions");
 const client = require("../../../index");
 
+try {
+
 module.exports = {
     optionId: 'logging_channels',
     optionName: "Logging Channel",
@@ -29,10 +31,11 @@ module.exports = {
         guild,
         newData
     }) => {
-        try {
-            const pool = await getPool().getConnection();
+        const pool = await getPool().getConnection();
 
-            await guildHasData(guild, pool);
+        await guildHasData(guild, pool);
+
+        try {
             const [guildData, guildRows] = await pool.query(`SELECT * FROM guild_data WHERE data_ServerId = ${guild.id}`);
             if (guildData.length === 0) return;
             if (newData === "") newData = "0";
@@ -46,4 +49,8 @@ module.exports = {
             return writeError(error, guild);
         }
     }
+}
+
+} catch (e) {
+    console.log(e)
 }
