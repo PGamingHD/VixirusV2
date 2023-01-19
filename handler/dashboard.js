@@ -55,8 +55,8 @@ require('dotenv').config();
         },
         SSL: {
             enabled: true,
-            cert: fs.readFileSync('/etc/letsencrypt/positivessl/lualock.com/lualock_com.crt', 'utf8'),
-            key: fs.readFileSync('/etc/letsencrypt/positivessl/lualock.com/lualock_com.key', 'utf8')
+            cert: fs.readFileSync('/etc/letsencrypt/positivessl/lualock.com/lualock_com.crt'),
+            key: fs.readFileSync('/etc/letsencrypt/positivessl/lualock.com/lualock_com.key')
         },
         useTheme404: true,
         bot: client,
