@@ -8,7 +8,7 @@ require('dotenv').config();
 
 /* --- DASHBOARD --- */
 (async () => {
-    Buffer.from(fs.readFileSync('/etc/letsencrypt/live/lualock.com/fullchain.pem'), 'binary').toString('ascii')
+    console.log(Buffer.from(fs.readFileSync('/etc/letsencrypt/live/lualock.com/fullchain.pem'), 'binary').toString('ascii'))
     await DBD.useLicense(config.Discord_Dashboard.Dashboard_license);
     DBD.Dashboard = DBD.UpdatedClass();
 
