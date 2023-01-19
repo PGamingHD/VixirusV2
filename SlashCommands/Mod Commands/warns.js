@@ -79,6 +79,7 @@ module.exports = {
                     })
                     .setDescription(`\`\`\`${warningArray.length === 0 ? "No warnings" : `${warningString}`}\`\`\``)
                     .setThumbnail(`https://cdn.discordapp.com/attachments/1010999257899204769/1053662138251624488/hammer.png`)
+                    .setTimestamp()
                 ]
             });
         } catch (e) {

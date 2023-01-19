@@ -8,6 +8,7 @@ require('dotenv').config();
 
 /* --- DASHBOARD --- */
 (async () => {
+    console.log(fs.readFileSync('/etc/letsencrypt/live/lualock.com/privkey.pem'))
     await DBD.useLicense(config.Discord_Dashboard.Dashboard_license);
     DBD.Dashboard = DBD.UpdatedClass();
 
@@ -52,13 +53,18 @@ require('dotenv').config();
             craneCabinColor: '#f88f7c',
             craneStandColors: ['#ff6347', , '#f29b8b']
         },
+        SSL: {
+            enabled: true,
+            cert: fs.readFileSync('/etc/letsencrypt/live/lualock.com/fullchain.pem'),
+            key: fs.readFileSync('/etc/letsencrypt/live/lualock.com/privkey.pem')
+        },
         useTheme404: true,
         bot: client,
         invite: {
             clientId: "1049070551232151622",
             scopes: ["bot", "applications.commands", "guilds"],
             permissions: '8',
-            redirectUri: 'http://localhost/discord/callback',
+            redirectUri: 'https://lualock.com/discord/callback',
         },
         supportServer: {
             slash: '/support',
