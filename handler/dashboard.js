@@ -55,10 +55,10 @@ require('dotenv').config();
         },
         SSL: {
             enabled: true,
-            cert: fs.readFileSync('/etc/letsencrypt/positivessl/lualock.com/lualock_com.crt', 'utf8'),
-            key: fs.readFileSync('/etc/letsencrypt/positivessl/lualock.com/lualock_com.key', 'utf8')
-            //cert: fs.readFileSync('/etc/letsencrypt/live/lualock.com/fullchain.pem', 'utf8'), // CERTBOT
-            //key: fs.readFileSync('/etc/letsencrypt/live/lualock.com/privkey.pem', 'utf8') // CERTBOT
+            //cert: fs.readFileSync('/etc/letsencrypt/positivessl/lualock.com/lualock_com.crt', 'utf8'),
+            //key: fs.readFileSync('/etc/letsencrypt/positivessl/lualock.com/lualock_com.key', 'utf8')
+            cert: fs.readFileSync('/etc/letsencrypt/live/lualock.com/fullchain.pem', 'utf8'), // CERTBOT
+            key: fs.readFileSync('/etc/letsencrypt/live/lualock.com/privkey.pem', 'utf8') // CERTBOT
         },
         useTheme404: true,
         bot: client,
