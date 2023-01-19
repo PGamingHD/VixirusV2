@@ -1,5 +1,5 @@
 {
-  "name": "discmons",
+  "name": "vixirusv2",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/PGamingHD/Discmons.git"
+    "url": "git+https://github.com/PGamingHD/VixirusV2.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/PGamingHD/Discmons/issues"
+    "url": "https://github.com/PGamingHD/VixirusV2/issues"
   },
-  "homepage": "https://github.com/PGamingHD/Discmons#readme",
+  "homepage": "https://github.com/PGamingHD/VixirusV2#readme",
   "dependencies": {
     "@haileybot/captcha-generator": "^1.7.0",
     "@keyv/mysql": "^1.5.1",
@@ -31,6 +31,7 @@
     "discord.js": "^14.2.0",
     "fs-extra": "^10.1.0",
     "glob": "^7.1.1",
+    "moment": "^2.29.4",
     "nodemon": "^2.0.16",
     "pretty-ms": "^7.0.0",
     "uuid": "^8.3.2"

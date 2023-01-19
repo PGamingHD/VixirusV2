@@ -14,7 +14,8 @@ const prettyMilliseconds = require('pretty-ms');
 const config = require('../../botconfig/config.json');
 const {
     genGuid,
-    modLog
+    modLog,
+    dateNow
 } = require("../../handler/functions");
 const fs = require("fs");
 
@@ -44,6 +45,7 @@ module.exports = {
         const highestRoleTarget = memberToBan.roles.highest.rawPosition;
         const highestRoleMod = interaction.member.roles.highest.rawPosition;
         const highestRoleBot = interaction.guild.members.me.roles.highest.rawPosition;
+        const caseID = genGuid();
 
         if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.KickMembers)) {
             return interaction.reply({
@@ -130,23 +132,47 @@ module.exports = {
         }
 
         try {
-            await memberToBan.user.send({
-                embeds: [
-                    new EmbedBuilder()
-                    .setColor(ee.color)
-                    .setTitle(`:x: You have been kicked from ${interaction.guild.name} :x:`)
-                    .addFields([{
-                        name: 'Moderator',
-                        value: `\`\`\`${interaction.user.username}#${interaction.user.discriminator}\`\`\``,
-                        inline: true
-                    }, {
-                        name: 'Reason',
-                        value: `\`\`\`${banReason}\`\`\``
-                    }])
-                    .setTimestamp()
-                    .setThumbnail(`https://cdn.discordapp.com/attachments/1010999257899204769/1053662138251624488/hammer.png`)
-                ]
-            })
+            if (!memberToBan.user.bot) {
+                await memberToBan.user.send({
+                    embeds: [
+                        new EmbedBuilder()
+                        .setColor(ee.color)
+                        .setTitle(`:x: You have been kicked from ${interaction.guild.name} :x:`)
+                        .addFields([{
+                            name: 'Moderator',
+                            value: `\`\`\`${interaction.user.username}#${interaction.user.discriminator}\`\`\``,
+                            inline: true
+                        }, {
+                            name: 'Reason',
+                            value: `\`\`\`${banReason}\`\`\``
+                        }])
+                        .setTimestamp()
+                        .setThumbnail(`https://cdn.discordapp.com/attachments/1010999257899204769/1053662138251624488/hammer.png`)
+                    ]
+                })
+            }
+        } catch {}
+
+        try {
+            if (!memberToBan.user.bot) {
+                if (client.globalPunishments.has(`${memberToBan.id}`)) {
+                    await con.query(`UPDATE user_punishments SET punished_data = JSON_ARRAY_APPEND(punished_data,'$',CAST('{"server": "${interaction.guild.id}", "punishment": "kick", "mod": "${interaction.user.id}", "target": "${memberToBan.id}", "reason": "${banReason}", "date": "${dateNow()}", "CaseID": "${caseID}"}' AS JSON)) WHERE punished_userId = '${memberToBan.id}'`);
+                    const [userPunishments, punishmentRows] = await con.query(`SELECT punished_data FROM user_punishments WHERE punished_userId = ${memberToBan.id}`);
+                    client.globalPunishments.set(`${memberToBan.id}`, userPunishments[0].punished_data)
+                } else {
+                    await con.query(`INSERT INTO user_punishments(punished_userId) VALUES (${memberToBan.id})`)
+                    await con.query(`UPDATE user_punishments SET punished_data = JSON_ARRAY_APPEND(punished_data,'$',CAST('{"server": "${interaction.guild.id}", "punishment": "kick", "mod": "${interaction.user.id}", "target": "${memberToBan.id}", "reason": "${banReason}", "date": "${dateNow()}", "CaseID": "${caseID}"}' AS JSON)) WHERE punished_userId = '${memberToBan.id}'`);
+                    client.globalPunishments.set(`${memberToBan.id}`, {
+                        "server": `${interaction.guild.id}`,
+                        "punishment": "kick",
+                        "mod": `${interaction.user.id}`,
+                        "target": `${memberToBan.id}`,
+                        "reason": `${banReason}`,
+                        "date": `${dateNow()}`,
+                        "CaseID": `${caseID}`
+                    })
+                }
+            }
         } catch {}
 
         try {
@@ -157,16 +183,16 @@ module.exports = {
                     .setTitle(`:warning: Member Kicked :warning:`)
                     .addFields([{
                         name: 'Reason',
-                        value: `\`\`\`${lockdownReason}\`\`\``,
+                        value: `\`\`\`${banReason}\`\`\``,
                         inline: true
-                    },{
+                    }, {
                         name: 'Target',
                         value: `\`\`\`${memberToBan.user.username}#${memberToBan.user.discriminator} (${memberToBan.user.id})\`\`\``
                     }, {
                         name: 'Moderator',
                         value: `\`\`\`${interaction.user.username}#${interaction.user.discriminator} (${interaction.user.id})\`\`\``,
                     }])
-                    .setThumbnail(`https://cdn.discordapp.com/attachments/1010999257899204769/1054749803193585714/support.png`)
+                    .setThumbnail(`https://cdn.discordapp.com/attachments/1010999257899204769/1065641669950709770/mod.png`)
                     .setTimestamp()
                 ]
             });

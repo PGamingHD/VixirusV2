@@ -14,22 +14,23 @@ const prettyMilliseconds = require('pretty-ms');
 const config = require('../../botconfig/config.json');
 const {
     genGuid,
-    modLog
+    modLog,
+    dateNow
 } = require("../../handler/functions");
 const fs = require("fs");
 
 module.exports = {
-    name: 'ban',
-    description: 'Ban a member of your Guild.',
+    name: 'softban',
+    description: 'Ban a member of your Guild and unban again to remove messages.',
     module: 'mod',
     options: [{
         name: 'member',
-        description: 'The member you wish to ban.',
+        description: 'The member you wish to softban.',
         type: ApplicationCommandOptionType.User,
         required: true
     }, {
         name: 'reason',
-        description: 'The reason for banning this member.',
+        description: 'The reason for softbanning this member.',
         type: ApplicationCommandOptionType.String,
         required: true
     }],
@@ -75,7 +76,7 @@ module.exports = {
                     new EmbedBuilder()
                     .setColor(ee.errorColor)
                     .setTitle(`:x: Error :x:`)
-                    .setDescription(`***You may not ban yourself from the server.***`)
+                    .setDescription(`***You may not softban yourself from the server.***`)
                 ],
                 ephemeral: true
             });
@@ -88,7 +89,7 @@ module.exports = {
                     new EmbedBuilder()
                     .setColor(ee.errorColor)
                     .setTitle(`:x: Error :x:`)
-                    .setDescription(`***You may not ban me from the server.***`)
+                    .setDescription(`***You may not softban me from the server.***`)
                 ],
                 ephemeral: true
             })
@@ -100,7 +101,7 @@ module.exports = {
                     new EmbedBuilder()
                     .setColor(ee.errorColor)
                     .setTitle(`:x: Error :x:`)
-                    .setDescription(`***You may not ban the Guild Owner.***`)
+                    .setDescription(`***You may not softban the Guild Owner.***`)
                 ],
                 ephemeral: true
             });
@@ -112,7 +113,7 @@ module.exports = {
                     new EmbedBuilder()
                     .setColor(ee.errorColor)
                     .setTitle(`:x: Error :x:`)
-                    .setDescription(`***It seems as if my role is not high enough to ban that user.***`)
+                    .setDescription(`***It seems as if my role is not high enough to softban that user.***`)
                 ],
                 ephemeral: true
             })
@@ -124,52 +125,84 @@ module.exports = {
                     new EmbedBuilder()
                     .setColor(ee.errorColor)
                     .setTitle(`:x: Error :x:`)
-                    .setDescription(`***You may not ban someone at the same or higher rank than you.***`)
+                    .setDescription(`***You may not softban someone at the same or higher rank than you.***`)
                 ],
                 ephemeral: true
             })
         }
 
         try {
-            await memberToBan.user.send({
-                embeds: [
-                    new EmbedBuilder()
-                    .setColor(ee.color)
-                    .setTitle(`:x: You have been banned in ${interaction.guild.name} :x:`)
-                    .addFields([{
-                        name: 'Moderator',
-                        value: `\`\`\`${interaction.user.username}#${interaction.user.discriminator}\`\`\``,
-                        inline: true
-                    }, {
-                        name: 'Reason',
-                        value: `\`\`\`${banReason}\`\`\``
-                    }])
-                    .setTimestamp()
-                    .setThumbnail(`https://cdn.discordapp.com/attachments/1010999257899204769/1053662138251624488/hammer.png`)
-                ]
-            })
+            if (!memberToBan.user.bot) {
+                await memberToBan.user.send({
+                    embeds: [
+                        new EmbedBuilder()
+                        .setColor(ee.color)
+                        .setTitle(`:x: You have been softbanned in ${interaction.guild.name} :x:`)
+                        .addFields([{
+                            name: 'Moderator',
+                            value: `\`\`\`${interaction.user.username}#${interaction.user.discriminator}\`\`\``,
+                            inline: true
+                        }, {
+                            name: 'Reason',
+                            value: `\`\`\`${banReason}\`\`\``
+                        }])
+                        .setAuthor({
+                            name: 'This is only a SOFTBAN to remove your messages, you may REJOIN again now!'
+                        })
+                        .setTimestamp()
+                        .setThumbnail(`https://cdn.discordapp.com/attachments/1010999257899204769/1053662138251624488/hammer.png`)
+                    ]
+                })
+            }
         } catch {}
 
-        await memberToBan.ban({days: 7, reason: `[BAN] Reason: ${banReason} | Moderator: ${interaction.user.username}#${interaction.user.discriminator}`});
+        await memberToBan.ban({
+            days: 7,
+            reason: `[SOFTBAN] Reason: ${banReason} | Moderator: ${interaction.user.username}#${interaction.user.discriminator}`
+        });
+
+        await interaction.guild.members.unban(memberToBan, `[SOFTBAN] Reason: ${banReason} | Moderator: ${interaction.user.username}#${interaction.user.discriminator}`);
+
+        try {
+            if (!memberToBan.user.bot) {
+                if (client.globalPunishments.has(`${memberToBan.id}`)) {
+                    await con.query(`UPDATE user_punishments SET punished_data = JSON_ARRAY_APPEND(punished_data,'$',CAST('{"server": "${interaction.guild.id}", "punishment": "softban", "mod": "${interaction.user.id}", "target": "${memberToBan.id}", "reason": "${banReason}", "date": "${dateNow()}", "CaseID": "${caseID}"}' AS JSON)) WHERE punished_userId = '${memberToBan.id}'`);
+                    const [userPunishments, punishmentRows] = await con.query(`SELECT punished_data FROM user_punishments WHERE punished_userId = ${memberToBan.id}`);
+                    client.globalPunishments.set(`${memberToBan.id}`, userPunishments[0].punished_data)
+                } else {
+                    await con.query(`INSERT INTO user_punishments(punished_userId) VALUES (${memberToBan.id})`)
+                    await con.query(`UPDATE user_punishments SET punished_data = JSON_ARRAY_APPEND(punished_data,'$',CAST('{"server": "${interaction.guild.id}", "punishment": "softban", "mod": "${interaction.user.id}", "target": "${memberToBan.id}", "reason": "${banReason}", "date": "${dateNow()}", "CaseID": "${caseID}"}' AS JSON)) WHERE punished_userId = '${memberToBan.id}'`);
+                    client.globalPunishments.set(`${memberToBan.id}`, {
+                        "server": `${interaction.guild.id}`,
+                        "punishment": "softban",
+                        "mod": `${interaction.user.id}`,
+                        "target": `${memberToBan.id}`,
+                        "reason": `${banReason}`,
+                        "date": `${dateNow()}`,
+                        "CaseID": `${caseID}`
+                    })
+                }
+            }
+        } catch {}
 
         try {
             await modLog(interaction.guild, {
                 embeds: [
                     new EmbedBuilder()
                     .setColor(ee.errorColor)
-                    .setTitle(`:warning: Member Banned :warning:`)
+                    .setTitle(`:warning: Member Softbanned :warning:`)
                     .addFields([{
                         name: 'Reason',
                         value: `\`\`\`${banReason}\`\`\``,
                         inline: true
-                    },{
+                    }, {
                         name: 'Target',
                         value: `\`\`\`${memberToBan.user.username}#${memberToBan.user.discriminator} (${memberToBan.user.id})\`\`\``
                     }, {
                         name: 'Moderator',
                         value: `\`\`\`${interaction.user.username}#${interaction.user.discriminator} (${interaction.user.id})\`\`\``,
                     }])
-                    .setThumbnail(`https://cdn.discordapp.com/attachments/1010999257899204769/1054749803193585714/support.png`)
+                    .setThumbnail(`https://cdn.discordapp.com/attachments/1010999257899204769/1065641669950709770/mod.png`)
                     .setTimestamp()
                 ]
             });
@@ -179,7 +212,7 @@ module.exports = {
             embeds: [
                 new EmbedBuilder()
                 .setColor(ee.color)
-                .setTitle(`:white_check_mark: Member was Banned :white_check_mark:`)
+                .setTitle(`:white_check_mark: Member was Softbanned :white_check_mark:`)
                 .addFields([{
                     name: 'Moderator',
                     value: `\`\`\`${interaction.user.username}#${interaction.user.discriminator}\`\`\``,

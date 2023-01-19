@@ -73,9 +73,9 @@ module.exports = {
         } else if (args[0] === "slash") {
             try {
                 let reload = false;
-                console.log(client.slashcategories.length)
-                for (let i = 0; i < client.slashcategories.length; i += 1) {
-                    let dir = client.slashcategories[i];
+                console.log(client.interactionCategories.length)
+                for (let i = 0; i < client.interactionCategories.length; i += 1) {
+                    let dir = client.interactionCategories[i];
                     try {
                         if (!args[1])
                             return message.reply({
@@ -86,9 +86,9 @@ module.exports = {
                                 ],
                             });
                         delete require.cache[require.resolve(`../../SlashCommands/${dir}/${args[1]}.js`)];
-                        client.slashCommands.delete(args[1]);
+                        client.interactionCommands.delete(args[1]);
                         const pull = require(`../../SlashCommands/${dir}/${args[1]}.js`);
-                        client.slashCommands.set(args[1], pull);
+                        client.interactionCommands.set(args[1], pull);
                         reload = true;
                     } catch {}
                 }

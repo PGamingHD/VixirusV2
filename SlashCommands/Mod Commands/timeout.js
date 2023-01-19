@@ -14,22 +14,28 @@ const prettyMilliseconds = require('pretty-ms');
 const config = require('../../botconfig/config.json');
 const {
     genGuid,
-    modLog
+    modLog,
+    dateNow
 } = require("../../handler/functions");
 const fs = require("fs");
 
 module.exports = {
-    name: 'removetimeout',
-    description: 'Remove timeout of a member in your Guild.',
+    name: 'timeout',
+    description: 'Timeout a member of your Guild.',
     module: 'mod',
     options: [{
         name: 'member',
-        description: 'The member you wish to remove the timeout of.',
+        description: 'The member you wish to timeout.',
         type: ApplicationCommandOptionType.User,
         required: true
     }, {
+        name: 'minutes',
+        description: 'The amount of minutes to timeout someone for.',
+        type: ApplicationCommandOptionType.Integer,
+        required: true
+    }, {
         name: 'reason',
-        description: 'The reason for removing the timeout of the member.',
+        description: 'The reason for timing this member out.',
         type: ApplicationCommandOptionType.String,
         required: true
     }],
@@ -41,9 +47,11 @@ module.exports = {
     run: async (client, interaction, con, args) => {
         const memberToTimeout = interaction.options.getMember('member');
         const timeoutReason = interaction.options.getString('reason');
+        let timeoutMinutes = interaction.options.getInteger('minutes');
         const highestRoleTarget = memberToTimeout.roles.highest.rawPosition;
         const highestRoleMod = interaction.member.roles.highest.rawPosition;
         const highestRoleBot = interaction.guild.members.me.roles.highest.rawPosition;
+        const caseID = genGuid();
 
         if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.ModerateMembers)) {
             return interaction.reply({
@@ -74,7 +82,7 @@ module.exports = {
                     new EmbedBuilder()
                     .setColor(ee.errorColor)
                     .setTitle(`:x: Error :x:`)
-                    .setDescription(`***You may not remove the timeout of yourself in the server.***`)
+                    .setDescription(`***You may not timeout yourself in the server.***`)
                 ],
                 ephemeral: true
             });
@@ -87,7 +95,7 @@ module.exports = {
                     new EmbedBuilder()
                     .setColor(ee.errorColor)
                     .setTitle(`:x: Error :x:`)
-                    .setDescription(`***You may not remove the timeout of me in the server.***`)
+                    .setDescription(`***You may not timeout me in the server.***`)
                 ],
                 ephemeral: true
             })
@@ -99,7 +107,7 @@ module.exports = {
                     new EmbedBuilder()
                     .setColor(ee.errorColor)
                     .setTitle(`:x: Error :x:`)
-                    .setDescription(`***You may not remove the timeout from the Guild Owner.***`)
+                    .setDescription(`***You may not timeout the Guild Owner.***`)
                 ],
                 ephemeral: true
             });
@@ -111,7 +119,7 @@ module.exports = {
                     new EmbedBuilder()
                     .setColor(ee.errorColor)
                     .setTitle(`:x: Error :x:`)
-                    .setDescription(`***It seems as if my role is not high enough to remove the timeout of that user.***`)
+                    .setDescription(`***It seems as if my role is not high enough to timeout that user.***`)
                 ],
                 ephemeral: true
             })
@@ -123,21 +131,81 @@ module.exports = {
                     new EmbedBuilder()
                     .setColor(ee.errorColor)
                     .setTitle(`:x: Error :x:`)
-                    .setDescription(`***You may not remove the timeout of someone at the same or higher rank than you.***`)
+                    .setDescription(`***You may not timeout someone at the same or higher rank than you.***`)
                 ],
                 ephemeral: true
             })
         }
 
-        await memberToTimeout.timeout(null, `[REMOVETIMEOUT] Reason: ${timeoutReason} | Moderator: ${interaction.user.username}#${interaction.user.discriminator}`);
+        if (timeoutMinutes < 0) {
+            timeoutMinutes = 1;
+        }
+
+        if (timeoutMinutes > 40319) {
+            timeoutMinutes = 40319;
+        }
+
+        try {
+            if (!memberToTimeout.user.bot) {
+                await memberToTimeout.user.send({
+                    embeds: [
+                        new EmbedBuilder()
+                        .setColor(ee.color)
+                        .setTitle(`:x: You have been timed out in ${interaction.guild.name} :x:`)
+                        .addFields([{
+                            name: 'Moderator',
+                            value: `\`\`\`${interaction.user.username}#${interaction.user.discriminator}\`\`\``,
+                            inline: true
+                        }, {
+                            name: 'Duration',
+                            value: `\`\`\`${timeoutMinutes} minute(s)\`\`\``,
+                            inline: true
+                        }, {
+                            name: 'Reason',
+                            value: `\`\`\`${timeoutReason}\`\`\``
+                        }])
+                        .setTimestamp()
+                        .setThumbnail(`https://cdn.discordapp.com/attachments/1010999257899204769/1053662138251624488/hammer.png`)
+                    ]
+                })
+            }
+        } catch {}
+
+        await memberToTimeout.timeout(timeoutMinutes * 60 * 1000, `[TIMEOUT] Reason: ${timeoutReason} | Moderator: ${interaction.user.username}#${interaction.user.discriminator}`);
+
+        try {
+            if (!memberToTimeout.user.bot) {
+                if (client.globalPunishments.has(`${memberToTimeout.id}`)) {
+                    await con.query(`UPDATE user_punishments SET punished_data = JSON_ARRAY_APPEND(punished_data,'$',CAST('{"server": "${interaction.guild.id}", "punishment": "timeout", "mod": "${interaction.user.id}", "target": "${memberToTimeout.id}", "reason": "${timeoutReason}", "date": "${dateNow()}", "CaseID": "${caseID}"}' AS JSON)) WHERE punished_userId = '${memberToTimeout.id}'`);
+                    const [userPunishments, punishmentRows] = await con.query(`SELECT punished_data FROM user_punishments WHERE punished_userId = ${memberToTimeout.id}`);
+                    client.globalPunishments.set(`${memberToTimeout.id}`, userPunishments[0].punished_data)
+                } else {
+                    await con.query(`INSERT INTO user_punishments(punished_userId) VALUES (${memberToTimeout.id})`)
+                    await con.query(`UPDATE user_punishments SET punished_data = JSON_ARRAY_APPEND(punished_data,'$',CAST('{"server": "${interaction.guild.id}", "punishment": "timeout", "mod": "${interaction.user.id}", "target": "${memberToTimeout.id}", "reason": "${timeoutReason}", "date": "${dateNow()}", "CaseID": "${caseID}"}' AS JSON)) WHERE punished_userId = '${memberToTimeout.id}'`);
+                    client.globalPunishments.set(`${memberToTimeout.id}`, {
+                        "server": `${interaction.guild.id}`,
+                        "punishment": "timeout",
+                        "mod": `${interaction.user.id}`,
+                        "target": `${memberToTimeout.id}`,
+                        "reason": `${timeoutReason}`,
+                        "date": `${dateNow()}`,
+                        "CaseID": `${caseID}`
+                    })
+                }
+            }
+        } catch {}
 
         try {
             await modLog(interaction.guild, {
                 embeds: [
                     new EmbedBuilder()
-                    .setColor(ee.successColor)
-                    .setTitle(`:warning: Member Timeout Removed :warning:`)
+                    .setColor(ee.errorColor)
+                    .setTitle(`:warning: Member Timed Out :warning:`)
                     .addFields([{
+                        name: 'Duration',
+                        value: `\`\`\`${timeoutMinutes} minute(s)\`\`\``,
+                        inline: true
+                    }, {
                         name: 'Reason',
                         value: `\`\`\`${timeoutReason}\`\`\``,
                         inline: true
@@ -148,7 +216,7 @@ module.exports = {
                         name: 'Moderator',
                         value: `\`\`\`${interaction.user.username}#${interaction.user.discriminator} (${interaction.user.id})\`\`\``,
                     }])
-                    .setThumbnail(`https://cdn.discordapp.com/attachments/1010999257899204769/1054749803193585714/support.png`)
+                    .setThumbnail(`https://cdn.discordapp.com/attachments/1010999257899204769/1065641669950709770/mod.png`)
                     .setTimestamp()
                 ]
             });
@@ -158,7 +226,7 @@ module.exports = {
             embeds: [
                 new EmbedBuilder()
                 .setColor(ee.color)
-                .setTitle(`:white_check_mark: Members timeout was Removed :white_check_mark:`)
+                .setTitle(`:white_check_mark: Member was Timed out :white_check_mark:`)
                 .addFields([{
                     name: 'Moderator',
                     value: `\`\`\`${interaction.user.username}#${interaction.user.discriminator}\`\`\``,
@@ -166,6 +234,10 @@ module.exports = {
                 }, {
                     name: 'Target',
                     value: `\`\`\`${memberToTimeout.user.username}#${memberToTimeout.user.discriminator}\`\`\``,
+                    inline: true
+                }, {
+                    name: 'Duration',
+                    value: `\`\`\`${timeoutMinutes} minute(s)\`\`\``,
                     inline: true
                 }, {
                     name: 'Reason',

@@ -19,7 +19,7 @@
 
     module.exports = {
         name: 'ping',
-        description: 'Get the current Client & API ping.',
+        description: 'Get the current Client, API & Database ping',
         userPerms: [],
         clientPerms: [],
         cooldown: 10,

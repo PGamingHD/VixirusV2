@@ -39,17 +39,28 @@ module.exports = async (client) => {
     // Slash Commands
     const slashCommands = await globPromise(`${process.cwd()}/SlashCommands/**/*.js`);
 
-    const arrayOfSlashCommands = [];
+    const arrayOfInteractions = [];
     slashCommands.map((value) => {
         const file = require(value);
         if (!file?.name) return;
-        client.slashCommands.set(file.name, file);
+        client.interactionCommands.set(file.name, file);
 
         if (["MESSAGE", "USER"].includes(file.type)) delete file.description;
-        arrayOfSlashCommands.push(file);
+        arrayOfInteractions.push(file);
     });
+
+    const contextFiles = await globPromise(`${process.cwd()}/ContextCommands/**/*.js`);
+    contextFiles.map((value) => {
+        const file = require(value);
+        if (!file?.name) return;
+        if (!file?.type) return;
+
+        client.interactionCommands.set(file.name, file);
+        arrayOfInteractions.push(file);
+    });
+
     client.on("ready", async () => {
-        await client.application.commands.set(arrayOfSlashCommands).then(console.log(chalk.green("[SLASH COMMANDS] <==> || Successfully loaded all slash commands globally! || <==> [SLASH COMMANDS]")))
+        await client.application.commands.set(arrayOfInteractions).then(client.logger.log("Successfully loaded all interaction commands globally", "ready"));
     });
 };
 

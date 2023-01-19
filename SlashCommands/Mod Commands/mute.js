@@ -15,7 +15,8 @@ const prettyMilliseconds = require('pretty-ms');
 const config = require('../../botconfig/config.json');
 const {
     genGuid,
-    modLog
+    modLog,
+    dateNow
 } = require("../../handler/functions");
 const fs = require("fs");
 
@@ -53,6 +54,7 @@ module.exports = {
         const highestRoleBot = interaction.guild.members.me.roles.highest.rawPosition;
         const mutedRole = await client.cachedMuteds.get(`${interaction.guild.id}`);
         const everyoneRole = interaction.guild.roles.everyone;
+        const caseID = genGuid();
 
         if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.ManageRoles)) {
             return interaction.reply({
@@ -220,10 +222,32 @@ module.exports = {
                         name: 'Moderator',
                         value: `\`\`\`${interaction.user.username}#${interaction.user.discriminator} (${interaction.user.id})\`\`\``,
                     }])
-                    .setThumbnail(`https://cdn.discordapp.com/attachments/1010999257899204769/1054749803193585714/support.png`)
+                    .setThumbnail(`https://cdn.discordapp.com/attachments/1010999257899204769/1065641669950709770/mod.png`)
                     .setTimestamp()
                 ]
             });
+        } catch {}
+
+        try {
+            if (!memberToWarn.user.bot) {
+                if (client.globalPunishments.has(`${memberToWarn.id}`)) {
+                    await con.query(`UPDATE user_punishments SET punished_data = JSON_ARRAY_APPEND(punished_data,'$',CAST('{"server": "${interaction.guild.id}", "punishment": "mute", "mod": "${interaction.user.id}", "target": "${memberToWarn.id}", "reason": "${reasonForWarn}", "date": "${dateNow()}", "CaseID": "${caseID}"}' AS JSON)) WHERE punished_userId = '${memberToWarn.id}'`);
+                    const [userPunishments, punishmentRows] = await con.query(`SELECT punished_data FROM user_punishments WHERE punished_userId = ${memberToWarn.id}`);
+                    client.globalPunishments.set(`${memberToWarn.id}`, userPunishments[0].punished_data)
+                } else {
+                    await con.query(`INSERT INTO user_punishments(punished_userId) VALUES (${memberToWarn.id})`)
+                    await con.query(`UPDATE user_punishments SET punished_data = JSON_ARRAY_APPEND(punished_data,'$',CAST('{"server": "${interaction.guild.id}", "punishment": "mute", "mod": "${interaction.user.id}", "target": "${memberToWarn.id}", "reason": "${reasonForWarn}", "date": "${dateNow()}", "CaseID": "${caseID}"}' AS JSON)) WHERE punished_userId = '${memberToWarn.id}'`);
+                    client.globalPunishments.set(`${memberToWarn.id}`, {
+                        "server": `${interaction.guild.id}`,
+                        "punishment": "mute",
+                        "mod": `${interaction.user.id}`,
+                        "target": `${memberToWarn.id}`,
+                        "reason": `${reasonForWarn}`,
+                        "date": `${dateNow()}`,
+                        "CaseID": `${caseID}`
+                    })
+                }
+            }
         } catch {}
 
         try {

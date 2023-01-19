@@ -25,7 +25,7 @@ module.exports = {
         return message.reply({
             embeds: [
                 new EmbedBuilder()
-                .setColor("AA00FF")
+                .setColor("AA00FF") 
                 .setDescription(`Global slash commands removed upon request.`),
             ],
         });

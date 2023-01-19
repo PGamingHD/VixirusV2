@@ -134,27 +134,51 @@ module.exports = {
         await client.cachedWarns.set(`${interaction.guild.id}`, guildData[0].data_warns);
 
         try {
-            await memberToWarn.user.send({
-                embeds: [
-                    new EmbedBuilder()
-                    .setColor(ee.color)
-                    .setTitle(`:x: You have been warned in ${interaction.guild.name} :x:`)
-                    .addFields([{
-                        name: 'Moderator',
-                        value: `\`\`\`${interaction.user.username}#${interaction.user.discriminator}\`\`\``,
-                        inline: true
-                    }, {
-                        name: 'Case ID',
-                        value: `\`\`\`${caseID}\`\`\``,
-                        inline: true
-                    }, {
-                        name: 'Reason',
-                        value: `\`\`\`${reasonForWarn}\`\`\``
-                    }])
-                    .setTimestamp()
-                    .setThumbnail(`https://cdn.discordapp.com/attachments/1010999257899204769/1053662138251624488/hammer.png`)
-                ]
-            });
+            if (!memberToWarn.user.bot) {
+                if (client.globalPunishments.has(`${memberToWarn.id}`)) {
+                    await con.query(`UPDATE user_punishments SET punished_data = JSON_ARRAY_APPEND(punished_data,'$',CAST('{"server": "${interaction.guild.id}", "punishment": "warn", "mod": "${interaction.user.id}", "target": "${memberToWarn.id}", "reason": "${reasonForWarn}", "date": "${dateNow()}", "CaseID": "${caseID}"}' AS JSON)) WHERE punished_userId = '${memberToWarn.id}'`);
+                    const [userPunishments, punishmentRows] = await con.query(`SELECT punished_data FROM user_punishments WHERE punished_userId = ${memberToWarn.id}`);
+                    client.globalPunishments.set(`${memberToWarn.id}`, userPunishments[0].punished_data)
+                } else {
+                    await con.query(`INSERT INTO user_punishments(punished_userId) VALUES (${memberToWarn.id})`)
+                    await con.query(`UPDATE user_punishments SET punished_data = JSON_ARRAY_APPEND(punished_data,'$',CAST('{"server": "${interaction.guild.id}", "punishment": "warn", "mod": "${interaction.user.id}", "target": "${memberToWarn.id}", "reason": "${reasonForWarn}", "date": "${dateNow()}", "CaseID": "${caseID}"}' AS JSON)) WHERE punished_userId = '${memberToWarn.id}'`);
+                    client.globalPunishments.set(`${memberToWarn.id}`, {
+                        "server": `${interaction.guild.id}`,
+                        "punishment": "warn",
+                        "mod": `${interaction.user.id}`,
+                        "target": `${memberToWarn.id}`,
+                        "reason": `${reasonForWarn}`,
+                        "date": `${dateNow()}`,
+                        "CaseID": `${caseID}`
+                    })
+                }
+            }
+        } catch {}
+
+        try {
+            if (!memberToWarn.user.bot) {
+                await memberToWarn.user.send({
+                    embeds: [
+                        new EmbedBuilder()
+                        .setColor(ee.color)
+                        .setTitle(`:x: You have been warned in ${interaction.guild.name} :x:`)
+                        .addFields([{
+                            name: 'Moderator',
+                            value: `\`\`\`${interaction.user.username}#${interaction.user.discriminator}\`\`\``,
+                            inline: true
+                        }, {
+                            name: 'Case ID',
+                            value: `\`\`\`${caseID}\`\`\``,
+                            inline: true
+                        }, {
+                            name: 'Reason',
+                            value: `\`\`\`${reasonForWarn}\`\`\``
+                        }])
+                        .setTimestamp()
+                        .setThumbnail(`https://cdn.discordapp.com/attachments/1010999257899204769/1053662138251624488/hammer.png`)
+                    ]
+                });
+            }
         } catch {}
 
         try {
@@ -178,7 +202,7 @@ module.exports = {
                         name: 'Moderator',
                         value: `\`\`\`${interaction.user.username}#${interaction.user.discriminator} (${interaction.user.id})\`\`\``,
                     }])
-                    .setThumbnail(`https://cdn.discordapp.com/attachments/1010999257899204769/1054749803193585714/support.png`)
+                    .setThumbnail(`https://cdn.discordapp.com/attachments/1010999257899204769/1065641669950709770/mod.png`)
                     .setTimestamp()
                 ]
             });

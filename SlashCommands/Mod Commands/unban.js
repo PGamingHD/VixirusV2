@@ -12,24 +12,26 @@ const ee = require('../../botconfig/embed.json');
 const emoji = require('../../botconfig/embed.json')
 const prettyMilliseconds = require('pretty-ms');
 const config = require('../../botconfig/config.json');
-const fs = require("fs");
 const {
+    genGuid,
     modLog
 } = require("../../handler/functions");
+const fs = require("fs");
 
 module.exports = {
-    name: 'setnick',
-    description: 'Give a member a new nickname.',
+    name: 'unban',
+    description: 'Unban a member from your Guild.',
     module: 'mod',
     options: [{
-        name: 'member',
-        description: 'The member you want to change the nick of.',
-        type: ApplicationCommandOptionType.User,
+        name: 'memberid',
+        description: 'The member you wish to unban.',
+        type: ApplicationCommandOptionType.String,
         required: true
     }, {
-        name: 'nick',
-        description: 'The nick you want to change to.',
+        name: 'reason',
+        description: 'The reason for unbanning this member.',
         type: ApplicationCommandOptionType.String,
+        required: true
     }],
     /** 
      * @param {Client} client
@@ -37,25 +39,22 @@ module.exports = {
      * @param {String[]} args
      */
     run: async (client, interaction, con, args) => {
-        const memberToNick = interaction.options.getMember('member');
-        let nick = interaction.options.getString('nick');
-        const highestRoleMod = interaction.member.roles.highest.rawPosition;
-        const highestRoleTarget = memberToNick.roles.highest.rawPosition;
-        const highestRoleBot = interaction.guild.members.me.roles.highest.rawPosition;
+        const memberToBan = interaction.options.getString('memberid');
+        const banReason = interaction.options.getString('reason');
 
-        if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.ManageNicknames)) {
+        if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.BanMembers)) {
             return interaction.reply({
                 embeds: [
                     new EmbedBuilder()
                     .setColor(ee.errorColor)
                     .setTitle(`:x: Error :x:`)
-                    .setDescription(`***It seems like I do not currently have the \`Manage Nicknames\` permission.***`)
+                    .setDescription(`***It seems like I do not currently have the \`Ban Members\` permission.***`)
                 ],
                 ephemeral: true
             });
         };
 
-        if (!await client.nickCmd.has(`${interaction.guild.id}`)) {
+        if (!await client.banCmd.has(`${interaction.guild.id}`)) {
             return interaction.reply({
                 embeds: [
                     new EmbedBuilder()
@@ -66,67 +65,79 @@ module.exports = {
             })
         }
 
-        if (interaction.guild.ownerId === memberToNick.id) {
+        if (interaction.user.id === memberToBan) {
             return interaction.reply({
                 embeds: [
                     new EmbedBuilder()
                     .setColor(ee.errorColor)
                     .setTitle(`:x: Error :x:`)
-                    .setDescription(`***You may not nick the Guild Owner.***`)
+                    .setDescription(`***You may not unban yourself from the server.***`)
                 ],
                 ephemeral: true
             });
         }
 
-        if (highestRoleTarget >= highestRoleMod && interaction.guild.ownerId != interaction.user.id) {
+
+        if (memberToBan === client.user.id) {
             return interaction.reply({
                 embeds: [
                     new EmbedBuilder()
                     .setColor(ee.errorColor)
                     .setTitle(`:x: Error :x:`)
-                    .setDescription(`***You may not edit the nickname of someone at the same or higher rank than you.***`)
+                    .setDescription(`***You may not unban me from the server.***`)
                 ],
                 ephemeral: true
             })
         }
 
-        if (highestRoleTarget >= highestRoleBot) {
+        if (interaction.guild.ownerId === memberToBan) {
             return interaction.reply({
                 embeds: [
                     new EmbedBuilder()
                     .setColor(ee.errorColor)
                     .setTitle(`:x: Error :x:`)
-                    .setDescription(`***It seems as if my role is not high enough to nick that user.***`)
+                    .setDescription(`***You may not unban the Guild Owner.***`)
                 ],
                 ephemeral: true
-            })
+            });
         }
 
-        const oldNick = memberToNick.nickname;
+        try {
+            var fetchBan = await interaction.guild.bans.fetch(memberToBan);
+        } catch (e) {
+            if (e.message === "Unknown Ban") {
+                return interaction.reply({
+                    embeds: [
+                        new EmbedBuilder()
+                        .setColor(ee.errorColor)
+                        .setTitle(`:x: Error :x:`)
+                        .setDescription(`***It seems like there is no user with that UserID that is banned.***`)
+                    ],
+                    ephemeral: true
+                })
+            }
+        }
 
-        if (!nick) nick = "";
-
-        await memberToNick.setNickname(nick);
+        await interaction.guild.members.unban(memberToBan, `[UNBAN] Reason: ${banReason} | Moderator: ${interaction.user.username}#${interaction.user.discriminator}`);
 
         try {
             await modLog(interaction.guild, {
                 embeds: [
                     new EmbedBuilder()
-                    .setColor(ee.maintenanceColor)
-                    .setTitle(`:warning: Slowmode Changed :warning:`)
+                    .setColor(ee.successColor)
+                    .setTitle(`:warning: Member Unbanned :warning:`)
                     .addFields([{
-                        name: 'Old Nickname',
-                        value: `\`\`\`${oldNick === null ? "No previous nickname" : oldNick}\`\`\``,
+                        name: 'Reason',
+                        value: `\`\`\`${banReason}\`\`\``,
                         inline: true
                     }, {
-                        name: 'New Nickname',
-                        value: `\`\`\`${nick === "" ? "Removed nickname" : nick}\`\`\``,
-                        inline: true
+                        name: 'Target',
+                        value: `\`\`\`${fetchBan.user.username}#${fetchBan.user.discriminator} (${fetchBan.user.id})\`\`\``
                     }, {
                         name: 'Moderator',
                         value: `\`\`\`${interaction.user.username}#${interaction.user.discriminator} (${interaction.user.id})\`\`\``,
                     }])
-                    .setThumbnail(`https://cdn.discordapp.com/attachments/1010999257899204769/1054749803193585714/support.png`)
+                    .setThumbnail(`https://cdn.discordapp.com/attachments/1010999257899204769/1065641669950709770/mod.png`)
                     .setTimestamp()
                 ]
             });
@@ -136,23 +147,21 @@ module.exports = {
             embeds: [
                 new EmbedBuilder()
                 .setColor(ee.color)
-                .setTitle(`:white_check_mark: Nickname Changed :white_check_mark:`)
+                .setTitle(`:white_check_mark: Member was Unbanned :white_check_mark:`)
                 .addFields([{
                     name: 'Moderator',
                     value: `\`\`\`${interaction.user.username}#${interaction.user.discriminator}\`\`\``,
                     inline: true
                 }, {
-                    name: 'Old Nickname',
-                    value: `\`\`\`${oldNick === null ? "No previous nickname" : oldNick}\`\`\``,
+                    name: 'Target',
+                    value: `\`\`\`${fetchBan.user.username}#${fetchBan.user.discriminator}\`\`\``,
                     inline: true
                 }, {
-                    name: 'New Nickname',
-                    value: `\`\`\`${nick === "" ? "Removed nickname" : nick}\`\`\``,
-                    inline: true
+                    name: 'Reason',
+                    value: `\`\`\`${banReason}\`\`\``
                 }])
-                .setTimestamp()
                 .setThumbnail(`https://cdn.discordapp.com/attachments/1010999257899204769/1053662138251624488/hammer.png`)
             ]
-        })
+        });
     }
 }

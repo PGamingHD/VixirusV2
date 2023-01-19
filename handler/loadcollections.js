@@ -207,6 +207,11 @@ module.exports = async (client) => {
             await client.timeoutUpdates.set(`${guild.log_ServerId}`, "TimeoutUpdates Enabled!");
         }
     });
+
+    const [punishedData, punishedRows] = await pool.query(`SELECT * FROM user_punishments`);
+    punishedData.forEach(async (user) => {
+        await client.globalPunishments.set(`${user.punished_userId}`, user.punished_data);
+    });
     
     await pool.release();
 }

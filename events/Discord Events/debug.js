@@ -4,7 +4,7 @@ const config = require("../../botconfig/config.json");
 if (config.ENABLE_DEBUG) {
 
     client.on("debug", async (info) => {
-        console.log(info)
+        return client.logger.log(info, "debug")
     });
 
 }

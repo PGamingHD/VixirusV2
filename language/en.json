@@ -45,7 +45,7 @@
     "JOINEDON_LABEL": "Joined On",
     "BOTDEVELOPER_LABEL": "Bot Developer",
     "PLATFORM_LABEL": "Platform",
-    "REGISTEREDCMDS_LABEL": "Registered Commands",
+    "REGISTEREDCMDS_LABEL": "Interaction Commands",
     "CACHEDSERVERS_LABEL": "Cached Server(s)",
     "CACHEDCHANNELS_LABEL": "Cached Channel(s)",
     "CACHEDUSERS_LABEL": "Cached User(s)",

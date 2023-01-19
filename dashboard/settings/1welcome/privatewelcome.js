@@ -27,9 +27,10 @@ module.exports = {
         
         const pool = await getPool().getConnection();
         try {
+            if (newData.length === 0) return {error: 'Please include text'};
+            if (newData === "") newData = "Have a great time in **{server}**!";
             const [guildData, guildRows] = await pool.query(`SELECT * FROM guild_data WHERE data_ServerId = ${guild.id}`);
             if (guildData.length === 0) return;
-            if (newData === "") newData = "Have a great time in **{server}**!";
             await pool.query(`UPDATE guild_data SET data_private = '${newData}' WHERE data_ServerId = ${guild.id}`);
 
             await client.cachedPrivateMessages.set(`${guild.id}`, newData);

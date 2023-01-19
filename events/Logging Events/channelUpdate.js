@@ -8,6 +8,9 @@ const { EmbedBuilder, channelLink } = require("discord.js");
 client.on("channelUpdate", async (oldchannel, newchannel) => {
     if (await client.channelUpdate.has(`${newchannel.guild.id}`) && await client.loggingmodule.has(`${newchannel.guild.id}`)) {
         let changedData = "";
+
+        if (oldchannel.name === newchannel.name && oldchannel.nsfw === newchannel.nsfw && oldchannel?.topic === newchannel?.topic) return;
+
         if (oldchannel.name !== newchannel.name) {
             changedData += `ㅤㅤㅤㅤㅤㅤ**Name**\n\`\`\`Old: ${oldchannel.name}\n-----------------------\nNew: ${newchannel.name}\`\`\`\n`
         } 

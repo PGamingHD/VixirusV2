@@ -22,7 +22,7 @@
 
     module.exports = {
         name: 'status',
-        description: 'Get some general information about the status of Discmon!',
+        description: 'Get some general information about the status of the client',
         userPerms: [],
         clientPerms: [],
         /** 
@@ -86,7 +86,7 @@
                             inline: true
                         }, {
                             name: await languageControl(interaction.guild, 'REGISTEREDCMDS_LABEL'),
-                            value: `\`[ ${client.slashCommands.map((d) => d.options).flat().length.toLocaleString('en-US')} ]\``,
+                            value: `\`[ ${client.interactionCommands.map((d) => d.options).flat().length.toLocaleString('en-US')} ]\``,
                             inline: true
                         }, {
                             name: await languageControl(interaction.guild, 'CACHEDSERVERS_LABEL'),

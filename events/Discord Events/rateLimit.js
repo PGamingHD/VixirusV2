@@ -4,7 +4,7 @@ const config = require("../../botconfig/config.json");
 if (config.ENABLE_RATEWARNING) {
 
     client.rest.on("rateLimited", async (rateLimitData) => {
-        return console.log(`[RATELIMIT] <==> || You have been set on a ratelimit by Discord! || <==> [RATELIMIT]`);
+        return client.logger.log(`[RATELIMIT] <==> || You have been set on a ratelimit by Discord! || <==> [RATELIMIT]`, "ratelimit");
     });
 
 }

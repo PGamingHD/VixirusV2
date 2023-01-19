@@ -83,9 +83,7 @@ client.on("guildMemberAdd", async (member) => {
                 }),
                 files: [attachment]
             })
-        } catch (error) {
-            console.log(error);
-        }
+        } catch {}
     }
 
     if (client.welcomemodule.has(`${member.guild.id}`) && client.privatemodule.has(`${member.guild.id}`) && client.cachedPrivateMessages.get(`${member.guild.id}`) !== "") {

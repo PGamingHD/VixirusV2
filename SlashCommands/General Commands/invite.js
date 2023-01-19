@@ -17,7 +17,7 @@
 
     module.exports = {
         name: 'invite',
-        description: 'Interested in inviting me, or maybe joining our support server?',
+        description: 'Interested in inviting me, or maybe joining our support server',
         userPerms: [],
         clientPerms: [],
         /** 

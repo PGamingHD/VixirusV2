@@ -20,7 +20,7 @@ const fs = require("fs");
 
 module.exports = {
     name: 'language',
-    description: 'View your current language, and also a list of other languages you can pick for your server!',
+    description: 'View your current language, and also a list of other languages you can pick for your server',
     userPerms: ['ManageGuild'],
     clientPerms: [],
     options: [{

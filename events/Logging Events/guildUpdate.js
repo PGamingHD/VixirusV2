@@ -8,6 +8,9 @@ const { EmbedBuilder } = require("discord.js");
 client.on("guildUpdate", async (oldGuild, newGuild) => {
     if (await client.guildUpdate.has(`${newGuild.id}`) && await client.loggingmodule.has(`${newGuild.id}`)) {
         let changedData = "";
+
+        if (oldGuild.afkTimeout === newGuild.afkTimeout && oldGuild.systemChannel === newGuild.systemChannel && oldGuild.afkChannel === newGuild.afkChannel && oldGuild.name === newGuild.name) return;
+
         if (oldGuild.afkTimeout !== newGuild.afkTimeout) {
             changedData += `ㅤㅤㅤㅤ**AFK Timeout**\n\`\`\`Old: ${oldGuild.afkTimeout / 60} minute(s)\n-----------------------\nNew: ${newGuild.afkTimeout / 60} minute(s)\`\`\`\n`
         }

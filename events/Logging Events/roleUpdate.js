@@ -8,6 +8,9 @@ const { EmbedBuilder } = require("discord.js");
 client.on("roleUpdate", async (oldRole, newRole) => {
     if (await client.roleUpdate.has(`${newRole.guild.id}`) && await client.loggingmodule.has(`${newRole.guild.id}`)) {
         let changedData = "";
+
+        if (oldRole.name === newRole.name && oldRole.color === newRole.color && oldRole.mentionable === newRole.mentionable && oldRole.hoist === newRole.hoist) return;
+
         if (oldRole.name !== newRole.name) {
             changedData += `ㅤㅤㅤㅤ**Name**\n\`\`\`Old: ${oldRole.name}\n-----------------------\nNew: ${newRole.name}\`\`\`\n`
         }

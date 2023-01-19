@@ -17,6 +17,8 @@ const getPool = require("../../handler/database");
 
 client.on("guildCreate", async (guild) => {
 
+    client.logger.log("I just joined a guild called " + guild.name + " (" +  guild.id + ")", "guildjoin");
+
     const pool = await getPool().getConnection();
     const [isAvailable, guildRows] = await pool.query(`SELECT * FROM guild_modules WHERE module_ServerId = ${guild.id}`);
 

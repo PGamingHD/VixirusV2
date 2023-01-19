@@ -26,9 +26,10 @@ module.exports = {
     }) => {
         const pool = await getPool().getConnection();
         try {
+            if (newData.length === 0) return {error: 'Invalid channel'};
+            if (newData === "") newData = "0";
             const [guildData, guildRows] = await pool.query(`SELECT * FROM guild_data WHERE data_ServerId = ${guild.id}`);
             if (guildData.length === 0) return;
-            if (newData === "") newData = "0";
             await pool.query(`UPDATE guild_data SET data_byechannel = '${newData}' WHERE data_ServerId = ${guild.id}`);
 
             await client.cachedLeaveChannels.set(`${guild.id}`, newData);

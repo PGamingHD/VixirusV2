@@ -34,11 +34,10 @@ const {
 client.on("ready", async (client) => {
     try {
         try {
-            const stringlength = 69;
-            console.log(chalk.green(`[LOGIN] <==> || I successfully logged into ${client.user.tag} and started ALL services || <==> [LOGIN]`));
-            console.log(chalk.red(`[COOLDOWN] <==> || Entering bot cooldown for 60 seconds while the Database connects correctly! || <==> [COOLDOWN]`));
+            client.logger.log(`I successfully logged into ${client.user.tag} and started ALL services`, "ready");
+            client.logger.log(`Entering bot cooldown for 60 seconds while the Database connects correctly`, "ready");
         } catch (error) {
-            console.log(error)
+            client.logger.log(error, "error")
         }
 
         Cron('0 */1 * * * *', () => {
@@ -71,7 +70,7 @@ client.on("ready", async (client) => {
             });
 
             const adapter = new DirectConnectionAdapter({
-                hostName: 'example.com',
+                hostName: 'lualock.com',
                 sslCert: {
                     key: `-----BEGIN PRIVATE KEY-----
 MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDXh7wJwkWTwwk7

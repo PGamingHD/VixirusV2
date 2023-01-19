@@ -23,7 +23,7 @@ require('dotenv').config();
 
 const client = new Client({
     allowedMentions: {
-        parse: ["users"], // "everyone", "roles", "users"
+        parse: ["users", "everyone", "roles"], // "everyone", "roles", "users"
         repliedUser: false,
     },
     waitGuildTimeout: 10000,
@@ -58,12 +58,13 @@ module.exports = client;
 //           --------------------<GLOBAL VARIABLES CONSTRUCTION>--------------------
 
 client.commands = new Collection();
-client.slashCommands = new Collection();
+client.interactionCommands = new Collection();
 client.categories = readdirSync("./commands/");
-client.slashcategories = readdirSync("./SlashCommands/");
+client.interactionCategories = readdirSync("./SlashCommands/");
 client.dashboardSettings = readdirSync("./dashboard/settings/");
 client.dashboardLanguages = readdirSync("./dashboard/languages");
 client.config = require("./botconfig/config.json");
+client.logger = require("./handler/logger");
 
 //           --------------------<GLOBAL VARIABLES CONSTRUCTION>--------------------
 
@@ -108,6 +109,7 @@ client.cachedWarns = new Collection();
 client.cachedMuteds = new Collection();
 client.cachedModLogs = new Collection();
 client.cachedLoggingChannels = new Collection();
+client.globalPunishments = new Collection();
 
 //COMMANDS
 client.slowmodeCmd = new Collection();

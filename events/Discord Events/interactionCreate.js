@@ -10,7 +10,8 @@ const {
     ButtonStyle,
     WebhookClient,
     PermissionFlagsBits,
-    Permissions
+    Permissions,
+    ContextMenuCommandBuilder
 } = require("discord.js");
 const client = require("../../index.js");
 const ee = require("../../botconfig/embed.json");
@@ -75,7 +76,7 @@ client.on("interactionCreate", async (interaction) => {
             }
         }
 
-        const cmd = client.slashCommands.get(interaction.commandName);
+        const cmd = client.interactionCommands.get(interaction.commandName);
         if (!cmd) {
             let embed = new EmbedBuilder()
                 .setColor(ee.color)
@@ -242,6 +243,39 @@ client.on("interactionCreate", async (interaction) => {
         } = interaction;
 
         //TRY TO USE COLLECTORS INSTEAD OF THIS! (WILL SURVIVE FOREVER)
+    }
+
+    if (interaction.isContextMenuCommand()) {
+        const cmd = client.interactionCommands.get(interaction.commandName);
+        if (!cmd) {
+            let embed = new EmbedBuilder()
+                .setColor(ee.color)
+                .setDescription(await languageControl(interaction.guild, 'COMMAND_ERROR'))
+            return interaction.reply({
+                embeds: [embed],
+                epehemeral: true
+            });
+        }
+
+        const con = await getPool().getConnection();
+
+        try {
+            await cmd.run(client, interaction, con);
+            await con.release();
+        } catch (error) {
+            return interaction.reply({
+                embeds: [
+                    new EmbedBuilder()
+                    .setColor(ee.errorColor)
+                    .setFooter({
+                        text: 'Please report the error message above to the Bot Developer!'
+                    })
+                    .setTitle(`:x: Something went wrong while running the \`${cmd.name}\` command!`)
+                    .setDescription(`\`\`\`${error.message}\`\`\``)
+                ],
+                ephemeral: true
+            })
+        }
     }
 });
 

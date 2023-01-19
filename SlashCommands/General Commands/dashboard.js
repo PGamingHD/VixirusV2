@@ -17,7 +17,7 @@ const {
 
 module.exports = {
     name: 'dashboard',
-    description: 'Interested in controlling me from my dashboard? Use this command to get the dashboard link.',
+    description: 'Interested in controlling me from my dashboard? Use this command to get the dashboard link',
     /** 
      * @param {Client} client 
      * @param {Message} message 
