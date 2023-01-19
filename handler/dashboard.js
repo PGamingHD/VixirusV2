@@ -54,7 +54,7 @@ require('dotenv').config();
             craneStandColors: ['#ff6347', , '#f29b8b']
         },
         SSL: {
-            enabled: false,
+            enabled: true,
             cert: Buffer.from(fs.readFileSync('/etc/letsencrypt/live/lualock.com/fullchain.pem'), 'binary').toString('ascii'),
             key: Buffer.from(fs.readFileSync('/etc/letsencrypt/live/lualock.com/privkey.pem'), 'binary').toString('ascii')
         },
