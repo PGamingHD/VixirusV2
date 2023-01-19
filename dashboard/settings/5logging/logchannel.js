@@ -10,7 +10,7 @@ const {
 const client = require("../../../index");
 
 module.exports = {
-    optionId: 'logging_channel',
+    optionId: 'logging_channels',
     optionName: "Logging Channel",
     optionDescription: "The channel that logs should be displayed in.",
     optionType: DBD.formTypes.channelsSelect(false, [ChannelType.GuildText], true, false),
@@ -19,6 +19,7 @@ module.exports = {
         user
     }) => {
         try {
+            console.log(client.cachedLoggingChannels)
             return await client.cachedLoggingChannels.get(`${guild.id}`);
         } catch (error) {
             return writeError(error, guild);
