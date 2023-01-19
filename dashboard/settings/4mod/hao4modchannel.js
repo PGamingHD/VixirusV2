@@ -25,6 +25,9 @@ module.exports = {
         newData
     }) => {
         const pool = await getPool().getConnection();
+
+        await guildHasData(guild, pool);
+        
         try {
             if (newData.length === 0) return {error: 'You may not return no channels'};
             if (newData[0] === "" || newData[0] === undefined) return {error: 'No channels were found, please select a channel first'};

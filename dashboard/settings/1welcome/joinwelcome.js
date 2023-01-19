@@ -23,9 +23,11 @@ module.exports = {
         guild,
         newData
     }) => {
-        if (newData === "") return;
-        
+
         const pool = await getPool().getConnection();
+
+        await guildHasData(guild, pool);
+
         try {
             const [guildData, guildRows] = await pool.query(`SELECT * FROM guild_data WHERE data_ServerId = ${guild.id}`);
             if (guildData.length === 0) return;

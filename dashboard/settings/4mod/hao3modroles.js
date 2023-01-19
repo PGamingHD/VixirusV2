@@ -24,6 +24,9 @@ module.exports = {
         newData
     }) => {
         const pool = await getPool().getConnection();
+
+        await guildHasData(guild, pool);
+        
         try {
             if (newData.length === 0) return {error: 'You may not return no roles'};
             if (newData.includes(guild.object.roles.everyone.id)) return {error: 'You may not include the everyone role in this!'};

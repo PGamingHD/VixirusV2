@@ -23,9 +23,10 @@ module.exports = {
         guild,
         newData
     }) => {
-        if (newData === "") return;
-        
         const pool = await getPool().getConnection();
+
+        await guildHasData(guild, pool);
+        
         try {
             if (newData.length === 0) return {error: 'Please include text'};
             if (newData === "") newData = "Have a great time in **{server}**!";

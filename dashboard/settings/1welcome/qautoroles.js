@@ -24,6 +24,9 @@ module.exports = {
         newData
     }) => {
         const pool = await getPool().getConnection();
+
+        await guildHasData(guild, pool);
+        
         try {
             if (newData[0] === "" || newData[0] === undefined || newData.includes(guild.object.roles.everyone.id)) return {error: 'Please include atleast 1 valid role & not the everyone role'};
             const [guildData, guildRows] = await pool.query(`SELECT * FROM guild_data WHERE data_ServerId = ${guild.id}`);

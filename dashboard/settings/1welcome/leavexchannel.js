@@ -25,6 +25,9 @@ module.exports = {
         newData
     }) => {
         const pool = await getPool().getConnection();
+
+        await guildHasData(guild, pool);
+        
         try {
             if (newData.length === 0) return {error: 'Invalid channel'};
             if (newData === "") newData = "0";
