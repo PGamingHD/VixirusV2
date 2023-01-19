@@ -1,6 +1,8 @@
 const DBD = require('discord-dashboard');
 const getPool = require("../../../handler/database");
-const { ChannelType } = require('discord.js');
+const {
+    ChannelType
+} = require('discord.js');
 const {
     writeError,
     guildHasData
@@ -18,7 +20,7 @@ module.exports = {
     }) => {
         try {
             return await client.cachedLoggingChannels.get(`${guild.id}`);
-        } catch(error) {
+        } catch (error) {
             return writeError(error, guild);
         }
     },
@@ -26,11 +28,10 @@ module.exports = {
         guild,
         newData
     }) => {
-        const pool = await getPool().getConnection();
-
-        await guildHasData(guild, pool);
-        
         try {
+            const pool = await getPool().getConnection();
+
+            await guildHasData(guild, pool);
             const [guildData, guildRows] = await pool.query(`SELECT * FROM guild_data WHERE data_ServerId = ${guild.id}`);
             if (guildData.length === 0) return;
             if (newData === "") newData = "0";
