@@ -16,7 +16,7 @@ module.exports = {
         guild,user
     }) => {
         try {
-            return await client.cachedModLogs.get(`${guild.id}`);
+            return await client.cachedLoggingChannels.get(`${guild.id}`);
         } catch(error) {
             return writeError(error, guild);
         }
@@ -34,9 +34,9 @@ module.exports = {
             if (newData[0] === "" || newData[0] === undefined) return {error: 'No channels were found, please select a channel first'};
             const [guildData, guildRows] = await pool.query(`SELECT * FROM guild_data WHERE data_ServerId = ${guild.id}`);
             if (guildData.length === 0) return;
-            await pool.query(`UPDATE guild_data SET data_modlogs = '${newData}' WHERE data_ServerId = ${guild.id}`);
+            await pool.query(`UPDATE guild_data SET data_logchannel = '${newData}' WHERE data_ServerId = ${guild.id}`);
 
-            await client.cachedModLogs.set(`${guild.id}`, newData);
+            await client.cachedLoggingChannels.set(`${guild.id}`, newData);
 
             return await pool.release();
         } catch (error) {
