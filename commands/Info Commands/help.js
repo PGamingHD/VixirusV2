@@ -27,7 +27,7 @@ module.exports = {
      * @param {Message} message
      * @param {String[]} args
      */
-    run: async (client, message, args, con, prefix) => {
+    run: async (client, message, args, con) => {
         const prefix = client.cachedServerPrefixes.get(`${message.guild.id}`)
 
         const embed1 = new EmbedBuilder()
