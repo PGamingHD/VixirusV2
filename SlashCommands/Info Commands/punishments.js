@@ -41,7 +41,7 @@ module.exports = {
         let punishmentsLength = 0;
 
         if (punishmentsLength !== undefined) {
-            punishmentsLength = globalPunishments.length;
+            punishmentsLength = globalPunishments.size;
         }
 
         for (let i = 0; i < punishmentsLength; i++) {
