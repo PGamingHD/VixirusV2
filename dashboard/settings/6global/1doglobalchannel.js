@@ -36,6 +36,9 @@ module.exports = {
             if (guildData.length === 0) return;
             await pool.query(`UPDATE guild_data SET data_globalchannel = '${newData}' WHERE data_ServerId = ${guild.id}`);
 
+            const currentServerChats = await client.globalChats.get(`chats`);
+            const newServerChats = currentServerChats.push(guild.id);
+            await client.globalChats.set(`chats`, newServerChats);
             await client.serverGlobal.set(`${guild.id}`, newData);
 
             return await pool.release();
