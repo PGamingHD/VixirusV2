@@ -203,7 +203,7 @@
                     const current = helpEmbedPage.slice(i, k);
                     let j = i;
                     k += 1;
-                    const info = current.map(currentEmbed => `\`${currentEmbed.data.color}\``);
+                    const info = current.map(currentEmbed => `\`${currentEmbed.data.description}\``);
                     const embed = new EmbedBuilder()
                         .setDescription(`${info}`)
                         .setTitle(helpEmbedPage[i].data.title)
