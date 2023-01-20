@@ -37,7 +37,7 @@ module.exports = {
               prompt: question,
             });
             
-            return interaction.reply({
+            return message.reply({
                 embeds: [
                     new EmbedBuilder()
                     .setColor(ee.color)
