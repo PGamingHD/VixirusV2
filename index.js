@@ -72,6 +72,7 @@ client.logger = require("./handler/logger");
 //           --------------------<DB VARIABLES CONTSTRUCTION>--------------------
 
 //GLOBALS
+client.globalCooldown = new Collection();
 client.userCooldown = new Collection();
 client.startupCooldown = new Collection();
 

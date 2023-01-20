@@ -19,6 +19,7 @@ const openai = new OpenAIApi(configuration);
 
 module.exports = {
     name: "ai",
+    globalCooldown: 10,
     aliases: ['openai', 'askai'],
     userPerms: [],
     clientPerms: [],
@@ -31,13 +32,18 @@ module.exports = {
     run: async (client, message, args, con) => {
         const question = args;
 
+        const msg = await message.reply({
+            content: `${emoji.loading} Thinking...`
+        })
+
         try {
             const completion = await openai.createCompletion({
               model: "text-davinci-002",
               prompt: question,
+              max_tokens: 4000
             });
             
-            return message.reply({
+            return await msg.edit({
                 embeds: [
                     new EmbedBuilder()
                     .setColor(ee.color)
@@ -47,7 +53,16 @@ module.exports = {
                 ]
             })
           } catch (error) {
-            console.log(error)
+            return await msg.edit({
+                content: '',
+                embeds: [
+                    new EmbedBuilder()
+                    .setColor(ee.errorColor)
+                    .setTitle(`:robot: Response Failed :robot:`)
+                    .setDescription(`Woops, is this resource being rate limited? Try asking again in a few minutes.`)
+                    .setTimestamp()
+                ]
+            })
           }
     },
 };

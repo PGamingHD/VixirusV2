@@ -125,6 +125,24 @@ client.on("interactionCreate", async (interaction) => {
             }
         }
 
+        if (client.globalCooldown.has(`${cmd?.name}`)) {
+            const usercd = await client.globalCooldown.get(`${cmd?.name}`);
+            let prettified = prettyMilliseconds(usercd - Date.now(), {
+                verbose: true
+            });
+
+            return interaction.reply({
+                embeds: [
+                    new EmbedBuilder()
+                    .setColor(ee.errorColor)
+                    .setDescription(stringTemplateParser(await languageControl(interaction.guild, 'ON_COOLDOWN'), {
+                        timeLeft: prettified
+                    }))
+                ],
+                ephemeral: true
+            })
+        }
+
         if (client.userCooldown.has(`${interaction.user.id}`)) {
             const usercd = await client.userCooldown.get(`${interaction.user.id}`);
             let prettified = prettyMilliseconds(usercd - Date.now(), {
@@ -150,6 +168,15 @@ client.on("interactionCreate", async (interaction) => {
             setTimeout(async () => {
                 await client.userCooldown.delete(`${interaction.user.id}`);
             }, 1000 * cmd?.cooldown);
+        }
+
+        if (cmd?.globalCooldown) {
+            let expireDate = Date.now() + 1000 * cmd?.globalCooldown;
+            await client.globalCooldown.set(`${cmd?.name}`, expireDate);
+
+            setTimeout(async () => {
+                await client.globalCooldown.delete(`${cmd?.name}`);
+            }, 1000 * cmd?.globalCooldown);
         }
 
         if (cmd.DeveloperCommand && !interaction.user.id.includes(config.DEVELOPER_IDS)) {

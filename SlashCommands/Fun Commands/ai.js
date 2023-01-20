@@ -8,7 +8,7 @@ const {
     ApplicationCommandOptionType
 } = require('discord.js');
 const ee = require('../../botconfig/embed.json');
-const emoji = require('../../botconfig/embed.json')
+const emoji = require('../../botconfig/emojis.json')
 const prettyMilliseconds = require('pretty-ms');
 const config = require('../../botconfig/config.json');
 const {
@@ -24,6 +24,7 @@ const openai = new OpenAIApi(configuration);
 
 module.exports = {
     name: 'ai',
+    globalCooldown: 10,
     description: 'Ask the OpenAI anything, provided by OpenAI!',
     options: [{
         name: 'question',
@@ -38,14 +39,20 @@ module.exports = {
      */
     run: async (client, interaction, args) => {
         const question = interaction.options.getString('question');
+
+        await interaction.reply({
+            content: `${emoji.loading} Thinking...`
+        })
         
         try {
             const completion = await openai.createCompletion({
-              model: "text-davinci-002",
+              model: "text-davinci-003",
               prompt: question,
+              max_tokens: 4000
             });
             
-            return interaction.reply({
+            return await interaction.editReply({
+                content: '',
                 embeds: [
                     new EmbedBuilder()
                     .setColor(ee.color)
@@ -55,7 +62,16 @@ module.exports = {
                 ]
             })
           } catch (error) {
-            console.log(error)
+            return await interaction.editReply({
+                content: '',
+                embeds: [
+                    new EmbedBuilder()
+                    .setColor(ee.errorColor)
+                    .setTitle(`:robot: Response Failed :robot:`)
+                    .setDescription(`Woops, is this resource being rate limited? Try asking again in a few minutes.`)
+                    .setTimestamp()
+                ]
+            })
           }
     }
 }

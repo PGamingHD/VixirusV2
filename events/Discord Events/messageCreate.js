@@ -77,6 +77,24 @@ client.on("messageCreate", async (message) => {
 
     if (!command) return;
 
+    if (client.globalCooldown.has(`${command?.name}`)) {
+        const usercd = await client.globalCooldown.get(`${command.name}`);
+        let prettified = prettyMilliseconds(usercd - Date.now(), {
+            verbose: true
+        });
+
+        return message.reply({
+            embeds: [
+                new EmbedBuilder()
+                .setColor(ee.errorColor)
+                .setDescription(stringTemplateParser(await languageControl(message.guild, 'ON_COOLDOWN'), {
+                    timeLeft: prettified
+                }))
+            ],
+            ephemeral: true
+        })
+    }
+
     if (client.userCooldown.has(`${message.author.id}`)) {
         const usercd = await client.userCooldown.get(`${message.author.id}`);
         let prettified = prettyMilliseconds(usercd - Date.now(), {
@@ -97,11 +115,20 @@ client.on("messageCreate", async (message) => {
 
     if (command?.cooldown) {
         let expireDate = Date.now() + 1000 * command?.cooldown;
-        await client.userCooldown.set(`${message.author.id}`, expireDate);
+        await client.userCooldown.set(`${command?.name}`, expireDate);
 
         setTimeout(async () => {
-            await client.userCooldown.delete(`${message.author.id}`);
+            await client.userCooldown.delete(`${command?.name}`);
         }, 1000 * command?.cooldown);
+    }
+
+    if (command?.globalCooldown) {
+        let expireDate = Date.now() + 1000 * command?.globalCooldown;
+        await client.globalCooldown.set(`${command?.name}`, expireDate);
+
+        setTimeout(async () => {
+            await client.globalCooldown.delete(`${command?.name}`);
+        }, 1000 * command?.globalCooldown);
     }
 
     let clientArray = [];
