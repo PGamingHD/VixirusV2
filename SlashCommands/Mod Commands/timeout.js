@@ -182,7 +182,7 @@ module.exports = {
                 } else {
                     await con.query(`INSERT INTO user_punishments(punished_userId) VALUES (${memberToTimeout.id})`)
                     await con.query(`UPDATE user_punishments SET punished_data = JSON_ARRAY_APPEND(punished_data,'$',CAST('{"server": "${interaction.guild.id}", "punishment": "timeout", "mod": "${interaction.user.id}", "target": "${memberToTimeout.id}", "reason": "${timeoutReason}", "date": "${dateNow()}", "CaseID": "${caseID}"}' AS JSON)) WHERE punished_userId = '${memberToTimeout.id}'`);
-                    client.globalPunishments.set(`${memberToTimeout.id}`, {
+                    client.globalPunishments.set(`${memberToTimeout.id}`, [{
                         "server": `${interaction.guild.id}`,
                         "punishment": "timeout",
                         "mod": `${interaction.user.id}`,
@@ -190,7 +190,7 @@ module.exports = {
                         "reason": `${timeoutReason}`,
                         "date": `${dateNow()}`,
                         "CaseID": `${caseID}`
-                    })
+                    }])
                 }
             }
         } catch {}
