@@ -4,7 +4,7 @@ module.exports = {
         index: {
             feeds: ["Current User", "CPU", "System Platform", "Server Count"],
             card: {
-                image: "https://cdn.discordapp.com/attachments/1010999257899204769/1049748265744216155/comingsoon.png",
+                image: "https://cdn.discordapp.com/attachments/1010999257899204769/1049750491967520798/onlyV.png",
                 category: "VixirusV2 Announcements",
                 title: "VixirusV2 - Coming Soon",
                 description: "VixirusV2 is under strict development and will return sooner rather than later.<br /><br /><br /><b>Stay tuned! :)</b>",
