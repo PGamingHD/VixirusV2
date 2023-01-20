@@ -240,6 +240,8 @@ async function LoggerLog(guild, returnObject) {
 }
 
 async function globalChat(message) {
+    if (!await client.globalmodule.has(`${message.guild.id}`)) return;
+
     const chats = await client.globalChats.get('chats');
     if (!chats.includes(message.channel.id)) return;
     if (config.Global_Chat.Banned_Users.includes(message.author.id)) return;
