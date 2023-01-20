@@ -11,6 +11,11 @@ const {
     languageControl,
     stringTemplateParser
 } = require("../../handler/functions")
+const { Configuration, OpenAIApi } = require("openai");
+const configuration = new Configuration({
+    apiKey: process.env.OPENAI_KEY,
+});
+const openai = new OpenAIApi(configuration);
 
 module.exports = {
     name: "ai",
