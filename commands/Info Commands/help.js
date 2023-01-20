@@ -28,39 +28,35 @@ module.exports = {
      * @param {String[]} args
      */
     run: async (client, message, args, con, prefix) => {
+        const prefix = client.cachedServerPrefixes.get(`${message.guild.id}`)
+
         const embed1 = new EmbedBuilder()
         embed1.setColor(ee.color)
-        embed1.setTitle(`Discmon Commands - Main`)
-        embed1.setDescription(`Information can be found on the slash command simply by typing the slash command.\nDon't know how to use slash commands? All slash commands are triggered by the prefix \`/\`!`)
+        embed1.setTitle(`VixirusV2 Commands`)
+        embed1.setDescription(`Client supports both Slash Commands & Prefixes, trigger the slash help with \`/help\` and prefix help with \`.${prefix}help\`!`)
         embed1.addFields([{
-            name: 'Market',
-            value: `The main Marketplace for selling and purchasing Pokémons.\n\`market\``
-        }, {
-            name: 'Configuration',
-            value: `Configure the client to your own needs.\n\`redirect\``
-        }, {
-            name: 'Pokémon',
-            value: `General Pokémon related commands.\n\`info\`, \`pokemons\`, \`select\``,
-        }, {
-            name: 'Shops',
-            value: `Purchasing items from the shop.\n\`shop\`, \`store\``
+            name: 'General',
+            value: `A couple of general commands to start off or just get some extra knowledge.\n\`dashboard\`, \`invite\`, \`ping\``
         }, {
             name: 'Information',
-            value: `Main information commands, will display both Pokémon and client info.\n\`help\`, \`status\`, \`profile\`, \`ping\``
+            value: `A couple of commands to get some information about the client.\n\`help\`, \`punishments\`, \`status\``
         }, {
-            name: 'Client',
-            value: `Everything related to the bot-client, and starting your adventure.\n\`start\``
+            name: 'Language',
+            value: `Language related commands, switch language up.\n\`language\``,
+        }, {
+            name: 'Moderation',
+            value: `Moderate your Servers with the bot.\n\`ban\`, \`clearwarns\`, \`kick\`, \`lockdown\`, \`mute\`, \`purge\`, \`removetimeout\`, \`removewarning\`, \`setnick\`, \`slowmode\`, \`softban\`, \`tempban\`, \`timeout\`, \`unban\`, \`unmute\`, \`warn\`, \`warns\``
         }])
         embed1.setFooter({
             text: 'Page 1 of 2'
         })
         const embed2 = new EmbedBuilder()
         embed2.setColor(ee.color)
-        embed2.setTitle(`Discmon Commands - Second`)
-        embed2.setDescription(`Information can be found on the slash command simply by typing the slash command.\nDon't know how to use slash commands? All slash commands are triggered by the prefix \`/\`!`)
+        embed2.setTitle(`VixirusV2 Commands`)
+        embed2.setDescription(`Client supports both Slash Commands & Prefixes, trigger the slash help with \`/help\` and prefix help with \`${prefix}help\`!`)
         embed2.addFields([{
-            name: 'Catching',
-            value: `\`catch\`, \`hint\``
+            name: 'COMING SOON',
+            value: `COMING SOON`
         }])
         embed2.setFooter({
             text: 'Page 2 of 2'
@@ -210,9 +206,8 @@ module.exports = {
                 const current = helpEmbedPage.slice(i, k);
                 let j = i;
                 k += 1;
-                const info = current.map(currentEmbed => `\`${currentEmbed.data.color}\``);
                 const embed = new EmbedBuilder()
-                    .setDescription(`${info}`)
+                    .setDescription(helpEmbedPage[i].data.description)
                     .setTitle(helpEmbedPage[i].data.title)
                     .addFields(helpEmbedPage[i].data.fields)
                     .setColor(helpEmbedPage[i].data.color)
