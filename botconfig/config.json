@@ -18,7 +18,7 @@
    },
    "Discord_Links": {
       "Support_Server": "https://discord.gg/xQFFRzhJu2",
-      "invite_link_recommended": "https://discord.com/api/oauth2/authorize?client_id=1049070551232151622&permissions=517543939136&scope=bot%20applications.commands",
+      "invite_link_recommended": "https://discord.com/api/oauth2/authorize?client_id=1049070551232151622&permissions=1385597234230&scope=bot%20applications.commands",
       "invite_link_admin": "https://discord.com/api/oauth2/authorize?client_id=1049070551232151622&permissions=8&scope=bot%20applications.commands"
    }
 }
