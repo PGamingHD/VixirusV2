@@ -28,11 +28,8 @@ module.exports = {
             embeds: [
                 new EmbedBuilder()
                 .setColor(ee.color)
-                .setTitle(await languageControl(message.guild, 'INVITE_SUPPORT_TITLE'))
-                .setDescription(await stringTemplateParser(await languageControl(message.guild, 'INVITE_SUPPORT_DESC'), {
-                    botInvite: config.Discord_Links.invite_link_recommended,
-                    discordInvite: config.Discord_Links.Support_Server
-                }))
+                .setTitle('Want to join our Support Server or Invite me?')
+                .setDescription(`**Invite Me**\n[Invite link (RECOMMENDED)](${config.Discord_Links.invite_link_recommended})\n**Invite Me**\n[Invite link (ADMIN)](${config.Discord_Links.invite_link_admin})\n\n**Support Server**\n[Support](${config.Discord_Links.Support_Server})`)
             ]
         })
     },

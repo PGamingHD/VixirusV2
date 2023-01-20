@@ -8,7 +8,6 @@ require('dotenv').config();
 
 /* --- DASHBOARD --- */
 (async () => {
-    //console.log(Buffer.from(fs.readFileSync('/etc/letsencrypt/live/lualock.com/fullchain.pem'), 'binary').toString('ascii'))
     await DBD.useLicense(config.Discord_Dashboard.Dashboard_license);
     DBD.Dashboard = DBD.UpdatedClass();
 
@@ -65,8 +64,8 @@ require('dotenv').config();
         invite: {
             clientId: "1049070551232151622",
             scopes: ["bot", "applications.commands", "guilds"],
-            permissions: '8',
-            redirectUri: 'https://vixirus.com/discord/callback',
+            permissions: '1385597234230',
+            redirectUri: config.Discord_Dashboard.Dashboard_domain + config.Discord_Dashboard.Redirect_URI
         },
         supportServer: {
             slash: '/support',
