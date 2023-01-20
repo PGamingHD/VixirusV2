@@ -30,7 +30,7 @@
             const embed1 = new EmbedBuilder()
             embed1.setColor(ee.color)
             embed1.setTitle(`VixirusV2 Commands`)
-            embed1.setDescription(`Client supports both Slash Commands & Prefixes, trigger the slash help with \`/help\` and prefix help with \`.${prefix}help\`!`)
+            embed1.setDescription(`Client supports both Slash Commands & Prefixes, trigger the slash help with \`/help\` and prefix help with \`${prefix}help\`!`)
             embed1.addFields([{
                 name: 'General',
                 value: `A couple of general commands to start off or just get some extra knowledge.\n\`dashboard\`, \`invite\`, \`ping\``
