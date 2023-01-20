@@ -38,12 +38,14 @@ module.exports = {
 
         let warningString = "";
         const warningArray = [];
-        await globalPunishments.forEach(warning => {
-            if (warning.target === member.id) {
-                warningArray.push(warning)
-                warningString = warningString + `---[${warning.CaseID}]---\nServer: ${warning.server}\nModerator: ${warning.mod}\nPunishment: ${warning.punishment}\nReason: ${warning.reason}\nDate: ${warning.date}\n\n`
+
+        for (let i = 0; i < globalPunishments.length; i++) {
+            const element = globalPunishments[i];
+            if (element.target === member.id) {
+                warningArray.push(element)
+                warningString = warningString + `---[${element.CaseID}]---\nServer: ${element.server}\nModerator: ${element.mod}\nPunishment: ${element.punishment}\nReason: ${element.reason}\nDate: ${element.date}\n\n`
             };
-        });
+        }
 
         return interaction.reply({
             embeds: [
