@@ -127,7 +127,7 @@ function writeError(error, guild) {
 function dateNow() {
     const AD = new Date;
     const ADY = AD.getFullYear();
-    let ADM = AD.getMonth();
+    let ADM = AD.getMonth() + 1;
     let ADD = AD.getDate();
     let ADH = AD.getHours();
     let ADMI = AD.getMinutes();
@@ -137,7 +137,7 @@ function dateNow() {
         ADD = '0' + AD.getDate();
     }
     if (ADM < 10) {
-        ADM = '0' + AD.getMonth();
+        ADM = '0' + ADM;
     }
     if (ADH < 10) {
         ADH = '0' + AD.getHours();

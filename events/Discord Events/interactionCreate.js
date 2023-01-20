@@ -207,6 +207,7 @@ client.on("interactionCreate", async (interaction) => {
             await cmd.run(client, interaction, con, args);
             await con.release();
         } catch (error) {
+            client.logger.log(error, 'error');
             return interaction.reply({
                 embeds: [
                     new EmbedBuilder()

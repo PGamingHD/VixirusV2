@@ -1,48 +1,41 @@
 const {
+    Message,
     Client,
-    CommandInteraction,
-    MessageEmbed,
-    MessageActionRow,
-    MessageButton,
-    EmbedBuilder,
-    ApplicationCommandOptionType,
-    PermissionFlagsBits,
     ActionRowBuilder,
     ButtonBuilder,
-    ButtonStyle
-} = require('discord.js');
-const ee = require('../../botconfig/embed.json');
-const emoji = require('../../botconfig/embed.json')
+    ButtonStyle,
+    EmbedBuilder
+} = require("discord.js");
+const emoji = require("../../botconfig/emojis.json");
+const ee = require("../../botconfig/embed.json");
 const prettyMilliseconds = require('pretty-ms');
 const config = require('../../botconfig/config.json');
+let cpuStat = require("cpu-stat");
+let os = require("os");
 const {
-    genGuid,
-    modLog
+    languageControl
 } = require("../../handler/functions");
-const fs = require("fs");
 
 module.exports = {
-    name: 'punishments',
-    description: 'View someones global punishments through this client',
-    options: [{
-        name: 'member',
-        description: 'The member to view global punishments off of',
-        type: ApplicationCommandOptionType.User
-    }],
-    /** 
+    name: "punishments",
+    aliases: ['punishs', 'punishment'],
+    userPerms: [],
+    clientPerms: [],
+    /**
+     *
      * @param {Client} client
      * @param {Message} message
      * @param {String[]} args
      */
-    run: async (client, interaction, con, args) => {
-        let member = interaction.options.getMember('member');
+    run: async (client, message, args, con, prefix) => {
+        let member = message.mentions.users.first();
 
         if (!member) {
-            member = interaction.member;
+            member = message.author;
         }
 
-        if (member.user.bot) {
-            return interaction.reply({
+        if (member.bot) {
+            return message.reply({
                 content: ':x: Looks like that user is a bot, you may not check punishments for bots! :x:',
                 ephemeral: true
             })
@@ -87,7 +80,7 @@ module.exports = {
         let main = undefined;
 
         if (embeds.length !== 0 && embeds.length !== 1) {
-            main = await interaction.reply({
+            main = await message.reply({
                 embeds: [embeds[currentPage].setFooter({
                     text: `Page ${currentPage+1} of ${embeds.length}`
                 })],
@@ -95,7 +88,7 @@ module.exports = {
                 fetchReply: true
             })
         } else {
-            main = await interaction.reply({
+            main = await message.reply({
                 embeds: [embeds[currentPage].setFooter({
                     text: `Page ${currentPage+1} of ${embeds.length}`
                 })],
@@ -104,7 +97,7 @@ module.exports = {
             })
         }
 
-        const filter = m => m.user.id === interaction.user.id;
+        const filter = m => m.user.id === message.author.id;
         const collector = main.createMessageComponentCollector({
             filter,
             idle: 1000 * 60,
@@ -187,7 +180,7 @@ module.exports = {
                     mainRow.components[i].setDisabled(true);
                 }
     
-                await interaction.editReply({
+                await main.edit({
                     components: [mainRow]
                 });
             }
@@ -198,9 +191,9 @@ module.exports = {
             let k = 5;
             if (punishmentsPage === undefined) {
                 const embed = new EmbedBuilder()
-                .setDescription(`\`\`\`No punishments\`\`\``)
+                .setDescription(`\`\`\`No warnings\`\`\``)
                 .setAuthor({
-                    name: `Global Punishments for ${member.user.username}#${member.user.discriminator}`,
+                    name: `Global Punishments for ${member.username}#${member.discriminator}`,
                     iconURL: member.displayAvatarURL()
                 })
                 .setTitle(`:white_check_mark: Global Punishments :white_check_mark:`)
@@ -219,7 +212,7 @@ module.exports = {
                     const embed = new EmbedBuilder()
                         .setDescription(`\`\`\`${warningString}\`\`\``)
                         .setAuthor({
-                            name: `Global Punishments for ${member.user.username}#${member.user.discriminator}`,
+                            name: `Global Punishments for ${member.username}#${member.discriminator}`,
                             iconURL: member.displayAvatarURL()
                         })
                         .setTitle(`:white_check_mark: Global Punishments :white_check_mark:`)
@@ -230,5 +223,14 @@ module.exports = {
             }
             return embeds;
         }
-    }
-}
+    },
+};
+
+/*
+
+Code used in this script has been written by original PizzaParadise developer - PGamingHD#0666
+Require assistance with scripts? Join the discord and get help right away! - https://discord.gg/pxySje4GPC
+Other than that, please do note that it is required if you are using this to mention the original developer
+Original Developer - PGamingHD#0666
+
+*/
