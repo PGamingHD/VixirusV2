@@ -40,8 +40,8 @@ module.exports = {
         const warningArray = [];
         let punishmentsLength = 0;
 
-        if (punishmentsLength !== undefined) {
-            punishmentsLength = globalPunishments.size;
+        if (globalPunishments !== undefined) {
+            punishmentsLength = globalPunishments.length;
         }
 
         for (let i = 0; i < punishmentsLength; i++) {
