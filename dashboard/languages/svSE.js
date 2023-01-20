@@ -8,7 +8,7 @@ module.exports = {
                 category: "VixirusV2 Nyheter",
                 title: "VixirusV2 - V2 Släppt!",
                 description: "VixirusV2 är nu släppt, testa alla våra nya sjuka BETA funktioner när du ändå håller på! :)<br /> Snälla kom ihåg att detta projekt är i BETA stegen, ni får gärna komma med nya förslag till funktioner.",
-                footer: "Support Server"
+                footer: ""
             },
             feedsTitle: "Uppdateringsflödet",
             graphTitle: "Minnesanvändning",

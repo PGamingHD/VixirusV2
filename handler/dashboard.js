@@ -184,7 +184,7 @@ require('dotenv').config();
                     description: "yo",
                     image: "https://cdn.discordapp.com/attachments/1010999257899204769/1049750491967520798/onlyV.png",
                     link: {
-                        text: "Join our Support Server here!",
+                        text: "Support Server",
                         enabled: true,
                         url: '/support'
                     }
