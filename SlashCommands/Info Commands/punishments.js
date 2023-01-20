@@ -36,10 +36,6 @@ module.exports = {
         const member = interaction.options.getMember('member');
         const globalPunishments = client.globalPunishments.get(`${member.id}`);
 
-        if (globalPunishments === undefined) {
-            return interaction.reply({})
-        }
-
         let warningString = "";
         const warningArray = [];
         await globalPunishments.forEach(warning => {
@@ -58,7 +54,7 @@ module.exports = {
                     name: `Global Punishments for ${member.user.username}#${member.user.discriminator}`,
                     iconURL: member.displayAvatarURL()
                 })
-                .setDescription(`\`\`\`${warningArray.length === 0 ? "No warnings" : `${warningString}`}\`\`\``)
+                .setDescription(`\`\`\`${warningArray.length === 0 ? "No punishments" : `${warningString}`}\`\`\``)
                 .setThumbnail(`https://cdn.discordapp.com/attachments/1010999257899204769/1053662138251624488/hammer.png`)
                 .setTimestamp()
             ]
