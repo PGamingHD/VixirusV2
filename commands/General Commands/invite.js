@@ -29,7 +29,7 @@ module.exports = {
                 new EmbedBuilder()
                 .setColor(ee.color)
                 .setTitle('Want to join our Support Server or Invite me?')
-                .setDescription(`**Invite Me**\n[Invite link (RECOMMENDED)](${config.Discord_Links.invite_link_recommended})\n**Invite Me**\n[Invite link (ADMIN)](${config.Discord_Links.invite_link_admin})\n\n**Support Server**\n[Support](${config.Discord_Links.Support_Server})`)
+                .setDescription(`**Invite Me [Recommended]**\n[Invite Link](${config.Discord_Links.invite_link_recommended})\n**Invite Me [Admin]**\n[Invite Link](${config.Discord_Links.invite_link_admin})\n\n**Support Server**\n[Support](${config.Discord_Links.Support_Server})`)
             ]
         })
     },
