@@ -122,7 +122,7 @@ module.exports = {
                         inline: true
                     }, {
                         name: await languageControl(message.guild, 'DASHBOARD_LABEL'),
-                        value: `[W.I.P](https://discord.gg/xQFFRzhJu2)`,
+                        value: `[Dashboard](${config.Discord_Dashboard.Dashboard_domain})`,
                         inline: true
                     }])
 
