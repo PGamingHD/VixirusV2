@@ -234,10 +234,10 @@ module.exports = {
                 const embed = new EmbedBuilder()
                     .setDescription(`\`\`\`No warnings\`\`\``)
                     .setAuthor({
-                        name: `Global Punishments for ${memberToView.user.username}#${memberToView.user.discriminator}`,
+                        name: `Warnings for ${memberToView.user.username}#${memberToView.user.discriminator}`,
                         iconURL: memberToView.displayAvatarURL()
                     })
-                    .setTitle(`:white_check_mark: Global Punishments :white_check_mark:`)
+                    .setTitle(`:white_check_mark: Server Warnings :white_check_mark:`)
                     .setThumbnail(`https://cdn.discordapp.com/attachments/1010999257899204769/1053662138251624488/hammer.png`)
                     .setColor(ee.color)
                 embeds.push(embed)
@@ -253,10 +253,10 @@ module.exports = {
                     const embed = new EmbedBuilder()
                         .setDescription(`\`\`\`${warningString}\`\`\``)
                         .setAuthor({
-                            name: `Global Punishments for ${memberToView.user.username}#${memberToView.user.discriminator}`,
+                            name: `Warnings for ${memberToView.user.username}#${memberToView.user.discriminator}`,
                             iconURL: memberToView.displayAvatarURL()
                         })
-                        .setTitle(`:white_check_mark: Global Punishments :white_check_mark:`)
+                        .setTitle(`:white_check_mark: Server Warnings :white_check_mark:`)
                         .setThumbnail(`https://cdn.discordapp.com/attachments/1010999257899204769/1053662138251624488/hammer.png`)
                         .setColor(ee.color)
                     embeds.push(embed)
