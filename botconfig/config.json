@@ -7,7 +7,7 @@
    "ENABLE_DEBUG": false,
    "Discord_Dashboard": {
       "Dashboard_port": 443,
-      "Dashboard_domain": "https://lualock.com",
+      "Dashboard_domain": "https://vixirus.com",
       "Redirect_URI": "/discord/callback",
       "Dashboard_client": {
          "id": "1049070551232151622",
