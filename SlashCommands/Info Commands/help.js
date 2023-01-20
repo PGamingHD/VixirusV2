@@ -50,7 +50,7 @@
             const embed2 = new EmbedBuilder()
             embed2.setColor(ee.color)
             embed2.setTitle(`VixirusV2 Commands`)
-            embed2.setDescription(`Client supports both Slash Commands & Prefixes, trigger the slash help with \`/help\` and prefix help with \`.${prefix}help\`!`)
+            embed2.setDescription(`Client supports both Slash Commands & Prefixes, trigger the slash help with \`/help\` and prefix help with \`${prefix}help\`!`)
             embed2.addFields([{
                 name: 'COMING SOON',
                 value: `COMING SOON`
@@ -203,9 +203,8 @@
                     const current = helpEmbedPage.slice(i, k);
                     let j = i;
                     k += 1;
-                    const info = current.map(currentEmbed => `\`${currentEmbed.data.description}\``);
                     const embed = new EmbedBuilder()
-                        .setDescription(`${info}`)
+                        .setDescription(helpEmbedPage[i].data.description)
                         .setTitle(helpEmbedPage[i].data.title)
                         .addFields(helpEmbedPage[i].data.fields)
                         .setColor(helpEmbedPage[i].data.color)
