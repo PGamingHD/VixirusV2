@@ -38,8 +38,13 @@ module.exports = {
 
         let warningString = "";
         const warningArray = [];
+        let punishmentsLength = 0;
 
-        for (let i = 0; i < globalPunishments.length; i++) {
+        if (punishmentsLength !== undefined) {
+            punishmentsLength = globalPunishments.length;
+        }
+
+        for (let i = 0; i < punishmentsLength; i++) {
             const element = globalPunishments[i];
             if (element.target === member.id) {
                 warningArray.push(element)
