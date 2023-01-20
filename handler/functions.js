@@ -7,6 +7,7 @@ const {
 } = require("discord.js");
 const client = require("../index");
 const Discord = require("discord.js")
+const emoji = require("../botconfig/emojis.json");
 const config = require("../botconfig/config.json");
 const ee = require("../botconfig/embed.json");
 const fs = require("fs");
@@ -27,6 +28,7 @@ module.exports.dateNow = dateNow;
 module.exports.modLog = modLog;
 module.exports.LoggerLog = LoggerLog;
 module.exports.guildHasData = guildHasData;
+module.exports.globalChat = globalChat;
 //FUNCTIONS
 
 async function languageControl(guild, translateLine) {
@@ -172,6 +174,10 @@ async function guildHasData(guild, pool) {
     await client.cachedLeaveMessages.set(`${guild.id}`, "{user} just left the server!");
     await client.cachedLeaveChannels.set(`${guild.id}`, null);
     await client.cachedPrivateMessages.set(`${guild.id}`, "Have a great time in **{server}**!");
+    await client.cachedMuteds.set(`${guild.id}`, "0")
+    await client.cachedModLogs.set(`${guild.id}`, "0")
+    await client.cachedLoggingChannels.set(`${guild.id}`, "0")
+    await client.serverGlobal.set(`${guild.id}`, "0")
     
     await client.funmodule.set(`${guild.id}`, "Fun Enabled!");
 
@@ -230,5 +236,52 @@ async function LoggerLog(guild, returnObject) {
         } catch {}
     } else {
         return;
+    }
+}
+
+async function globalChat(message) {
+    const chats = await client.globalChats.get('chats');
+    if (!chats.includes(message.channel.id)) return;
+    if (config.Global_Chat.Banned_Users.includes(message.author.id)) return;
+    let chatRank = emoji.user;
+
+    if (config.Global_Chat.VIP_Rank.includes(message.author.id)) {
+        chatRank = emoji.vip;
+    }
+
+    if (config.Global_Chat.Premium_Rank.includes(message.author.id)) {
+        chatRank = emoji.premium;
+    }
+
+    if (config.Global_Chat.Special_Rank.includes(message.author.id)) {
+        chatRank = emoji.special;
+    }
+
+    if (config.Global_Chat.Support_Rank.includes(message.author.id)) {
+        chatRank = emoji.support;
+    }
+
+    if (config.Global_Chat.Mod_Rank.includes(message.author.id)) {
+        chatRank = emoji.moderator;
+    }
+
+    if (config.Global_Chat.Admin_Rank.includes(message.author.id)) {
+        chatRank = emoji.administrator;
+    }
+
+    if (config.Global_Chat.Developer_Rank.includes(message.author.id)) {
+        chatRank = emoji.developer
+    }
+
+    for (let i = 0; i < chats.length; i++) {
+        if (chats[i] === message.channel.id) continue;
+
+        try {
+            const channelChat = await client.channels.fetch(chats[i]);
+
+            await channelChat.send({
+                content: `**[${message.guild.id === "1010999169676222514" ? "Support Server" : message.guild.name}] ${chatRank} ${message.author.tag}:** ${message.content}`
+            })
+        } catch {}
     }
 }

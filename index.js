@@ -94,6 +94,8 @@ client.funmodule = new Collection();
 
 client.loggingmodule = new Collection();
 
+client.globalmodule = new Collection();
+
 //SETTINGS
 client.cachedGuildLanguages = new Collection();
 
@@ -111,6 +113,8 @@ client.cachedMuteds = new Collection();
 client.cachedModLogs = new Collection();
 client.cachedLoggingChannels = new Collection();
 client.globalPunishments = new Collection();
+client.serverGlobal = new Collection();
+client.globalChats = new Collection();
 
 //COMMANDS
 client.slowmodeCmd = new Collection();

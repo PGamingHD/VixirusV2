@@ -3,6 +3,8 @@ const getPool = require("./database");
 module.exports = async (client) => {
     const pool = await getPool().getConnection();
     const [guildData, guildsRow] = await pool.query(`SELECT * FROM guild_data`);
+    const globalChats = [];
+    
     guildData.forEach(async (guild) => {
         await client.cachedGuildLanguages.set(`${guild.data_ServerId}`, guild.data_language);
 
@@ -37,6 +39,12 @@ module.exports = async (client) => {
         await client.cachedModLogs.set(`${guild.data_ServerId}`, guild.data_modlogs);
 
         await client.cachedLoggingChannels.set(`${guild.data_ServerId}`, guild.data_logchannel);
+
+        await client.serverGlobal.set(`${guild.data_ServerId}`, guild.data_globalchannel);
+
+        if (guild.data_globalchannel !== "0") {
+            globalChats.push(guild.data_globalchannel);
+        }
     });
 
     const [guildModules, modulesGuild] = await pool.query(`SELECT * FROM guild_modules;`);
@@ -79,6 +87,10 @@ module.exports = async (client) => {
 
         if (guild.module_logging) {
             await client.loggingmodule.set(`${guild.module_ServerId}`, "Logging Enabled!");
+        }
+
+        if (guild.module_global) {
+            await client.globalmodule.set(`${guild.module_ServerId}`, "Global Enabled!");
         }
     });
 
@@ -210,4 +222,6 @@ module.exports = async (client) => {
     });
     
     await pool.release();
+
+    await client.globalChats.set(`chats`, globalChats);
 }

@@ -20,5 +20,15 @@
       "Support_Server": "https://discord.gg/xQFFRzhJu2",
       "invite_link_recommended": "https://discord.com/api/oauth2/authorize?client_id=1049070551232151622&permissions=1385597234230&scope=bot%20applications.commands",
       "invite_link_admin": "https://discord.com/api/oauth2/authorize?client_id=1049070551232151622&permissions=8&scope=bot%20applications.commands"
+   },
+   "Global_Chat": {
+      "Banned_Users": [],
+      "Developer_Rank": ["266726434855321600"],
+      "Admin_Rank": ["264114457033179146"],
+      "Mod_Rank": ["336599916078039050"],
+      "Support_Rank": [],
+      "Premium_Rank": [],
+      "Special_Rank": [],
+      "VIP_Rank": []
    }
 }

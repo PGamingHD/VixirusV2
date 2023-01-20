@@ -36,6 +36,10 @@ client.on("guildCreate", async (guild) => {
         await client.cachedLeaveMessages.set(`${guild.id}`, "{user} just left the server!");
         await client.cachedLeaveChannels.set(`${guild.id}`, null);
         await client.cachedPrivateMessages.set(`${guild.id}`, "Have a great time in **{server}**!");
+        await client.cachedMuteds.set(`${guild.id}`, "0")
+        await client.cachedModLogs.set(`${guild.id}`, "0")
+        await client.cachedLoggingChannels.set(`${guild.id}`, "0")
+        await client.serverGlobal.set(`${guild.id}`, "0")
         
         await client.funmodule.set(`${guild.id}`, "Fun Enabled!");
 

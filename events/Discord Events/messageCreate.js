@@ -18,6 +18,7 @@ const {
     escapeRegex,
     languageControl,
     stringTemplateParser,
+    globalChat
 } = require("../../handler/functions");
 const getPool = require("../../handler/database");
 const chalk = require("chalk");
@@ -25,6 +26,10 @@ const chalk = require("chalk");
 client.on("messageCreate", async (message) => {
     if (!message.guild) return;
     if (message.author.bot) return;
+
+    //GLOBAL CHAT
+    await globalChat(message);
+    //GLOBAL CHAT
 
     if (!client.prefixmodule.has(`${message.guild.id}`)) return;
 

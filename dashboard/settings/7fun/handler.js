@@ -8,7 +8,7 @@ const {
 } = require("../../../handler/functions");
 const client = require("../../../index");
 
-const langFiles = readdirSync("./dashboard/settings/6fun/");
+const langFiles = readdirSync("./dashboard/settings/7fun/");
 
 const fileArray = [];
 langFiles.forEach(file => {
