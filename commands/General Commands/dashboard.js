@@ -29,7 +29,7 @@ module.exports = {
                 new EmbedBuilder()
                 .setColor(ee.color)
                 .setTitle('Dashboard Link')
-                .setDescription('*Configure your bot trough the [dashboard](https://vixirus.com/)!*')
+                .setDescription(`*Configure your bot trough the [dashboard](${config.Discord_Dashboard.Dashboard_domain})!*`)
             ]
         })
     },
