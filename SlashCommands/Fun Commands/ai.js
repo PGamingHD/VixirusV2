@@ -62,16 +62,29 @@ module.exports = {
                 ]
             })
           } catch (error) {
-            return await interaction.editReply({
-                content: '',
-                embeds: [
-                    new EmbedBuilder()
-                    .setColor(ee.errorColor)
-                    .setTitle(`:robot: Response Failed :robot:`)
-                    .setDescription(`Woops, is this resource being rate limited? Try asking again in a few minutes.`)
-                    .setTimestamp()
-                ]
-            })
+            if (error.message === "Request failed with status code 429") {
+                return await interaction.editReply({
+                    content: '',
+                    embeds: [
+                        new EmbedBuilder()
+                        .setColor(ee.errorColor)
+                        .setTitle(`:robot: Response Failed :robot:`)
+                        .setDescription(`Woops, is this resource being rate limited? Try asking again in a few minutes.`)
+                        .setTimestamp()
+                    ]
+                })
+            } else {
+                return await interaction.editReply({
+                    content: '',
+                    embeds: [
+                        new EmbedBuilder()
+                        .setColor(ee.errorColor)
+                        .setTitle(`:robot: Response Failed :robot:`)
+                        .setDescription(`Error, failed to update bot response. (Please contact Developer)\n**Error Message:**\n\`\`\`${error.message}\`\`\``)
+                        .setTimestamp()
+                    ]
+                })
+            }
           }
     }
 }
