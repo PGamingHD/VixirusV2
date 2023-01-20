@@ -44,6 +44,7 @@ module.exports = {
             });
             
             return await msg.edit({
+                content: '',
                 embeds: [
                     new EmbedBuilder()
                     .setColor(ee.color)
