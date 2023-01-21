@@ -166,7 +166,6 @@ async function guildHasData(guild, pool) {
     await pool.query(`INSERT INTO guild_modules(module_ServerId) VALUES("${guild.id}")`);
     await pool.query(`INSERT INTO guild_logs(log_ServerId) VALUES("${guild.id}")`);
 
-    //STARTER VALUES THAT MUST BE RE-SET!
     await client.cachedGuildLanguages.set(`${guild.id}`, "en");
     await client.cachedServerPrefixes.set(`${guild.id}`, "v!");
     await client.cachedWelcomeMessages.set(`${guild.id}`, "Hey {user}, welcome to **{server}**!");
