@@ -83,6 +83,12 @@
             ])
             mainRow.addComponents([
                 new ButtonBuilder()
+                .setEmoji('⏹️')
+                .setCustomId('exit')
+                .setStyle(ButtonStyle.Primary)
+            ])
+            mainRow.addComponents([
+                new ButtonBuilder()
                 .setEmoji('➡️')
                 .setCustomId('forward')
                 .setStyle(ButtonStyle.Primary)
@@ -91,12 +97,6 @@
                 new ButtonBuilder()
                 .setEmoji('⏩')
                 .setCustomId('fastforward')
-                .setStyle(ButtonStyle.Primary)
-            ])
-            mainRow.addComponents([
-                new ButtonBuilder()
-                .setEmoji('❌')
-                .setCustomId('exit')
                 .setStyle(ButtonStyle.Primary)
             ])
 

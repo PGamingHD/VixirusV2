@@ -86,6 +86,12 @@ module.exports = {
         ])
         mainRow.addComponents([
             new ButtonBuilder()
+            .setEmoji('⏹️')
+            .setCustomId('exit')
+            .setStyle(ButtonStyle.Primary)
+        ])
+        mainRow.addComponents([
+            new ButtonBuilder()
             .setEmoji('➡️')
             .setCustomId('forward')
             .setStyle(ButtonStyle.Primary)
@@ -94,12 +100,6 @@ module.exports = {
             new ButtonBuilder()
             .setEmoji('⏩')
             .setCustomId('fastforward')
-            .setStyle(ButtonStyle.Primary)
-        ])
-        mainRow.addComponents([
-            new ButtonBuilder()
-            .setEmoji('❌')
-            .setCustomId('exit')
             .setStyle(ButtonStyle.Primary)
         ])
 
