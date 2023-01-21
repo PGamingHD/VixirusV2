@@ -283,7 +283,7 @@ async function globalChat(message) {
             const channelChat = await client.channels.fetch(chats[i]);
 
             await channelChat.send({
-                content: `**[${message.guild.id === "1010999169676222514" ? "👑Support Server👑" : message.guild.name}] ${chatRank} ${message.author.tag}:** ${message.content}`
+                content: `**[${message.guild.id === "1010999169676222514" ? `${emoji.support}Support Server${emoji.support}` : message.guild.name}] ${chatRank} ${message.author.tag}:** ${message.content}`
             })
         } catch {}
     }
