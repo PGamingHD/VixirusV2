@@ -29,6 +29,28 @@ client.on("messageCreate", async (message) => {
     if (!message.guild) return;
     if (message.author.bot) return;
 
+    if (await client.usersAFK.has(`${message.author.id}`)) {
+        await client.usersAFK.delete(`${message.author.id}`);
+
+        await message.reply({
+            embeds: [
+                new EmbedBuilder()
+                .setColor(ee.color)
+                .setDescription(`:x: You are no longer marked as AFK`)
+            ]
+        });
+    }
+
+    if (message.mentions.users.first()) {
+        if (await client.usersAFK.has(`${message.mentions.users.first().id}`)) await message.reply({
+            embeds: [
+                new EmbedBuilder()
+                .setColor(ee.maintenanceColor)
+                .setDescription(`:warning: That user is currently marked as AFK for the following reason: \`\`\`${await client.usersAFK.get(`${message.mentions.users.first().id}`)}\`\`\``)
+            ]
+        })
+    }
+
     //GLOBAL CHAT
     await globalChat(message);
     //GLOBAL CHAT

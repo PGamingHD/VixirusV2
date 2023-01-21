@@ -36,7 +36,7 @@ module.exports = {
         embed1.setDescription(`Client supports both Slash Commands & Prefixes, trigger the slash help with \`/help\` and prefix help with \`${prefix}help\`!`)
         embed1.addFields([{
             name: 'General',
-            value: `A couple of general commands to start off or just get some extra knowledge.\n\`dashboard\`, \`invite\`, \`ping\``
+            value: `A couple of general commands to start off or just get some extra knowledge.\n\`dashboard\`, \`invite\`, \`ping\`, \`afk\``
         }, {
             name: 'Information',
             value: `A couple of commands to get some information about the client.\n\`help\`, \`punishments\`, \`status\``
@@ -46,6 +46,9 @@ module.exports = {
         }, {
             name: 'Moderation',
             value: `Moderate your Servers with the bot.\n\`ban\`, \`clearwarns\`, \`kick\`, \`lockdown\`, \`mute\`, \`purge\`, \`removetimeout\`, \`removewarning\`, \`setnick\`, \`slowmode\`, \`softban\`, \`tempban\`, \`timeout\`, \`unban\`, \`unmute\`, \`warn\`, \`warns\``
+        }, {
+            name: 'Fun',
+            value: `Have some fun with a couple of fun commands.\n\`ai\``
         }])
         embed1.setFooter({
             text: 'Page 1 of 2'

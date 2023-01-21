@@ -149,6 +149,9 @@ client.nicknameUpdates = new Collection();
 client.avatarUpdates = new Collection();
 client.timeoutUpdates = new Collection();
 
+//NO DB VARIABLES
+client.usersAFK = new Collection();
+
 
 
 //           --------------------<DB VARIABLES CONTSTRUCTION>--------------------

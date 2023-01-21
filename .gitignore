@@ -2,3 +2,4 @@
 /node_modules
 /botconfig/heapusage.json
 .env
+botconfig/heapusage.json
