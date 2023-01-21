@@ -33,6 +33,9 @@
         run: async (client, interaction, args) => {
 
             try {
+                const secondsUptime = Math.floor(client.uptime / 1000);
+                const cmdsPerSecond = client.messagesSent / secondsUptime;
+
                 cpuStat.usagePercent(async function (e, percent, seconds) {
                     if (e) return console.log(String(e.stack));
 
@@ -63,11 +66,11 @@
 
                     const botinfo = new EmbedBuilder()
                         .setAuthor({
-                            name: 'VixirusV2 Status',
+                            name: client.user.username + ' Status',
                             iconURL: client.user.displayAvatarURL()
                         })
                         .setColor(ee.color)
-                        .setDescription(await languageControl(interaction.guild, 'BOT_STATUS_DESC'))
+                        .setDescription(`I am the one and only ${client.user.username}, check my commands out with \`/help\`!\n\n**Events since last restart \`${prettyMilliseconds(client.uptime)}\` ago:**\n• **${client.messagesSent.toLocaleString('en-US')}** message processed\n• **${cmdsPerSecond.toFixed(2).toLocaleString('en-US')}** messages per second`)
                         .addFields([{
                             name: await languageControl(interaction.guild, 'BIRTHDAY_LABEL'),
                             value: `<t:${Math.floor(client.user.createdTimestamp / 1000)}>`,

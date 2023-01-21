@@ -65,6 +65,7 @@ client.dashboardSettings = readdirSync("./dashboard/settings/");
 client.dashboardLanguages = readdirSync("./dashboard/languages");
 client.config = require("./botconfig/config.json");
 client.logger = require("./handler/logger");
+client.messagesSent = 0;
 
 //           --------------------<GLOBAL VARIABLES CONSTRUCTION>--------------------
 

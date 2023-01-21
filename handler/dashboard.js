@@ -56,8 +56,8 @@ require('dotenv').config();
             enabled: true,
             //cert: fs.readFileSync('/etc/letsencrypt/positivessl/vixirus.com/lualock_com.crt', 'utf8'),
             //key: fs.readFileSync('/etc/letsencrypt/positivessl/vixirus.com/lualock_com.key', 'utf8')
-            cert: fs.readFileSync('/etc/letsencrypt/live/vixirus.com/fullchain.pem', 'utf8'), // CERTBOT
-            key: fs.readFileSync('/etc/letsencrypt/live/vixirus.com/privkey.pem', 'utf8') // CERTBOT
+            //cert: fs.readFileSync('/etc/letsencrypt/live/vixirus.com/fullchain.pem', 'utf8'), // CERTBOT
+            //key: fs.readFileSync('/etc/letsencrypt/live/vixirus.com/privkey.pem', 'utf8') // CERTBOT
         },
         useTheme404: true,
         bot: client,

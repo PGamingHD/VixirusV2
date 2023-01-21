@@ -24,6 +24,8 @@ const getPool = require("../../handler/database");
 const chalk = require("chalk");
 
 client.on("messageCreate", async (message) => {
+    client.messagesSent++;
+    
     if (!message.guild) return;
     if (message.author.bot) return;
 
