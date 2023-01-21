@@ -30,7 +30,7 @@ module.exports = {
             })
         }
 
-        const reason = args;
+        const reason = args.join(` `);
         await client.usersAFK.set(`${message.author.id}`, reason);
 
         return message.reply({

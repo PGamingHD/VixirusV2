@@ -28,7 +28,7 @@ module.exports = {
      * @param {String[]} args
      */
     run: async (client, message, args, con, prefix) => {
-        const newLanguage = args[1];
+        const newLanguage = args[0];
         let guildLang = client.cachedGuildLanguages.get(message.guild.id);
 
         if (guildLang === "sv") {

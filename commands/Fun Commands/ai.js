@@ -31,7 +31,7 @@ module.exports = {
      * @param {String[]} args
      */
     run: async (client, message, args, con) => {
-        const question = args;
+        const question = args.join(` `);
 
         const msg = await message.reply({
             content: `${emoji.loading} Thinking...`
