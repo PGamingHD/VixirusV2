@@ -240,8 +240,8 @@ async function LoggerLog(guild, returnObject) {
 }
 
 async function globalChat(message) {
-    if (!await client.globalmodule.has(`${message.guild.id}`)) return console.log("MODULE OFF");
-    if (await client.globalChats.get('chats').length < 1) return console.log("LENGTH LESS THAN 1");
+    if (!await client.globalmodule.has(`${message.guild.id}`)) return;
+    if (await client.globalChats.get('chats').length < 1) return;
 
     const chats = await client.globalChats.get('chats');
     if (!chats.includes(message.channel.id)) return;
@@ -283,7 +283,7 @@ async function globalChat(message) {
             const channelChat = await client.channels.fetch(chats[i]);
 
             await channelChat.send({
-                content: `**[${message.guild.id === "1010999169676222514" ? "Support Server" : message.guild.name}] ${chatRank} ${message.author.tag}:** ${message.content}`
+                content: `**[${message.guild.id === "1010999169676222514" ? "👑Support Server👑" : message.guild.name}] ${chatRank} ${message.author.tag}:** ${message.content}`
             })
         } catch {}
     }
