@@ -12,7 +12,7 @@ const {
 } = require("../../handler/functions");
 
 module.exports = {
-    name: 'Report',
+    name: 'Report Message',
     type: ApplicationCommandType.Message,
     /** 
      * @param {Client} client 
