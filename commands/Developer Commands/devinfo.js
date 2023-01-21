@@ -161,7 +161,7 @@ module.exports = {
         })
 
         collector.on('end', async (collected, reason) => {
-            if (reason === "messageDelete") {
+            if (reason === "messageDelete" || guilds.length <= 20) {
                 return;
             } else {
                 for (let i = 0; i < mainRow.components.length; i++) {
