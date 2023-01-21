@@ -20,7 +20,7 @@ module.exports = {
      */
     run: async (client, interaction, con) => {
         const logChannel = await client.cachedModLogs.get(`${interaction.guild.id}`);
-        if (!client.modlogmodule.has(`${interaction.guild.id}`) || logChannel === "0") return interaction.reply({
+        if (!client.modmodule.has(`${interaction.guild.id}`) || logChannel === "0") return interaction.reply({
             content: ':x: Modlogs not setup, reports will not be recieved! (Have a Staff Member enable it first) :x:',
             ephemeral: true
         });

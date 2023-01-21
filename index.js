@@ -88,7 +88,6 @@ client.rolemodule = new Collection();
 client.languagemodule = new Collection();
 
 client.modmodule = new Collection();
-client.modlogmodule = new Collection();
 
 client.funmodule = new Collection();
 
