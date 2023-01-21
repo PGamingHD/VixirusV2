@@ -38,7 +38,7 @@ module.exports = {
 
             const currentServerChats = await client.globalChats.get(`chats`);
             const newArray = [];
-            newArray.push(`${guild.id}`);
+            newArray.push(`${newData}`);
             for (let i = 0; i < currentServerChats.length; i++) {
                 newArray.push(currentServerChats[i]);
             }
