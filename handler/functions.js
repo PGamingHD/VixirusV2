@@ -241,6 +241,7 @@ async function LoggerLog(guild, returnObject) {
 
 async function globalChat(message) {
     if (!await client.globalmodule.has(`${message.guild.id}`)) return;
+    if (await client.globalChats.get('chats').length < 1) return;
 
     const chats = await client.globalChats.get('chats');
     if (!chats.includes(message.channel.id)) return;
