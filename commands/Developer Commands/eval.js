@@ -44,7 +44,7 @@ module.exports = {
             if (string.includes(client.token)) return;
 
             let evalEmbed = new EmbedBuilder().setTitle(`${client.user.username} | EVALUTION`);
-            evalEmbed.setDescription(`***Input:***\n\`\`\`js\n${evaled}\n\`\`\`\n***Output:***\n\`\`\`js\n${string}\n\`\`\``);
+            evalEmbed.setDescription(`***Input:***\n\`\`\`js\n${args.join(` `)}\n\`\`\`\n***Output:***\n\`\`\`js\n${string}\n\`\`\``);
             message.reply({
                 embeds: [evalEmbed.setColor(ee.color).setTimestamp()]
             });
