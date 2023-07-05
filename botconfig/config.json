@@ -9,10 +9,6 @@
       "Dashboard_port": 443,
       "Dashboard_domain": "https://vixirus.com",
       "Redirect_URI": "/discord/callback",
-      "Dashboard_client": {
-         "id": "1049070551232151622",
-         "secret": "OIX6rguSdo2VQtuE3ceyPXmG1Ko9io9D"
-      },
       "Dashboard_license": "07c8588f-3848-4b37-861f-9386898839ba",
       "OwnerIDs": ["266726434855321600"]
    },
